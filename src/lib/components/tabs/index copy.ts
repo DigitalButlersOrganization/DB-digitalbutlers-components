@@ -1,5 +1,5 @@
 import { CLASSES } from '../../../constants/classes';
-import { KEYS_CODES } from '../../../constants/key-codes';
+import { KEYS } from '../../../constants/keys';
 import { KEYS_DIRECTIONS } from '../../../constants/key-directions';
 import getChildrenArray from '../../utils/get-children-array';
 import './index.scss';
@@ -85,21 +85,21 @@ export class Tabs {
 		const { target, keyCode } = event;
 		if ((target as HTMLElement).closest(this.defaultSelectors.tab)) {
 			switch (keyCode) {
-			case KEYS_CODES.END: {
+			case KEYS.END: {
 				event.preventDefault(); // prevent page scroll
 				this.focusTab(event, 'last');
 				break;
 			}
-			case KEYS_CODES.HOME: {
+			case KEYS.HOME: {
 				event.preventDefault(); // prevent page scroll
 				this.focusTab(event, 'first');
 				break;
 			}
-			case KEYS_CODES.UP: {
+			case KEYS.UP: {
 				this.determineOrientation(event);
 				break;
 			}
-			case KEYS_CODES.DOWN: {
+			case KEYS.DOWN: {
 				this.determineOrientation(event);
 				break;
 			}
@@ -114,23 +114,23 @@ export class Tabs {
 		const { target, keyCode } = event;
 		if ((target as HTMLElement).closest(this.defaultSelectors.tab)) {
 			switch (keyCode) {
-			case KEYS_CODES.LEFT: {
+			case KEYS.LEFT: {
 				this.determineOrientation(event);
 				break;
 			}
-			case KEYS_CODES.RIGHT: {
+			case KEYS.RIGHT: {
 				this.determineOrientation(event);
 				break;
 			}
-			case KEYS_CODES.DELETE: {
+			case KEYS.DELETE: {
 				this.determineDeletable(event);
 				break;
 			}
-			case KEYS_CODES.ENTER: {
+			case KEYS.ENTER: {
 				this.activateTab(target as HTMLElement);
 				break;
 			}
-			case KEYS_CODES.SPACE: {
+			case KEYS.SPACE: {
 				this.activateTab(target as HTMLElement);
 				break;
 			}
@@ -215,10 +215,10 @@ export class Tabs {
 					if (desiredTabsElements[index + pressedIndex]) {
 						(desiredTabsElements[index + pressedIndex] as HTMLElement).focus();
 						// eslint-disable-next-line no-undef
-					} else if (keyCode === KEYS_CODES.LEFT || keyCode === KEYS_CODES.UP) {
+					} else if (keyCode === KEYS.LEFT || keyCode === KEYS.UP) {
 						this.focusTab(event, 'last');
 						// eslint-disable-next-line no-undef
-					} else if (keyCode === KEYS_CODES.RIGHT || keyCode === KEYS_CODES.DOWN) {
+					} else if (keyCode === KEYS.RIGHT || keyCode === KEYS.DOWN) {
 						this.focusTab(event, 'first');
 					}
 				}
@@ -232,11 +232,11 @@ export class Tabs {
 		let proceed = false;
 
 		if (vertical) {
-			if (keyCode === KEYS_CODES.UP || keyCode === KEYS_CODES.DOWN) {
+			if (keyCode === KEYS.UP || keyCode === KEYS.DOWN) {
 				event.preventDefault();
 				proceed = true;
 			}
-		} else if (keyCode === KEYS_CODES.LEFT || keyCode === KEYS_CODES.RIGHT) {
+		} else if (keyCode === KEYS.LEFT || keyCode === KEYS.RIGHT) {
 			proceed = true;
 		}
 

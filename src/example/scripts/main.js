@@ -10,8 +10,9 @@ const tabs = new Tabs({
 	tabpanelsListSelector: '[data-tabs="content"]',
 	tabbuttonsListSelector: '[data-tabs="tabs"]',
 	deletableTabs: true,
+	// autoplay: {
+	// 	delay: 1000,
+	// },
 });
 
 tabs.init();
-
-console.log(tabs);

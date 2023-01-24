@@ -1,21 +1,27 @@
 import { CLASSES } from '../../../constants/classes';
-import { KEYS_CODES } from '../../../constants/key-codes';
+import { KEYS } from '../../../constants/keys';
 import { KEYS_DIRECTIONS } from '../../../constants/key-directions';
 import getChildrenArray from '../../utils/get-children-array';
 import './index.scss';
-import { TabsPropertiesModel } from './interfaces';
+import { EventDetailsModel, TabsPropertiesModel } from './interfaces';
 
 export class Tabs {
 	tabsWrapperSelector: string;
 	tabpanelsListSelector: string;
 	tabbuttonsListSelector: string;
+	currentActive: number;
 	deletableTabs: boolean;
 	autoplay: {
 		delay: number
 	};
 
-	// eslint-disable-next-line no-undef
+	autoplayTimeout: number;
+
 	tabsWrapper: HTMLElement;
+	tabList: HTMLElement | undefined;
+	tabPanelsList: HTMLElement | undefined;
+	tabs: HTMLElement[];
+	panels: HTMLElement[];
 	defaultRoles: {
 		[key: string]: string
 	};
@@ -29,6 +35,7 @@ export class Tabs {
 		tabpanelsListSelector = '[data-tabs="content"]',
 		tabbuttonsListSelector = '[data-tabs="tabs"]',
 		deletableTabs = false,
+		initialTab = 0,
 		autoplay = {
 			delay: 0,
 		},
@@ -36,9 +43,15 @@ export class Tabs {
 		this.tabsWrapperSelector = tabsWrapperSelector;
 		this.tabpanelsListSelector = tabpanelsListSelector;
 		this.tabbuttonsListSelector = tabbuttonsListSelector;
-		this.tabsWrapper = document.querySelector(tabsWrapperSelector);
 		this.deletableTabs = deletableTabs;
+		this.tabsWrapper = document.querySelector(tabsWrapperSelector) as HTMLElement;
+		this.tabList = undefined;
+		this.tabPanelsList = undefined;
+		this.tabs = [];
+		this.panels = [];
+		this.currentActive = initialTab;
 		this.autoplay = autoplay;
+		this.autoplayTimeout = 0;
 		this.defaultRoles = {
 			tab: 'tab',
 			tabpanel: 'tabpanel',
@@ -50,62 +63,89 @@ export class Tabs {
 	}
 
 	init = () => {
-		this.assigningTabsAttributes();
-		this.addListenersForTabs();
-		this.startActivate();
-		if (this.autoplay.delay > 0) {
-			this.initAutoPlay();
+		if (this.tabsWrapper) {
+			this.tabList = this.tabsWrapper.querySelector(this.tabbuttonsListSelector) as HTMLElement;
+			this.tabPanelsList = this.tabsWrapper.querySelector(this.tabpanelsListSelector) as HTMLElement;
+			if (this.tabList && this.tabPanelsList) {
+				this.tabs = getChildrenArray(this.tabList);
+				this.panels = getChildrenArray(this.tabPanelsList);
+				if (this.tabs.length === this.panels.length) {
+					this.assigningTabsAttributes();
+					this.addListenersForTabs();
+					this.setActive(this.currentActive);
+					if (this.autoplay.delay > 0) {
+						this.runAutoPlay();
+					}
+				}
+			}
 		}
 	};
 
+	public setActive = (index: number, setFocus: boolean = true) => {
+		this.currentActive = index;
+		this.setUnactiveAll();
+		this.tabs[index].setAttribute('tabindex', '0');
+		this.tabs[index].setAttribute('aria-selected', 'true');
+		this.tabs[index].classList.add(CLASSES.ACTIVE);
+		this.tabs[index].classList.remove(CLASSES.UNACTIVE);
+		this.panels[index].removeAttribute('hidden');
+		this.panels[index].removeAttribute('inert');
+		this.panels[index].classList.add(CLASSES.ACTIVE);
+		this.panels[index].classList.remove(CLASSES.UNACTIVE);
+		// Set focus when required
+		if (setFocus) {
+			this.tabs[index].focus();
+		}
+	};
+
+	public getNextIndex = (): number => (this.currentActive + 1 === this.tabs.length ? 0 : this.currentActive + 1);
+
+	public stopAutoPlay = () => {
+		clearTimeout(this.autoplayTimeout);
+	};
+
 	// eslint-disable-next-line class-methods-use-this
-	initAutoPlay = () => {
-		console.log('autoplay');
+	private runAutoPlay = () => {
+		this.autoplayTimeout = setTimeout(() => {
+			this.setActive(this.getNextIndex());
+			this.runAutoPlay();
+		}, this.autoplay.delay);
 	};
 
-	startActivate = () => {
-		this.tabsWrapper.forEach((wrapper) => {
-			const activeSlideIndex = wrapper.dataset.tabsActive ? +wrapper.dataset.tabsActive : 0;
-			const targetTab = getChildrenArray(wrapper
-				.querySelector(this.tabbuttonsListSelector) as HTMLElement)[activeSlideIndex];
-			this.activateTab(targetTab as HTMLElement, false);
-		});
-	};
-
-	addListenersForTabs = () => {
-		window.addEventListener('click', this.clickHandler);
+	private addListenersForTabs = () => {
+		this.tabsWrapper.addEventListener('click', this.clickHandler);
 		window.addEventListener('keydown', this.keydownHandler);
 		window.addEventListener('keyup', this.keyupHandler);
 	};
 
-	clickHandler = (event: Event) => {
-		const { target } = event;
-		if ((target as HTMLElement).closest(this.defaultSelectors.tab)) {
-			const tab = (target as HTMLElement).closest(this.defaultSelectors.tab);
-			this.activateTab(tab as HTMLElement, false);
+	private clickHandler = (event: MouseEvent) => {
+		this.stopAutoPlay();
+		const target = event.target as HTMLElement;
+		const targetButton = target.closest(this.defaultSelectors.tab);
+		const targetIndex = targetButton?.getAttribute('aria-label');
+		if (targetIndex) {
+			this.setActive(+targetIndex);
 		}
 	};
 
-	keydownHandler = (event: KeyboardEvent) => {
-		const { target, keyCode } = event;
-		if ((target as HTMLElement).closest(this.defaultSelectors.tab)) {
-			switch (keyCode) {
-			case KEYS_CODES.END: {
+	private keydownHandler = (event: KeyboardEvent) => {
+		const eventDetails: EventDetailsModel = this.getEventDetails(event);
+		const { targetButton, targetIndex, key } = eventDetails;
+		if (targetButton && targetIndex !== undefined) {
+			this.stopAutoPlay();
+			switch (key) {
+			case KEYS.END: {
 				event.preventDefault(); // prevent page scroll
-				this.focusTab(event, 'last');
+				this.focusTab('last');
 				break;
 			}
-			case KEYS_CODES.HOME: {
+			case KEYS.HOME: {
 				event.preventDefault(); // prevent page scroll
-				this.focusTab(event, 'first');
+				this.focusTab('first');
 				break;
 			}
-			case KEYS_CODES.UP: {
-				this.determineOrientation(event);
-				break;
-			}
-			case KEYS_CODES.DOWN: {
-				this.determineOrientation(event);
+			case KEYS.UP || KEYS.DOWN: {
+				this.determineOrientation(eventDetails);
 				break;
 			}
 			default: {
@@ -115,28 +155,23 @@ export class Tabs {
 		}
 	};
 
-	keyupHandler = (event: KeyboardEvent) => {
-		const { target, keyCode } = event;
-		if ((target as HTMLElement).closest(this.defaultSelectors.tab)) {
-			switch (keyCode) {
-			case KEYS_CODES.LEFT: {
-				this.determineOrientation(event);
+	private keyupHandler = (event: KeyboardEvent) => {
+		const eventDetails: EventDetailsModel = this.getEventDetails(event);
+		const { targetButton, targetIndex, key } = eventDetails;
+		if (targetButton && targetIndex !== undefined) {
+			this.stopAutoPlay();
+			switch (key) {
+			case KEYS.LEFT || KEYS.RIGHT: {
+				event.preventDefault();
+				this.determineOrientation(eventDetails);
 				break;
 			}
-			case KEYS_CODES.RIGHT: {
-				this.determineOrientation(event);
+			case KEYS.DELETE: {
+				this.determineDeletable(eventDetails);
 				break;
 			}
-			case KEYS_CODES.DELETE: {
-				this.determineDeletable(event);
-				break;
-			}
-			case KEYS_CODES.ENTER: {
-				this.activateTab(target as HTMLElement);
-				break;
-			}
-			case KEYS_CODES.SPACE: {
-				this.activateTab(target as HTMLElement);
+			case KEYS.ENTER || KEYS.SPACE: {
+				this.setActive(+targetIndex);
 				break;
 			}
 			default: {
@@ -146,37 +181,15 @@ export class Tabs {
 		}
 	};
 
-	activateTab = (tab: HTMLElement, setFocus: boolean = true) => {
-		const controls = tab.getAttribute('aria-controls');
-		const desiredTabpanel = document.querySelector(`#${controls}`);
-		this.deactivateTabs(tab);
-		tab.setAttribute('tabindex', '0');
-		tab.setAttribute('aria-selected', 'true');
-		tab.classList.add(CLASSES.ACTIVE);
-		tab.classList.remove(CLASSES.UNACTIVE);
-		desiredTabpanel?.removeAttribute('hidden');
-		desiredTabpanel?.removeAttribute('inert');
-		desiredTabpanel?.classList.add(CLASSES.ACTIVE);
-		desiredTabpanel?.classList.remove(CLASSES.UNACTIVE);
-		// Set focus when required
-		if (setFocus) {
-			tab.focus();
-		}
-	};
 
-	deactivateTabs = (tab: Element) => {
-		const nearestTabsWrapper = tab.closest(this.tabsWrapperSelector);
-		const nearestTabList = (nearestTabsWrapper as HTMLElement).querySelector(this.tabbuttonsListSelector);
-		const nearestTabpanelsList = (nearestTabsWrapper as HTMLElement).querySelector(this.tabpanelsListSelector);
-		const desiredTabsElements = getChildrenArray(nearestTabList as HTMLElement);
-		const desiredTabpanelsElements = getChildrenArray(nearestTabpanelsList as HTMLElement);
-		[...desiredTabsElements].forEach((tabElement) => {
+	private setUnactiveAll = () => {
+		this.tabs.forEach((tabElement) => {
 			tabElement.setAttribute('tabindex', '-1');
 			tabElement.setAttribute('aria-selected', 'false');
 			tabElement.classList.remove(CLASSES.ACTIVE);
 			tabElement.classList.add(CLASSES.UNACTIVE);
 		});
-		[...desiredTabpanelsElements].forEach((tabpanel) => {
+		this.panels.forEach((tabpanel) => {
 			tabpanel.setAttribute('hidden', 'hidden');
 			tabpanel.setAttribute('inert', 'true');
 			tabpanel.classList.remove(CLASSES.ACTIVE);
@@ -185,132 +198,106 @@ export class Tabs {
 	};
 
 	// eslint-disable-next-line class-methods-use-this
-	focusTab = (event: Event, order: number | 'first' | 'last') => {
-		const { target } = event;
-		const nearestTabList = (target as HTMLElement).closest('[role="tablist"]');
-		const desiredTabsElements = (nearestTabList as HTMLElement).querySelectorAll(this.defaultSelectors.tab);
-		let tabOfDesired: HTMLElement;
-		switch (order) {
-		case 'first': {
-			tabOfDesired = desiredTabsElements[0] as HTMLElement;
-			break;
+	private focusTab = (order: 'first' | 'last') => {
+		if (order === 'first') {
+			this.tabs[0].focus();
+			return;
 		}
-		case 'last': {
-			tabOfDesired = desiredTabsElements[desiredTabsElements.length - 1] as HTMLElement;
-			break;
+		if (order === 'last') {
+			this.tabs[this.tabs.length - 1].focus();
 		}
-		default: {
-			tabOfDesired = desiredTabsElements[order] as HTMLElement;
-		}
-		}
-		tabOfDesired?.focus();
 	};
 
 	// When a tablist is aria-orientation is set to vertical, only up and down arrow
 	// should function. In all other cases only left and right arrow function.
-	switchTabOnArrowPress = (event: KeyboardEvent) => {
-		const { target, keyCode } = event;
-		// const pressedKeyCode = keyCode;
-		const nearestTabList = (target as HTMLElement).closest('[role="tablist"]');
-		const desiredTabsElements = (nearestTabList as HTMLElement).querySelectorAll(this.defaultSelectors.tab);
-		const pressedIndex = KEYS_DIRECTIONS[keyCode];
+	private switchTabOnArrowPress = (eventDetails: EventDetailsModel) => {
+		const { target, key } = eventDetails;
+		const pressedIndex = KEYS_DIRECTIONS[key];
 		if (pressedIndex) {
-			desiredTabsElements.forEach((tab: Element, index: number) => {
+			this.tabs.forEach((tab: Element, index: number) => {
 				if (tab === target) {
-					if (desiredTabsElements[index + pressedIndex]) {
-						(desiredTabsElements[index + pressedIndex] as HTMLElement).focus();
+					if (this.tabs[index + pressedIndex]) {
+						(this.tabs[index + pressedIndex] as HTMLElement).focus();
 						// eslint-disable-next-line no-undef
-					} else if (keyCode === KEYS_CODES.LEFT || keyCode === KEYS_CODES.UP) {
-						this.focusTab(event, 'last');
+					} else if (key === KEYS.LEFT || key === KEYS.UP) {
+						this.focusTab('last');
 						// eslint-disable-next-line no-undef
-					} else if (keyCode === KEYS_CODES.RIGHT || keyCode === KEYS_CODES.DOWN) {
-						this.focusTab(event, 'first');
+					} else if (key === KEYS.RIGHT || key === KEYS.DOWN) {
+						this.focusTab('first');
 					}
 				}
 			});
 		}
 	};
 
-	determineOrientation = (event: KeyboardEvent) => {
-		const { target, keyCode } = event;
-		const vertical = (target as HTMLElement).closest('[role="tablist"]')?.getAttribute('aria-orientation') === 'vertical';
+	private determineOrientation = (eventDetails: EventDetailsModel) => {
+		const {
+			target, key, event,
+		} = eventDetails;
+
+		const vertical = target.closest('[role="tablist"]')?.getAttribute('aria-orientation') === 'vertical';
 		let proceed = false;
 
 		if (vertical) {
-			if (keyCode === KEYS_CODES.UP || keyCode === KEYS_CODES.DOWN) {
+			if (key === KEYS.UP || key === KEYS.DOWN) {
 				event.preventDefault();
 				proceed = true;
 			}
-		} else if (keyCode === KEYS_CODES.LEFT || keyCode === KEYS_CODES.RIGHT) {
+		} else if (key === KEYS.LEFT || key === KEYS.RIGHT) {
 			proceed = true;
 		}
 
 		if (proceed) {
-			this.switchTabOnArrowPress(event);
+			this.switchTabOnArrowPress(eventDetails);
 		}
 	};
-
 
 	// Deletes a tab and its panel
 	// eslint-disable-next-line class-methods-use-this
-	deleteTab = (event: Event) => {
-		const { target } = event;
-		// eslint-disable-next-line unicorn/prefer-query-selector
-		const desiredPanel = document.querySelector(`#${(target as HTMLElement).getAttribute('aria-controls')}`);
-		(target as HTMLElement).remove();
-		(desiredPanel as HTMLElement).remove();
+	private deleteTab = (index: number) => {
+		const targetTab = this.tabs.find((element) => element.getAttribute('aria-label') === `${index}`);
+		const targetPanel = this.panels.find((element) => element.getAttribute('aria-label') === `${index}`);
+		targetTab?.remove();
+		targetPanel?.remove();
 	};
 
-	determineDeletable = (event: Event) => {
-		const { target } = event;
-		const nearestTabList = (target as HTMLElement).closest('[role="tablist"]');
-		const desiredTabsElements = (nearestTabList as HTMLElement).querySelectorAll(this.defaultSelectors.tab);
-
-		if (Object.hasOwn((target as HTMLElement).dataset, 'deletable')) {
-			desiredTabsElements.forEach((tab: Element, index: number) => {
-				if (target === tab) {
-					this.deleteTab(event);
-					// Activate the closest tab to the one that was just deleted
-					if (desiredTabsElements.length > 1) {
-						if (index - 1 < 0) {
-							this.activateTab(desiredTabsElements[index + 1] as HTMLElement);
-						} else {
-							this.activateTab(desiredTabsElements[index - 1] as HTMLElement);
-						}
-					} else {
-						((nearestTabList as HTMLElement).closest(this.tabsWrapperSelector) as HTMLElement)?.focus();
-					}
-				}
-			});
+	private determineDeletable = (eventDetails: EventDetailsModel) => {
+		const { targetButton, targetIndex } = eventDetails;
+		if (targetButton.dataset.deletable) {
+			this.deleteTab(targetIndex as number);
 		}
 	};
 
-	assigningTabsAttributes = () => {
-		const tabList = this.tabsWrapper.querySelector(this.tabbuttonsListSelector) as HTMLElement;
-		const tabPanelsList = this.tabsWrapper.querySelector(this.tabbuttonsListSelector) as HTMLElement;
-		this.tabsWrapper.forEach((tabWrapper) => {
-			const nearestTabList = tabWrapper.querySelector(this.tabbuttonsListSelector) as HTMLElement;
-			const nearestTabpanelsList = tabWrapper.querySelector(this.tabpanelsListSelector) as HTMLElement;
-			if (nearestTabList && nearestTabpanelsList) {
-				const nearestTabs = getChildrenArray(nearestTabList);
-				// const nearestTabs = nearestTabList.childNodes || [];
-				const nearestTabpanels = nearestTabpanelsList.children || [];
-				const regForRemoveSpecialSymbols = /[^\s\w]/gi;
-				nearestTabs.forEach((tab, index) => {
-					const titleCurrentTab = (tab.textContent as string).toLowerCase()
-						.replace(regForRemoveSpecialSymbols, '').split(' ').join('-')
-						.trim();
-					(tab as HTMLElement).setAttribute('id', titleCurrentTab);
-					tab.setAttribute('aria-controls', `${titleCurrentTab}-tabpanel`);
-					tab.setAttribute('role', this.defaultRoles.tab);
-					// eslint-disable-next-line no-unused-expressions, no-param-reassign
-					this.deletableTabs ? tab.dataset.deletable = 'true' : undefined;
-					nearestTabpanels[index].setAttribute('aria-labelledby', titleCurrentTab);
-					nearestTabpanels[index].setAttribute('id', `${titleCurrentTab}-tabpanel`);
-					nearestTabpanels[index].setAttribute('role', this.defaultRoles.tabpanel);
-				});
-			}
+	private assigningTabsAttributes = () => {
+		const regForRemoveSpecialSymbols = /[^\s\w]/gi;
+		this.tabs.forEach((tab, index) => {
+			const titleCurrentTab = (tab.textContent as string).toLowerCase()
+				.replace(regForRemoveSpecialSymbols, '').split(' ').join('-')
+				.trim();
+			(tab as HTMLElement).setAttribute('id', titleCurrentTab);
+			tab.setAttribute('aria-controls', `${titleCurrentTab}-tabpanel`);
+			tab.setAttribute('aria-label', `${index}`);
+			tab.setAttribute('role', this.defaultRoles.tab);
+			this.deletableTabs ? tab.dataset.deletable = 'true' : undefined;
+			this.panels[index].setAttribute('aria-labelledby', titleCurrentTab);
+			this.panels[index].setAttribute('aria-label', `${index}`);
+			this.panels[index].setAttribute('id', `${titleCurrentTab}-tabpanel`);
+			this.panels[index].setAttribute('role', this.defaultRoles.tabpanel);
 		});
+	};
+
+	private getEventDetails = (event: KeyboardEvent): EventDetailsModel => {
+		const { key } = event;
+		const target = event.target as HTMLElement;
+		const targetButton = target.closest(this.defaultSelectors.tab) as HTMLElement;
+		const targetIndex = targetButton?.getAttribute('aria-label');
+		return {
+			target,
+			targetIndex: targetIndex ? +targetIndex : undefined,
+			targetButton,
+			key,
+			event,
+		};
 	};
 }
 

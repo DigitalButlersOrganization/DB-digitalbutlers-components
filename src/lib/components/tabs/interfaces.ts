@@ -7,6 +7,15 @@ export interface TabsPropertiesModel {
 	tabpanelsListSelector: string,
 	tabbuttonsListSelector: string,
 	deletableTabs: boolean,
-	autoplay: AutoPlayModel
+	autoplay: AutoPlayModel,
+	initialTab: number,
+}
+
+export interface EventDetailsModel {
+	target: HTMLElement,
+	targetButton: HTMLElement,
+	targetIndex: number | undefined,
+	key: string,
+	event: KeyboardEvent
 }
 

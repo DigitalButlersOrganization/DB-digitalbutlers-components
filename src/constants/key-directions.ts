@@ -5,8 +5,8 @@ interface KeyDirectionsModel {
 }
 
 export const KEYS_DIRECTIONS: KeyDirectionsModel = {
-	37: -1,
-	38: -1,
-	39: 1,
-	40: 1,
+	ArrowLeft: -1,
+	ArrowUp: -1,
+	ArrowRight: 1,
+	ArrowDown: 1,
 };
