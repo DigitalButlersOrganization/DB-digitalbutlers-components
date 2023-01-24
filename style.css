@@ -19,6 +19,10 @@
   padding: 10px;
 }
 
+.tab:focus {
+  outline: 3px solid black;
+}
+
 .tab.js--active {
   background-color: red;
 }
