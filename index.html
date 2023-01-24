@@ -4,9 +4,31 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Digital Butlers Components</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div id="app"></div>
+    <div data-tabs="wrapper" class="wrapper">
+      <div data-tabs="tabs" class="tabs" role="tablist">
+        <button class="tab">Tab 1</button>
+        <button class="tab">Tab 2</button>
+        <button class="tab">Tab 3</button>
+      </div>
+      <div data-tabs="content" class="content">
+      <div data-tabs="wrapper" data-tabs-active="1" class="wrapper">
+        <div data-tabs="tabs" class="tabs">
+          <button class="tab">Tab 1.1</button>
+          <button class="tab">Tab 1.2</button>
+        </div>
+        <div data-tabs="content" class="content">
+          <div>Content 1.1</div>
+          <div>Content 1.2</div>  
+        </div>
+      </div>
+        <div>Content 2</div>
+        <div>Content 3</div>  
+      </div>
+    </div>
     <script type="module" src="./src/example/scripts/main.js"></script>
   </body>
 </html>

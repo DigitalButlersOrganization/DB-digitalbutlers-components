@@ -1,0 +1,24 @@
+.wrapper {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 10px;
+}
+
+.tab {
+  background-color: #DDD;
+  border: none;
+  outline: none;
+  padding: 10px;
+}
+
+.tab.js--active {
+  background-color: red;
+}
