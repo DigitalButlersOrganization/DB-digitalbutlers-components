@@ -15,7 +15,7 @@ export class Tabs {
 	};
 
 	// eslint-disable-next-line no-undef
-	tabsWrappers: NodeListOf<HTMLElement>;
+	tabsWrapper: HTMLElement;
 	defaultRoles: {
 		[key: string]: string
 	};
@@ -36,7 +36,7 @@ export class Tabs {
 		this.tabsWrapperSelector = tabsWrapperSelector;
 		this.tabpanelsListSelector = tabpanelsListSelector;
 		this.tabbuttonsListSelector = tabbuttonsListSelector;
-		this.tabsWrappers = document.querySelectorAll(tabsWrapperSelector);
+		this.tabsWrapper = document.querySelector(tabsWrapperSelector);
 		this.deletableTabs = deletableTabs;
 		this.autoplay = autoplay;
 		this.defaultRoles = {
@@ -54,12 +54,17 @@ export class Tabs {
 		this.addListenersForTabs();
 		this.startActivate();
 		if (this.autoplay.delay > 0) {
-			// this.initAutoPlay();
+			this.initAutoPlay();
 		}
 	};
 
+	// eslint-disable-next-line class-methods-use-this
+	initAutoPlay = () => {
+		console.log('autoplay');
+	};
+
 	startActivate = () => {
-		this.tabsWrappers.forEach((wrapper) => {
+		this.tabsWrapper.forEach((wrapper) => {
 			const activeSlideIndex = wrapper.dataset.tabsActive ? +wrapper.dataset.tabsActive : 0;
 			const targetTab = getChildrenArray(wrapper
 				.querySelector(this.tabbuttonsListSelector) as HTMLElement)[activeSlideIndex];
@@ -281,7 +286,9 @@ export class Tabs {
 	};
 
 	assigningTabsAttributes = () => {
-		this.tabsWrappers.forEach((tabWrapper) => {
+		const tabList = this.tabsWrapper.querySelector(this.tabbuttonsListSelector) as HTMLElement;
+		const tabPanelsList = this.tabsWrapper.querySelector(this.tabbuttonsListSelector) as HTMLElement;
+		this.tabsWrapper.forEach((tabWrapper) => {
 			const nearestTabList = tabWrapper.querySelector(this.tabbuttonsListSelector) as HTMLElement;
 			const nearestTabpanelsList = tabWrapper.querySelector(this.tabpanelsListSelector) as HTMLElement;
 			if (nearestTabList && nearestTabpanelsList) {
