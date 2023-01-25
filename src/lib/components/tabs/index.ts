@@ -1,16 +1,15 @@
 import { CLASSES } from '../../../constants/classes';
 import { KEYS } from '../../../constants/keys';
-import { KEYS_DIRECTIONS } from '../../../constants/key-directions';
 import getChildrenArray from '../../utils/get-children-array';
 import './index.scss';
-import { EventDetailsModel, TabsPropertiesModel } from './interfaces';
+import { EventDetailsModel, TabsConfigModel } from './interfaces';
 
 export class Tabs {
-	tabsWrapperSelector: string;
 	tabpanelsListSelector: string;
 	tabbuttonsListSelector: string;
 	currentActive: number;
 	deletableTabs: boolean;
+	orientation: 'vertical' | 'horizontal';
 	autoplay: {
 		delay: number
 	};
@@ -30,22 +29,26 @@ export class Tabs {
 		[key: string]: `[role="${string}"]`
 	};
 
-	constructor({
-		tabsWrapperSelector = '[data-tabs="wrapper"]',
-		tabpanelsListSelector = '[data-tabs="content"]',
-		tabbuttonsListSelector = '[data-tabs="tabs"]',
-		deletableTabs = false,
-		initialTab = 0,
-		autoplay = {
-			delay: 0,
-		},
-	}: TabsPropertiesModel) {
-		this.tabsWrapperSelector = tabsWrapperSelector;
+	constructor(tabsWrapper: string | HTMLElement,
+		{
+			tabpanelsListSelector = '[data-tabs="content"]',
+			tabbuttonsListSelector = '[data-tabs="tabs"]',
+			deletableTabs = false,
+			initialTab = 0,
+			vertical = false,
+			autoplay = {
+				delay: 0,
+			},
+		}: TabsConfigModel) {
+		// this.tabsWrapperSelector = config.tabsWrapperSelector;
 		this.tabpanelsListSelector = tabpanelsListSelector;
 		this.tabbuttonsListSelector = tabbuttonsListSelector;
 		this.deletableTabs = deletableTabs;
-		this.tabsWrapper = document.querySelector(tabsWrapperSelector) as HTMLElement;
+		this.tabsWrapper = typeof tabsWrapper === 'string'
+			? document.querySelector(tabsWrapper) as HTMLElement
+			: tabsWrapper;
 		this.tabList = undefined;
+		this.orientation = vertical ? 'vertical' : 'horizontal';
 		this.tabPanelsList = undefined;
 		this.tabs = [];
 		this.panels = [];
@@ -94,11 +97,15 @@ export class Tabs {
 		this.panels[index].classList.remove(CLASSES.UNACTIVE);
 		// Set focus when required
 		if (setFocus) {
-			this.tabs[index].focus();
+			this.focusTab(index);
 		}
 	};
 
-	public getNextIndex = (): number => (this.currentActive + 1 === this.tabs.length ? 0 : this.currentActive + 1);
+	public getNextIndex = (): number => (this.currentActive + 1 >= this.tabs.length
+		? 0 : this.currentActive + 1);
+
+	public getPreviousIndex = (): number => (this.currentActive - 1 < 0
+		? this.tabs.length - 1 : this.currentActive - 1);
 
 	public stopAutoPlay = () => {
 		clearTimeout(this.autoplayTimeout);
@@ -114,56 +121,37 @@ export class Tabs {
 
 	private addListenersForTabs = () => {
 		this.tabsWrapper.addEventListener('click', this.clickHandler);
-		window.addEventListener('keydown', this.keydownHandler);
 		window.addEventListener('keyup', this.keyupHandler);
 	};
 
 	private clickHandler = (event: MouseEvent) => {
 		this.stopAutoPlay();
-		const target = event.target as HTMLElement;
-		const targetButton = target.closest(this.defaultSelectors.tab);
-		const targetIndex = targetButton?.getAttribute('aria-label');
-		if (targetIndex) {
+		const { targetIndex, targetButton } = this.getEventDetails(event);
+		if (targetIndex !== undefined && this.tabs.includes(targetButton)) {
 			this.setActive(+targetIndex);
-		}
-	};
-
-	private keydownHandler = (event: KeyboardEvent) => {
-		const eventDetails: EventDetailsModel = this.getEventDetails(event);
-		const { targetButton, targetIndex, key } = eventDetails;
-		if (targetButton && targetIndex !== undefined) {
-			this.stopAutoPlay();
-			switch (key) {
-			case KEYS.END: {
-				event.preventDefault(); // prevent page scroll
-				this.focusTab('last');
-				break;
-			}
-			case KEYS.HOME: {
-				event.preventDefault(); // prevent page scroll
-				this.focusTab('first');
-				break;
-			}
-			case KEYS.UP || KEYS.DOWN: {
-				this.determineOrientation(eventDetails);
-				break;
-			}
-			default: {
-				break;
-			}
-			}
 		}
 	};
 
 	private keyupHandler = (event: KeyboardEvent) => {
 		const eventDetails: EventDetailsModel = this.getEventDetails(event);
 		const { targetButton, targetIndex, key } = eventDetails;
-		if (targetButton && targetIndex !== undefined) {
+		if (targetButton && targetIndex !== undefined && this.tabs.includes(targetButton)) {
 			this.stopAutoPlay();
 			switch (key) {
-			case KEYS.LEFT || KEYS.RIGHT: {
+			case KEYS.LEFT:
+			case KEYS.RIGHT: {
 				event.preventDefault();
-				this.determineOrientation(eventDetails);
+				if (this.orientation === 'horizontal') {
+					this.switchTabOnArrowPress(eventDetails);
+				}
+				break;
+			}
+			case KEYS.UP:
+			case KEYS.DOWN: {
+				event.preventDefault();
+				if (this.orientation === 'vertical') {
+					this.switchTabOnArrowPress(eventDetails);
+				}
 				break;
 			}
 			case KEYS.DELETE: {
@@ -174,13 +162,22 @@ export class Tabs {
 				this.setActive(+targetIndex);
 				break;
 			}
+			case KEYS.END: {
+				event.preventDefault(); // prevent page scroll
+				this.focusTab('last');
+				break;
+			}
+			case KEYS.HOME: {
+				event.preventDefault(); // prevent page scroll
+				this.focusTab('first');
+				break;
+			}
 			default: {
 				break;
 			}
 			}
 		}
 	};
-
 
 	private setUnactiveAll = () => {
 		this.tabs.forEach((tabElement) => {
@@ -198,7 +195,10 @@ export class Tabs {
 	};
 
 	// eslint-disable-next-line class-methods-use-this
-	private focusTab = (order: 'first' | 'last') => {
+	private focusTab = (order: 'first' | 'last' | 'prev' | 'next' | number) => {
+		if (typeof order === 'number') {
+			this.tabs[order].focus();
+		}
 		if (order === 'first') {
 			this.tabs[0].focus();
 			return;
@@ -206,55 +206,44 @@ export class Tabs {
 		if (order === 'last') {
 			this.tabs[this.tabs.length - 1].focus();
 		}
+		if (order === 'next') {
+			this.tabs[this.tabs.length - 1].focus();
+		}
 	};
 
 	// When a tablist is aria-orientation is set to vertical, only up and down arrow
 	// should function. In all other cases only left and right arrow function.
 	private switchTabOnArrowPress = (eventDetails: EventDetailsModel) => {
-		const { target, key } = eventDetails;
-		const pressedIndex = KEYS_DIRECTIONS[key];
-		if (pressedIndex) {
-			this.tabs.forEach((tab: Element, index: number) => {
-				if (tab === target) {
-					if (this.tabs[index + pressedIndex]) {
-						(this.tabs[index + pressedIndex] as HTMLElement).focus();
-						// eslint-disable-next-line no-undef
-					} else if (key === KEYS.LEFT || key === KEYS.UP) {
-						this.focusTab('last');
-						// eslint-disable-next-line no-undef
-					} else if (key === KEYS.RIGHT || key === KEYS.DOWN) {
-						this.focusTab('first');
-					}
-				}
-			});
-		}
-	};
-
-	private determineOrientation = (eventDetails: EventDetailsModel) => {
-		const {
-			target, key, event,
-		} = eventDetails;
-
-		const vertical = target.closest('[role="tablist"]')?.getAttribute('aria-orientation') === 'vertical';
-		let proceed = false;
-
-		if (vertical) {
-			if (key === KEYS.UP || key === KEYS.DOWN) {
-				event.preventDefault();
-				proceed = true;
+		const { key, targetIndex } = eventDetails;
+		switch (key) {
+		case KEYS.LEFT:
+		case KEYS.UP: {
+			if (targetIndex !== undefined) {
+				this.focusTab(targetIndex - 1 < 0
+					? this.tabs.length - 1 : targetIndex - 1);
 			}
-		} else if (key === KEYS.LEFT || key === KEYS.RIGHT) {
-			proceed = true;
+			break;
 		}
-
-		if (proceed) {
-			this.switchTabOnArrowPress(eventDetails);
+		case KEYS.RIGHT:
+		case KEYS.DOWN: {
+			if (targetIndex !== undefined) {
+				this.focusTab(targetIndex + 1 >= this.tabs.length
+					? 0 : targetIndex + 1);
+			}
+			break;
+		}
+		default: {
+			break;
+		}
 		}
 	};
 
 	// Deletes a tab and its panel
 	// eslint-disable-next-line class-methods-use-this
 	private deleteTab = (index: number) => {
+		if (index === this.currentActive) {
+			this.setActive(this.getNextIndex());
+		}
 		const targetTab = this.tabs.find((element) => element.getAttribute('aria-label') === `${index}`);
 		const targetPanel = this.panels.find((element) => element.getAttribute('aria-label') === `${index}`);
 		targetTab?.remove();
@@ -269,32 +258,26 @@ export class Tabs {
 	};
 
 	private assigningTabsAttributes = () => {
-		const regForRemoveSpecialSymbols = /[^\s\w]/gi;
+		this.tabsWrapper.setAttribute('aria-orientation', this.orientation);
 		this.tabs.forEach((tab, index) => {
-			const titleCurrentTab = (tab.textContent as string).toLowerCase()
-				.replace(regForRemoveSpecialSymbols, '').split(' ').join('-')
-				.trim();
-			(tab as HTMLElement).setAttribute('id', titleCurrentTab);
-			tab.setAttribute('aria-controls', `${titleCurrentTab}-tabpanel`);
 			tab.setAttribute('aria-label', `${index}`);
 			tab.setAttribute('role', this.defaultRoles.tab);
-			this.deletableTabs ? tab.dataset.deletable = 'true' : undefined;
-			this.panels[index].setAttribute('aria-labelledby', titleCurrentTab);
+			// eslint-disable-next-line no-param-reassign
+			tab.dataset.deletable = `${this.deletableTabs}`;
 			this.panels[index].setAttribute('aria-label', `${index}`);
-			this.panels[index].setAttribute('id', `${titleCurrentTab}-tabpanel`);
 			this.panels[index].setAttribute('role', this.defaultRoles.tabpanel);
 		});
 	};
 
-	private getEventDetails = (event: KeyboardEvent): EventDetailsModel => {
-		const { key } = event;
+	private getEventDetails = (event: KeyboardEvent | MouseEvent): EventDetailsModel => {
+		const key = event instanceof KeyboardEvent ? event.key : undefined;
 		const target = event.target as HTMLElement;
-		const targetButton = target.closest(this.defaultSelectors.tab) as HTMLElement;
-		const targetIndex = targetButton?.getAttribute('aria-label');
+		const targetTab = target.closest(this.defaultSelectors.tab) as HTMLElement;
+		const targetIndex = targetTab?.getAttribute('aria-label');
 		return {
 			target,
 			targetIndex: targetIndex ? +targetIndex : undefined,
-			targetButton,
+			targetButton: targetTab,
 			key,
 			event,
 		};

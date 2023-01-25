@@ -7,26 +7,40 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div id="app"></div>
-    <div data-tabs="wrapper"  class="wrapper">
-      <div data-tabs="tabs" class="tabs" role="tablist">
-        <button data-deletable class="tab">Tab 1</button>
-        <button data-deletable class="tab">Tab 2</button>
+    <div class="app">
+      <div class="app-tabs">
+        <button data-deletable class="tab">В рамках спецификации</button>
+        <button data-deletable class="tab">Приятно, граждане</button>
         <button data-deletable class="tab">Tab 3</button>
       </div>
-      <div data-tabs="content" class="content">
-      <div data-tabs="wrapper" class="wrapper">
-        <div data-tabs="tabs" class="tabs">
-          <button class="tab">Tab 1.1</button>
-          <button class="tab">Tab 1.2</button>
+      <div class="content">
+        <div class="app-panel">
+          В рамках спецификации современных стандартов, представители современных социальных резервов представлены в исключительно положительном свете. А ещё базовые сценарии поведения пользователей неоднозначны и будут заблокированы в рамках своих собственных рациональных ограничений. 
         </div>
-        <div data-tabs="content" class="content">
-          <div>Content 1.1</div>
-          <div>Content 1.2</div>  
+        <div class="app-panel">
+          Приятно, граждане, наблюдать, как акционеры крупнейших компаний могут быть смешаны с не уникальными данными до степени совершенной неузнаваемости, из-за чего возрастает их статус бесполезности. В своём стремлении улучшить пользовательский опыт мы упускаем, что явные признаки победы институционализации представляют собой не что иное, как квинтэссенцию победы маркетинга над разумом и должны быть рассмотрены исключительно в разрезе маркетинговых и финансовых предпосылок. 
         </div>
-      </div>
-        <div>Content 2</div>
-        <div>Content 3</div>  
+          <div data-tabs="wrapper"  class="wrapper app-panel">
+                <div data-tabs="tabs" class="tabs">
+                  <button data-deletable class="tab">Tab 1</button>
+                  <button data-deletable class="tab">Tab 2</button>
+                  <button data-deletable class="tab">Tab 3</button>
+                </div>
+                <div data-tabs="content" class="content">
+                <div data-tabs="wrapper" class="wrapper">
+                  <div data-tabs="tabs" class="tabs">
+                    <button class="tab">Tab 1.1</button>
+                    <button class="tab">Tab 1.2</button>
+                  </div>
+                  <div data-tabs="content" class="content">
+                    <div>Content 1.1</div>
+                    <div>Content 1.2</div>  
+                  </div>
+                </div>
+                  <div>Content 2</div>
+                  <div>Content 3</div>  
+                </div>
+              </div>
       </div>
     </div>
     <script type="module" src="./src/example/scripts/main.js"></script>

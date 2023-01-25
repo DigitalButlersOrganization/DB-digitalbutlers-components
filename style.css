@@ -1,3 +1,29 @@
+body {
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  width: 60%;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+}
+
+.app-panel.js--unactive {
+  display: none;
+}
+
+.content {
+  padding: 25px
+}
+
+.app-tabs {
+  display: flex;
+  flex-flow: column;
+  row-gap: 10px;
+  padding: 0 10px 0 0;
+}
+
 .wrapper {
   display: flex;
   flex-flow: column;
