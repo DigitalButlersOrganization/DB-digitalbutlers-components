@@ -44,34 +44,88 @@ const tabs = new Tabs(
 tabs.init();
 ```
 
+			deletableTabs = false,
+			initialTab = 0,
+			vertical = false,
+			autoplay = {
+				delay: 0,
+			},
+
 ## API
 
-### Properties
+### Config Properties
 
-| Name                    | Type               | Default              | Description                                                                                                                                                                                                           |
-|-------------------------|--------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `tabbuttonsListSelector`| `string`           | `'[data-tabs="tabs"]'`   | Css selector for elements with tabs                                    |
-| `tabpanelsListSelector` | `string`           | `'[data-tabs="content"]'`| Css selector for elements used to switch between tabs.                                                                                                                                                                |
-| `navSelector`           | `string`           | `undefined`          | Css selector for navigation element. If can element with selector not found this.nav will be set to first button parent. Used to insert moving background element if this `hasMovingBackground` sets to `true`        |
-| `activeClass`           | `string`           | `'js--active'`       | Class to be added to active tab and button.                                                                                                                                                                           |
-| `eventType`             | `string`           | `'click'`            | Event type will be listened at buttons.                                                                                                                                                                               |
-| `initialTab`            | `number`, `string` | `0`                  | Id or name of the tab will be active after tabs initialization.                                                                                                                                                       |
-| `hasMovingBackground`   | `boolean`          | `false`              | If `true` it will init (and create if it's needed) element with `movingBackgroundClass` class. It's the element that will be moved to create a visual effect like [there](https://royals-postpartum.webflow.io/blog). |
-| `movingBackgroundClass` | `string`           | `'tabs__background'` | Moving background class.                                                                                                                                                                                              |
-| `searchParameterName`   | `string`           | `undefined`          | If sets on tab change url search parameter `searchParameterName` will be changed to active tab name.                                                                                                                  | 
-| `tabNameAttribute`      | `string`           | `'data-tab-name'`    | Tab element attribute with tab name.                                                                                                                                                                                  |                                                                                                                                                   
+##### tabbuttonsListSelector
+**Type:** `string`
+**Default:** `'[data-tabs="tabs"]'`
+**Description:** Css selector for elements with tabs
+
+##### tabpanelsListSelector
+**Type:** `string`
+**Default:** `'[data-tabs="content"]'`
+**Description:** Css selector for elements with tabs content
+
+##### deletableTabs
+**Type:** `boolean`
+**Default:** `false`
+**Description:** Ability to delete tabs and their contents.
+
+##### initialTab
+**Type:** `number`
+**Default:** `0`
+**Description:** Id of the tab will be active after tabs initialization. buttons.
+
+##### vertical
+**Type:** `boolaen`
+**Default:** `false`
+**Description:** Vertical layout of slides.
+
+##### autoplay
+**Type:** `object`
+
+###### Autoplay config properties
+##### vertical
+**Delay:** `boolaen`
+**Default:** `0`
+**Description:** Autoplay delay. A value of 0 disables autoplay.
+
 
 ### Methods
 
-| Name         | Return                 | Arguments                  | Description                                                                                       |
-|--------------|------------------------|----------------------------|---------------------------------------------------------------------------------------------------|
-| `init()`     | Tabs instance          | -                          | Initialize all listeners.                                                                         |
-| `goTo(id)`   | Active tab HTMLElement | `id`: `number` or `string` | If typeof `id` === `'string'` makes tab with name `id` active. Else makes tab number `id` active. |
-| `goToNext()` | Active tab HTMLElement | -                          | Makes next tab active.                                                                            |
-| `goToPrev()` | Active tab HTMLElement | -                          | Makes previous tab active.                                                                        |
+##### init()
+**Return:** -
+**Arguments:** -
+**Required to use**
+**Description:** Initialize all listeners and methods.
+
+##### setActive(index)
+**Return:** -
+**Arguments:** `id`
+**Description:** makes tab with target id active.
+
+##### getNextIndex()
+**Return:** Index of slide fater active, and 0 if current active slide is last
+**Arguments:** -
+
+##### getPreviousIndex()
+**Return:** Index of slide before active, and index of last slide if current index = 0
+**Arguments:** -
+
+##### getLastIndex()
+**Return:** Index of last slide
+**Arguments:** -
+
+##### stopAutoPlay()
+**Return:** -
+**Arguments:** -
+**Description:** Stop the autoplay animation.
+
+##### update()
+**Return:** -
+**Arguments:** -
+**Description:** Update all indexes, properties and attributes for each tab.
+
 
 ## License
 
 MIT
-
-Copyright © 2021 [kirillsakun](https://github.com/kirillsakun).
