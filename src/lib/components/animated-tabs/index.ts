@@ -22,7 +22,7 @@ export class AnimatedTabs extends Tabs {
 
 	init = () => {
 		super.init();
-		// this.animatedClass = 		this.setInlineStyles();
+		this.setInlineStyles();
 	};
 
 	public setActive = (index: number, setFocus: boolean = true) => {
@@ -31,19 +31,12 @@ export class AnimatedTabs extends Tabs {
 		this.setInvisibleAll();
 		setTimeout(() => {
 			this.setUnactiveAll();
-			this.tabs[index].setAttribute('tabindex', '0');
-			this.tabs[index].setAttribute('aria-selected', 'true');
-			this.tabs[index].classList.remove(CLASSES.UNACTIVE);
-			this.tabs[index].classList.add(CLASSES.ACTIVE);
+			this.setActiveAttributes(index);
+			this.setActiveClasses(index);
 			setTimeout(() => {
-				this.tabs[index].classList.add(CLASSES.VISIBLE);
-			}, 100);
-			this.panels[index].removeAttribute('hidden');
-			this.panels[index].removeAttribute('inert');
-			this.panels[index].classList.remove(CLASSES.UNACTIVE);
-			this.panels[index].classList.add(CLASSES.ACTIVE);
-			setTimeout(() => {
-				this.panels[index].classList.add(CLASSES.VISIBLE);
+				this.setVisible(index);
+				// this.tabs[index].classList.add(this.animatedClass);
+				// this.panels[index].classList.add(this.animatedClass);
 			}, 100);
 		}, this.animationDelay);
 		// Set focus when required
@@ -53,12 +46,41 @@ export class AnimatedTabs extends Tabs {
 	};
 
 	private setInvisibleAll = () => {
-		this.tabs.forEach((tabElement) => {
-			tabElement.classList.remove(CLASSES.VISIBLE);
+		[this.tabs, this.panels].flat().forEach((element) => {
+			switch (this.animationType) {
+			case 'opacity':
+				if (this.panels.includes(element)) {
+					this.setInvisibleByOpacity(element);
+				}
+				break;
+			default:
+				element.classList.remove(this.animatedClass);
+				break;
+			}
 		});
-		this.panels.forEach((tabpanel) => {
-			tabpanel.classList.remove(CLASSES.VISIBLE);
-		});
+	};
+
+	private setVisible = (index: number) => {
+		switch (this.animationType) {
+		case 'opacity':
+			this.setVisibleByOpacity(index);
+			break;
+		default:
+			this.tabs[index].classList.add(this.animatedClass);
+			this.panels[index].classList.add(this.animatedClass);
+			break;
+		}
+	};
+
+	private setVisibleByOpacity = (index: number) => {
+		this.panels[index].classList.add(this.animatedClass);
+		this.panels[index].style.opacity = '1';
+	};
+
+	// eslint-disable-next-line class-methods-use-this
+	private setInvisibleByOpacity = (element: HTMLElement) => {
+		// eslint-disable-next-line no-param-reassign
+		element.style.opacity = '0';
 	};
 
 	private setInlineStyles = () => {

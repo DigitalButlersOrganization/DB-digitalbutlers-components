@@ -33,6 +33,7 @@ const mainTabs = new AnimatedTabs(
 	}, {
 		animation: {
 			delay: 300,
+			type: 'opacity',
 		},
 	},
 );

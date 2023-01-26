@@ -1,4 +1,4 @@
-export type AnimationType = 'basic' | 'opacity' | 'fade' | 'slide'
+export type AnimationType = 'opacity'
 
 export interface AnimationModel {
   delay: number,

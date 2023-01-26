@@ -93,14 +93,8 @@ export class Tabs {
 	public setActive = (index: number, setFocus: boolean = true) => {
 		this.currentActive = index;
 		this.setUnactiveAll();
-		this.tabs[index].setAttribute('tabindex', '0');
-		this.tabs[index].setAttribute('aria-selected', 'true');
-		this.tabs[index].classList.add(CLASSES.ACTIVE);
-		this.tabs[index].classList.remove(CLASSES.UNACTIVE);
-		this.panels[index].removeAttribute('hidden');
-		this.panels[index].removeAttribute('inert');
-		this.panels[index].classList.add(CLASSES.ACTIVE);
-		this.panels[index].classList.remove(CLASSES.UNACTIVE);
+		this.setActiveAttributes(index);
+		this.setActiveClasses(index);
 		// Set focus when required
 		if (setFocus) {
 			this.focusTab(index);
@@ -187,14 +181,14 @@ export class Tabs {
 	};
 
 	protected setUnactiveAll = () => {
-		this.setUnactiveAttributes();
+		this.setUnactiveAttributesAll();
 		[this.tabs, this.panels].flat().forEach((element) => {
 			element.classList.remove(CLASSES.ACTIVE);
 			element.classList.add(CLASSES.UNACTIVE);
 		});
 	};
 
-	protected setUnactiveAttributes = () => {
+	protected setUnactiveAttributesAll = () => {
 		this.tabs.forEach((tabElement) => {
 			tabElement.setAttribute('tabindex', '-1');
 			tabElement.setAttribute('aria-selected', 'false');
@@ -203,6 +197,20 @@ export class Tabs {
 			tabpanel.setAttribute('hidden', 'hidden');
 			tabpanel.setAttribute('inert', 'true');
 		});
+	};
+
+	protected setActiveAttributes = (index: number) => {
+		this.tabs[index].setAttribute('tabindex', '0');
+		this.tabs[index].setAttribute('aria-selected', 'true');
+		this.panels[index].removeAttribute('hidden');
+		this.panels[index].removeAttribute('inert');
+	};
+
+	protected setActiveClasses = (index: number) => {
+		this.tabs[index].classList.remove(CLASSES.UNACTIVE);
+		this.tabs[index].classList.add(CLASSES.ACTIVE);
+		this.panels[index].classList.remove(CLASSES.UNACTIVE);
+		this.panels[index].classList.add(CLASSES.ACTIVE);
 	};
 
 	protected focusTab = (order: number) => {
