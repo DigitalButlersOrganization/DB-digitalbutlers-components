@@ -1,6 +1,6 @@
 import { CLASSES } from '../../../constants/classes';
 import { KEYS } from '../../../constants/keys';
-import getChildrenArray from '../../utils/get-children-array';
+import { getChildrenArray, getRandomId } from '../../index';
 import './index.scss';
 import { EventDetailsModel, TabsConfigModel } from './interfaces';
 
@@ -11,10 +11,12 @@ export class Tabs {
 	deletableTabs: boolean;
 	orientation: 'vertical' | 'horizontal';
 	autoplay: {
-		delay: number
+		delay: number;
 	};
 
 	autoplayTimeout: number;
+	listenersAdded: boolean;
+	randomId: string;
 
 	tabsWrapper: HTMLElement;
 	tabList: HTMLElement | undefined;
@@ -40,7 +42,6 @@ export class Tabs {
 				delay: 0,
 			},
 		}: TabsConfigModel) {
-		// this.tabsWrapperSelector = config.tabsWrapperSelector;
 		this.tabpanelsListSelector = tabpanelsListSelector;
 		this.tabbuttonsListSelector = tabbuttonsListSelector;
 		this.deletableTabs = deletableTabs;
@@ -55,6 +56,8 @@ export class Tabs {
 		this.currentActive = initialTab;
 		this.autoplay = autoplay;
 		this.autoplayTimeout = 0;
+		this.listenersAdded = false;
+		this.randomId = getRandomId();
 		this.defaultRoles = {
 			tab: 'tab',
 			tabpanel: 'tabpanel',
@@ -74,7 +77,10 @@ export class Tabs {
 				this.panels = getChildrenArray(this.tabPanelsList);
 				if (this.tabs.length === this.panels.length) {
 					this.assigningTabsAttributes();
-					this.addListenersForTabs();
+					if (!this.listenersAdded) {
+						this.addListenersForTabs();
+						this.listenersAdded = true;
+					}
 					this.setActive(this.currentActive);
 					if (this.autoplay.delay > 0) {
 						this.runAutoPlay();
@@ -101,17 +107,18 @@ export class Tabs {
 		}
 	};
 
-	public getNextIndex = (): number => (this.currentActive + 1 >= this.tabs.length
+	public getNextIndex = (): number => (this.currentActive >= this.getLastIndex()
 		? 0 : this.currentActive + 1);
 
 	public getPreviousIndex = (): number => (this.currentActive - 1 < 0
-		? this.tabs.length - 1 : this.currentActive - 1);
+		? this.getLastIndex() : this.currentActive - 1);
+
+	public getLastIndex = (): number => this.tabs.length - 1;
 
 	public stopAutoPlay = () => {
 		clearTimeout(this.autoplayTimeout);
 	};
 
-	// eslint-disable-next-line class-methods-use-this
 	private runAutoPlay = () => {
 		this.autoplayTimeout = setTimeout(() => {
 			this.setActive(this.getNextIndex());
@@ -148,14 +155,14 @@ export class Tabs {
 			}
 			case KEYS.UP:
 			case KEYS.DOWN: {
-				event.preventDefault();
+				event.preventDefault(); // prevent page scroll
 				if (this.orientation === 'vertical') {
 					this.switchTabOnArrowPress(eventDetails);
 				}
 				break;
 			}
 			case KEYS.DELETE: {
-				this.determineDeletable(eventDetails);
+				this.deleteTab(eventDetails);
 				break;
 			}
 			case KEYS.ENTER || KEYS.SPACE: {
@@ -164,12 +171,12 @@ export class Tabs {
 			}
 			case KEYS.END: {
 				event.preventDefault(); // prevent page scroll
-				this.focusTab('last');
+				this.focusTab(this.getLastIndex());
 				break;
 			}
 			case KEYS.HOME: {
 				event.preventDefault(); // prevent page scroll
-				this.focusTab('first');
+				this.focusTab(0);
 				break;
 			}
 			default: {
@@ -194,21 +201,8 @@ export class Tabs {
 		});
 	};
 
-	// eslint-disable-next-line class-methods-use-this
-	private focusTab = (order: 'first' | 'last' | 'prev' | 'next' | number) => {
-		if (typeof order === 'number') {
-			this.tabs[order].focus();
-		}
-		if (order === 'first') {
-			this.tabs[0].focus();
-			return;
-		}
-		if (order === 'last') {
-			this.tabs[this.tabs.length - 1].focus();
-		}
-		if (order === 'next') {
-			this.tabs[this.tabs.length - 1].focus();
-		}
+	private focusTab = (order: number) => {
+		this.tabs[order].focus();
 	};
 
 	// When a tablist is aria-orientation is set to vertical, only up and down arrow
@@ -220,14 +214,14 @@ export class Tabs {
 		case KEYS.UP: {
 			if (targetIndex !== undefined) {
 				this.focusTab(targetIndex - 1 < 0
-					? this.tabs.length - 1 : targetIndex - 1);
+					? this.getLastIndex() : targetIndex - 1);
 			}
 			break;
 		}
 		case KEYS.RIGHT:
 		case KEYS.DOWN: {
 			if (targetIndex !== undefined) {
-				this.focusTab(targetIndex + 1 >= this.tabs.length
+				this.focusTab(targetIndex >= this.getLastIndex()
 					? 0 : targetIndex + 1);
 			}
 			break;
@@ -239,21 +233,22 @@ export class Tabs {
 	};
 
 	// Deletes a tab and its panel
-	// eslint-disable-next-line class-methods-use-this
-	private deleteTab = (index: number) => {
-		if (index === this.currentActive) {
-			this.setActive(this.getNextIndex());
-		}
-		const targetTab = this.tabs.find((element) => element.getAttribute('aria-label') === `${index}`);
-		const targetPanel = this.panels.find((element) => element.getAttribute('aria-label') === `${index}`);
-		targetTab?.remove();
-		targetPanel?.remove();
-	};
-
-	private determineDeletable = (eventDetails: EventDetailsModel) => {
+	private deleteTab = (eventDetails: EventDetailsModel) => {
 		const { targetButton, targetIndex } = eventDetails;
-		if (targetButton.dataset.deletable) {
-			this.deleteTab(targetIndex as number);
+		if (targetButton.dataset.deletable && targetIndex !== undefined) {
+			this.tabs[targetIndex].remove();
+			this.panels[targetIndex].remove();
+			const newTabsLength = this.tabs.length - 1;
+			if (targetIndex < this.currentActive) {
+				this.setActive(targetIndex);
+			} else if (targetIndex >= this.currentActive) {
+				if (targetIndex === newTabsLength || targetIndex === newTabsLength) {
+					this.setActive(targetIndex - 1);
+				} else {
+					this.setActive(targetIndex);
+				}
+			}
+			this.update();
 		}
 	};
 
@@ -262,8 +257,12 @@ export class Tabs {
 		this.tabs.forEach((tab, index) => {
 			tab.setAttribute('aria-label', `${index}`);
 			tab.setAttribute('role', this.defaultRoles.tab);
+			tab.setAttribute('id', `${this.randomId}-tab-${index}`);
+			tab.setAttribute('aria-controls', `${this.randomId}-tabpanel-${index}`);
 			// eslint-disable-next-line no-param-reassign
 			tab.dataset.deletable = `${this.deletableTabs}`;
+			this.panels[index].setAttribute('aria-labelledby', `${this.randomId}-tab-${index}`);
+			this.panels[index].setAttribute('id', `${this.randomId}-tabpanel-${index}`);
 			this.panels[index].setAttribute('aria-label', `${index}`);
 			this.panels[index].setAttribute('role', this.defaultRoles.tabpanel);
 		});
@@ -281,6 +280,11 @@ export class Tabs {
 			key,
 			event,
 		};
+	};
+
+	public update = () => {
+		this.init();
+		this.assigningTabsAttributes();
 	};
 }
 
