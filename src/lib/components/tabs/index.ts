@@ -31,10 +31,11 @@ export class Tabs {
 		[key: string]: `[role="${string}"]`
 	};
 
-	constructor(tabsWrapper: string | HTMLElement,
+	// eslint-disable-next-line default-param-last
+	constructor(tabsWrapper: string | HTMLElement = '[data-tabs="wrapper"]',
 		{
-			tabpanelsListSelector = '[data-tabs="content"]',
 			tabbuttonsListSelector = '[data-tabs="tabs"]',
+			tabpanelsListSelector = '[data-tabs="content"]',
 			deletableTabs = false,
 			initialTab = 0,
 			vertical = false,
