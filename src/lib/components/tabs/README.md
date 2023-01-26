@@ -44,13 +44,6 @@ const tabs = new Tabs(
 tabs.init();
 ```
 
-			deletableTabs = false,
-			initialTab = 0,
-			vertical = false,
-			autoplay = {
-				delay: 0,
-			},
-
 ## API
 
 ### Config Properties
@@ -84,8 +77,8 @@ tabs.init();
 **Type:** `object`
 
 ###### Autoplay config properties
-##### vertical
-**Delay:** `boolaen`
+##### delay
+**Delay:** `number`
 **Default:** `0`
 **Description:** Autoplay delay. A value of 0 disables autoplay.
 
