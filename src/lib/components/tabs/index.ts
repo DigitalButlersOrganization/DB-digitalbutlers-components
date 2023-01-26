@@ -68,7 +68,7 @@ export class Tabs {
 		};
 	}
 
-	init = () => {
+	init() {
 		if (this.tabsWrapper) {
 			this.tabList = this.tabsWrapper.querySelector(this.tabbuttonsListSelector) as HTMLElement;
 			this.tabPanelsList = this.tabsWrapper.querySelector(this.tabpanelsListSelector) as HTMLElement;
@@ -88,7 +88,7 @@ export class Tabs {
 				}
 			}
 		}
-	};
+	}
 
 	public setActive = (index: number, setFocus: boolean = true) => {
 		this.currentActive = index;
@@ -186,22 +186,26 @@ export class Tabs {
 		}
 	};
 
-	private setUnactiveAll = () => {
+	protected setUnactiveAll = () => {
+		this.setUnactiveAttributes();
+		[this.tabs, this.panels].flat().forEach((element) => {
+			element.classList.remove(CLASSES.ACTIVE);
+			element.classList.add(CLASSES.UNACTIVE);
+		});
+	};
+
+	protected setUnactiveAttributes = () => {
 		this.tabs.forEach((tabElement) => {
 			tabElement.setAttribute('tabindex', '-1');
 			tabElement.setAttribute('aria-selected', 'false');
-			tabElement.classList.remove(CLASSES.ACTIVE);
-			tabElement.classList.add(CLASSES.UNACTIVE);
 		});
 		this.panels.forEach((tabpanel) => {
 			tabpanel.setAttribute('hidden', 'hidden');
 			tabpanel.setAttribute('inert', 'true');
-			tabpanel.classList.remove(CLASSES.ACTIVE);
-			tabpanel.classList.add(CLASSES.UNACTIVE);
 		});
 	};
 
-	private focusTab = (order: number) => {
+	protected focusTab = (order: number) => {
 		this.tabs[order].focus();
 	};
 
@@ -266,6 +270,7 @@ export class Tabs {
 			this.panels[index].setAttribute('aria-label', `${index}`);
 			this.panels[index].setAttribute('role', this.defaultRoles.tabpanel);
 		});
+		this.setUnactiveAll();
 	};
 
 	private getEventDetails = (event: KeyboardEvent | MouseEvent): EventDetailsModel => {

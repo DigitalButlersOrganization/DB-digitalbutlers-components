@@ -11,11 +11,6 @@ export interface TabsConfigModel {
 	vertical: boolean,
 }
 
-export interface TabsPropertiesModel {
-	tabsWrapper: string | HTMLElement,
-	config: TabsConfigModel,
-}
-
 export interface EventDetailsModel {
 	target: HTMLElement,
 	targetButton: HTMLElement,

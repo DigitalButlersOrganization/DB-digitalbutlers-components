@@ -7,4 +7,8 @@ interface ClassesModel {
 export const CLASSES: ClassesModel = {
 	ACTIVE: 'js--active',
 	UNACTIVE: 'js--unactive',
+	VISIBLE: 'js--visible',
+	ANIMATED_FADE: 'js--animated-fade',
+	ANIMATED_OPACITY: 'js--animated-fade',
+	ANIMATED_SLIDE: 'js--animated-slide',
 };
