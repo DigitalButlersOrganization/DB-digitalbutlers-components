@@ -8,27 +8,30 @@ import {
 } from './interfaces';
 
 export class Tabs {
-	tabpanelsListSelector: string;
-	tabbuttonsListSelector: string;
+	#tabpanelsListSelector: string;
+	#tabbuttonsListSelector: string;
 	currentActive: number;
-	deletableTabs: boolean;
+	nextIndex: number | undefined;
+	prevIndex: number | undefined;
+	lastIndex: number | undefined;
+	#deletableTabs: boolean;
 	orientation: 'vertical' | 'horizontal';
-	autoplay: AutoPlayModel;
-	autoplayTimeout: number;
-	listenersAdded: boolean;
-	maxPanelHeight: number;
-	randomId: string;
-	equalHeight: boolean;
+	#autoplay: AutoPlayModel;
+	#autoplayTimeout: number;
+	#listenersAdded: boolean;
+	#maxPanelHeight: number;
+	generatedId: string;
+	#equalHeight: boolean;
 	tabsWrapper: HTMLElement;
 	tabList: HTMLElement | undefined;
 	tabPanelsList: HTMLElement | undefined;
 	tabs: HTMLElement[];
 	panels: HTMLElement[];
-	defaultRoles: {
+	#defaultRoles: {
 		[key: string]: string
 	};
 
-	defaultSelectors: {
+	#defaultSelectors: {
 		[key: string]: `[role="${string}"]`
 	};
 
@@ -45,29 +48,32 @@ export class Tabs {
 				delay: 0,
 			},
 		}: TabsConfigModel) {
-		this.tabpanelsListSelector = tabpanelsListSelector;
-		this.tabbuttonsListSelector = tabbuttonsListSelector;
-		this.deletableTabs = deletableTabs;
+		this.#tabpanelsListSelector = tabpanelsListSelector;
+		this.#tabbuttonsListSelector = tabbuttonsListSelector;
+		this.#deletableTabs = deletableTabs;
 		this.tabsWrapper = typeof tabsWrapper === 'string'
 			? document.querySelector(tabsWrapper) as HTMLElement
 			: tabsWrapper;
 		this.tabList = undefined;
-		this.orientation = vertical ? 'vertical' : 'horizontal';
 		this.tabPanelsList = undefined;
 		this.tabs = [];
 		this.panels = [];
+		this.orientation = vertical ? 'vertical' : 'horizontal';
 		this.currentActive = initialTab;
-		this.autoplay = autoplay;
-		this.autoplayTimeout = 0;
-		this.listenersAdded = false;
-		this.maxPanelHeight = 0;
-		this.randomId = getRandomId();
-		this.equalHeight = equalHeight;
-		this.defaultRoles = {
+		this.nextIndex = undefined;
+		this.prevIndex = undefined;
+		this.lastIndex = undefined;
+		this.#autoplay = autoplay;
+		this.#autoplayTimeout = 0;
+		this.#listenersAdded = false;
+		this.#maxPanelHeight = 0;
+		this.generatedId = getRandomId();
+		this.#equalHeight = equalHeight;
+		this.#defaultRoles = {
 			tab: 'tab',
 			tabpanel: 'tabpanel',
 		};
-		this.defaultSelectors = {
+		this.#defaultSelectors = {
 			tab: '[role="tab"]',
 			tabpanel: '[role="tabpanel"]',
 		};
@@ -75,23 +81,23 @@ export class Tabs {
 
 	init() {
 		if (this.tabsWrapper) {
-			this.tabList = this.tabsWrapper.querySelector(this.tabbuttonsListSelector) as HTMLElement;
-			this.tabPanelsList = this.tabsWrapper.querySelector(this.tabpanelsListSelector) as HTMLElement;
+			this.tabList = this.tabsWrapper.querySelector(this.#tabbuttonsListSelector) as HTMLElement;
+			this.tabPanelsList = this.tabsWrapper.querySelector(this.#tabpanelsListSelector) as HTMLElement;
 			if (this.tabList && this.tabPanelsList) {
 				this.tabs = getChildrenArray(this.tabList);
 				this.panels = getChildrenArray(this.tabPanelsList);
 				if (this.tabs.length === this.panels.length) {
-					if (this.equalHeight) {
+					if (this.#equalHeight) {
 						this.setEqualHeight();
 						window.addEventListener('resize', this.setEqualHeight);
 					}
 					this.assigningTabsAttributes();
-					if (!this.listenersAdded) {
+					if (!this.#listenersAdded) {
 						this.addListenersForTabs();
-						this.listenersAdded = true;
+						this.#listenersAdded = true;
 					}
-					this.setActive(this.currentActive);
-					if (this.autoplay.delay > 0) {
+					this.goTo(this.currentActive);
+					if (this.#autoplay.delay > 0) {
 						this.runAutoPlay();
 					}
 				}
@@ -110,12 +116,9 @@ export class Tabs {
 		});
 	};
 
-	// setPanelsListHeight = (height: number) => {
-	// 	// this.tabPanelsList?.style.height = `${height}px`;
-	// };
-
-	public setActive = (index: number, setFocus: boolean = true) => {
+	public goTo = (index: number, setFocus: boolean = true) => {
 		this.currentActive = index;
+		this.updateProperties();
 		this.setUnactiveAll();
 		this.setActiveAttributes(index);
 		this.setActiveClasses(index);
@@ -125,23 +128,23 @@ export class Tabs {
 		}
 	};
 
-	public getNextIndex = (): number => (this.currentActive >= this.getLastIndex()
-		? 0 : this.currentActive + 1);
+	public goToNext = () => {
+		this.goTo(this.nextIndex as number);
+	};
 
-	public getPreviousIndex = (): number => (this.currentActive - 1 < 0
-		? this.getLastIndex() : this.currentActive - 1);
-
-	public getLastIndex = (): number => this.tabs.length - 1;
+	public goToPrev = () => {
+		this.goTo(this.prevIndex as number);
+	};
 
 	public stopAutoPlay = () => {
-		clearTimeout(this.autoplayTimeout);
+		clearTimeout(this.#autoplayTimeout);
 	};
 
 	private runAutoPlay = () => {
-		this.autoplayTimeout = setTimeout(() => {
-			this.setActive(this.getNextIndex());
+		this.#autoplayTimeout = setTimeout(() => {
+			this.goTo(this.nextIndex as number);
 			this.runAutoPlay();
-		}, this.autoplay.delay);
+		}, this.#autoplay.delay);
 	};
 
 	private addListenersForTabs = () => {
@@ -153,7 +156,7 @@ export class Tabs {
 		this.stopAutoPlay();
 		const { targetIndex, targetButton } = this.getEventDetails(event);
 		if (targetIndex !== undefined && this.tabs.includes(targetButton)) {
-			this.setActive(+targetIndex);
+			this.goTo(+targetIndex);
 		}
 	};
 
@@ -184,12 +187,12 @@ export class Tabs {
 				break;
 			}
 			case KEYS.ENTER || KEYS.SPACE: {
-				this.setActive(+targetIndex);
+				this.goTo(+targetIndex);
 				break;
 			}
 			case KEYS.END: {
 				event.preventDefault(); // prevent page scroll
-				this.focusTab(this.getLastIndex());
+				this.focusTab(this.lastIndex as number);
 				break;
 			}
 			case KEYS.HOME: {
@@ -248,14 +251,14 @@ export class Tabs {
 		case KEYS.UP: {
 			if (targetIndex !== undefined) {
 				this.focusTab(targetIndex - 1 < 0
-					? this.getLastIndex() : targetIndex - 1);
+					? (this.lastIndex as number) : targetIndex - 1);
 			}
 			break;
 		}
 		case KEYS.RIGHT:
 		case KEYS.DOWN: {
 			if (targetIndex !== undefined) {
-				this.focusTab(targetIndex >= this.getLastIndex()
+				this.focusTab(targetIndex >= (this.lastIndex as number)
 					? 0 : targetIndex + 1);
 			}
 			break;
@@ -274,12 +277,12 @@ export class Tabs {
 			this.panels[targetIndex].remove();
 			const newTabsLength = this.tabs.length - 1;
 			if (targetIndex < this.currentActive) {
-				this.setActive(targetIndex);
+				this.goTo(targetIndex);
 			} else if (targetIndex >= this.currentActive) {
 				if (targetIndex === newTabsLength || targetIndex === newTabsLength) {
-					this.setActive(targetIndex - 1);
+					this.goTo(targetIndex - 1);
 				} else {
-					this.setActive(targetIndex);
+					this.goTo(targetIndex);
 				}
 			}
 			this.update();
@@ -293,16 +296,16 @@ export class Tabs {
 		this.tabs.forEach((tab, index) => {
 			tab.classList.add(CUSTOM_CLASSES.TAB);
 			tab.setAttribute('aria-label', `${index}`);
-			tab.setAttribute('role', this.defaultRoles.tab);
-			tab.setAttribute('id', `${this.randomId}-tab-${index}`);
-			tab.setAttribute('aria-controls', `${this.randomId}-tabpanel-${index}`);
+			tab.setAttribute('role', this.#defaultRoles.tab);
+			tab.setAttribute('id', `${this.generatedId}-tab-${index}`);
+			tab.setAttribute('aria-controls', `${this.generatedId}-tabpanel-${index}`);
 
-			tab.dataset.deletable = `${this.deletableTabs}`;
+			tab.dataset.deletable = `${this.#deletableTabs}`;
 			this.panels[index].classList.add(CUSTOM_CLASSES.PANEL);
-			this.panels[index].setAttribute('aria-labelledby', `${this.randomId}-tab-${index}`);
-			this.panels[index].setAttribute('id', `${this.randomId}-tabpanel-${index}`);
+			this.panels[index].setAttribute('aria-labelledby', `${this.generatedId}-tab-${index}`);
+			this.panels[index].setAttribute('id', `${this.generatedId}-tabpanel-${index}`);
 			this.panels[index].setAttribute('aria-label', `${index}`);
-			this.panels[index].setAttribute('role', this.defaultRoles.tabpanel);
+			this.panels[index].setAttribute('role', this.#defaultRoles.tabpanel);
 		});
 		this.setUnactiveAll();
 	};
@@ -310,7 +313,7 @@ export class Tabs {
 	private getEventDetails = (event: KeyboardEvent | MouseEvent): EventDetailsModel => {
 		const key = event instanceof KeyboardEvent ? event.key : undefined;
 		const target = event.target as HTMLElement;
-		const targetTab = target.closest(this.defaultSelectors.tab) as HTMLElement;
+		const targetTab = target.closest(this.#defaultSelectors.tab) as HTMLElement;
 		const targetIndex = targetTab?.getAttribute('aria-label');
 		return {
 			target,
@@ -321,7 +324,16 @@ export class Tabs {
 		};
 	};
 
+	private updateProperties = (): void => {
+		this.lastIndex = this.tabs.length - 1;
+		this.nextIndex = (this.currentActive >= this.lastIndex)
+			? 0 : this.currentActive + 1;
+		this.prevIndex = (this.currentActive - 1 < 0
+			? this.lastIndex : this.currentActive - 1);
+	};
+
 	public update = () => {
+		this.updateProperties();
 		this.init();
 		this.assigningTabsAttributes();
 	};
