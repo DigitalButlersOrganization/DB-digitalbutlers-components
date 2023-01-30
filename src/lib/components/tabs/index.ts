@@ -290,6 +290,7 @@ export class Tabs {
 	};
 
 	private assigningTabsAttributes = () => {
+		this.tabsWrapper.classList.add(CUSTOM_CLASSES.TABS_WRAPPER);
 		this.tabsWrapper.setAttribute('aria-orientation', this.#orientation);
 		this.tabList?.classList.add(CUSTOM_CLASSES.TAB_LIST);
 		this.tabPanelsList?.classList.add(CUSTOM_CLASSES.PANEL_LIST);
