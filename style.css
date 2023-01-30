@@ -9,11 +9,8 @@ body {
   grid-template-columns: 1fr 4fr;
 }
 
-.app-panel.js--unactive {
-  display: none;
-}
-
-.content {
+.app-panel {
+  background-color: bisque;
   padding: 25px
 }
 

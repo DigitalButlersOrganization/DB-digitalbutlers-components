@@ -1,5 +1,19 @@
-[role='tabpanel'] {
-	&.js--unactive {
-		display: none;
+.js--panel-list {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: auto;
+	& .js--panel {
+		position: absolute;
+		inset: 0 0 auto 0;
+		width: 100%;
+		height: auto;
+		opacity: 0;
+		list-style: none;
+		box-sizing: border-box;
+		&.js--active {
+			opacity: 1;
+		}
 	}
 }

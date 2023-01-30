@@ -9,6 +9,7 @@ export interface TabsConfigModel {
 	autoplay: AutoPlayModel,
 	initialTab: number,
 	vertical: boolean,
+	equalHeight: boolean,
 }
 
 export interface EventDetailsModel {

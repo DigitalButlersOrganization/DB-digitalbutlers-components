@@ -2,7 +2,9 @@ import { CLASSES } from '../../../constants/classes';
 import { KEYS } from '../../../constants/keys';
 import { getChildrenArray, getRandomId } from '../../index';
 import './index.scss';
-import { EventDetailsModel, TabsConfigModel } from './interfaces';
+import {
+	AutoPlayModel, EventDetailsModel, TabsConfigModel,
+} from './interfaces';
 
 export class Tabs {
 	tabpanelsListSelector: string;
@@ -10,14 +12,12 @@ export class Tabs {
 	currentActive: number;
 	deletableTabs: boolean;
 	orientation: 'vertical' | 'horizontal';
-	autoplay: {
-		delay: number;
-	};
-
+	autoplay: AutoPlayModel;
 	autoplayTimeout: number;
 	listenersAdded: boolean;
+	maxPanelHeight: number;
 	randomId: string;
-
+	equalHeight: boolean;
 	tabsWrapper: HTMLElement;
 	tabList: HTMLElement | undefined;
 	tabPanelsList: HTMLElement | undefined;
@@ -38,6 +38,7 @@ export class Tabs {
 			tabpanelsListSelector = '[data-tabs="content"]',
 			deletableTabs = false,
 			initialTab = 0,
+			equalHeight = false,
 			vertical = false,
 			autoplay = {
 				delay: 0,
@@ -58,7 +59,9 @@ export class Tabs {
 		this.autoplay = autoplay;
 		this.autoplayTimeout = 0;
 		this.listenersAdded = false;
+		this.maxPanelHeight = 0;
 		this.randomId = getRandomId();
+		this.equalHeight = equalHeight;
 		this.defaultRoles = {
 			tab: 'tab',
 			tabpanel: 'tabpanel',
@@ -77,6 +80,10 @@ export class Tabs {
 				this.tabs = getChildrenArray(this.tabList);
 				this.panels = getChildrenArray(this.tabPanelsList);
 				if (this.tabs.length === this.panels.length) {
+					if (this.equalHeight) {
+						this.setEqualHeight();
+						window.addEventListener('resize', this.setEqualHeight);
+					}
 					this.assigningTabsAttributes();
 					if (!this.listenersAdded) {
 						this.addListenersForTabs();
@@ -90,6 +97,21 @@ export class Tabs {
 			}
 		}
 	}
+
+	setEqualHeight = () => {
+		this.panels.forEach((element) => {
+			console.log(element.style);
+			element.style.height = 'auto';
+		});
+		const maxHeight = Math.max(...this.panels.map((element) => element.offsetHeight));
+		this.panels.forEach((element) => {
+			element.style.height = `${maxHeight}px`;
+		});
+	};
+
+	setPanelsListHeight = (height: number) => {
+		// this.tabPanelsList?.style.height = `${height}px`;
+	};
 
 	public setActive = (index: number, setFocus: boolean = true) => {
 		this.currentActive = index;
@@ -195,7 +217,6 @@ export class Tabs {
 			tabElement.setAttribute('aria-selected', 'false');
 		});
 		this.panels.forEach((tabpanel) => {
-			tabpanel.setAttribute('hidden', 'hidden');
 			tabpanel.setAttribute('inert', 'true');
 		});
 	};
@@ -203,7 +224,6 @@ export class Tabs {
 	protected setActiveAttributes = (index: number) => {
 		this.tabs[index].setAttribute('tabindex', '0');
 		this.tabs[index].setAttribute('aria-selected', 'true');
-		this.panels[index].removeAttribute('hidden');
 		this.panels[index].removeAttribute('inert');
 	};
 
@@ -267,13 +287,17 @@ export class Tabs {
 
 	private assigningTabsAttributes = () => {
 		this.tabsWrapper.setAttribute('aria-orientation', this.orientation);
+		this.tabList?.classList.add(CLASSES.TAB_LIST);
+		this.tabPanelsList?.classList.add(CLASSES.PANEL_LIST);
 		this.tabs.forEach((tab, index) => {
+			tab.classList.add(CLASSES.TAB);
 			tab.setAttribute('aria-label', `${index}`);
 			tab.setAttribute('role', this.defaultRoles.tab);
 			tab.setAttribute('id', `${this.randomId}-tab-${index}`);
 			tab.setAttribute('aria-controls', `${this.randomId}-tabpanel-${index}`);
-			// eslint-disable-next-line no-param-reassign
+
 			tab.dataset.deletable = `${this.deletableTabs}`;
+			this.panels[index].classList.add(CLASSES.PANEL);
 			this.panels[index].setAttribute('aria-labelledby', `${this.randomId}-tab-${index}`);
 			this.panels[index].setAttribute('id', `${this.randomId}-tabpanel-${index}`);
 			this.panels[index].setAttribute('aria-label', `${index}`);
