@@ -15,7 +15,7 @@ export class Tabs {
 	prevIndex: number | undefined;
 	lastIndex: number | undefined;
 	#deletableTabs: boolean;
-	orientation: 'vertical' | 'horizontal';
+	#orientation: 'vertical' | 'horizontal';
 	#autoplay: AutoPlayModel;
 	#autoplayTimeout: number;
 	#listenersAdded: boolean;
@@ -58,7 +58,7 @@ export class Tabs {
 		this.tabPanelsList = undefined;
 		this.tabs = [];
 		this.panels = [];
-		this.orientation = vertical ? 'vertical' : 'horizontal';
+		this.#orientation = vertical ? 'vertical' : 'horizontal';
 		this.currentActive = initialTab;
 		this.nextIndex = undefined;
 		this.prevIndex = undefined;
@@ -169,7 +169,7 @@ export class Tabs {
 			case KEYS.LEFT:
 			case KEYS.RIGHT: {
 				event.preventDefault();
-				if (this.orientation === 'horizontal') {
+				if (this.#orientation === 'horizontal') {
 					this.switchTabOnArrowPress(eventDetails);
 				}
 				break;
@@ -177,7 +177,7 @@ export class Tabs {
 			case KEYS.UP:
 			case KEYS.DOWN: {
 				event.preventDefault(); // prevent page scroll
-				if (this.orientation === 'vertical') {
+				if (this.#orientation === 'vertical') {
 					this.switchTabOnArrowPress(eventDetails);
 				}
 				break;
@@ -290,7 +290,7 @@ export class Tabs {
 	};
 
 	private assigningTabsAttributes = () => {
-		this.tabsWrapper.setAttribute('aria-orientation', this.orientation);
+		this.tabsWrapper.setAttribute('aria-orientation', this.#orientation);
 		this.tabList?.classList.add(CUSTOM_CLASSES.TAB_LIST);
 		this.tabPanelsList?.classList.add(CUSTOM_CLASSES.PANEL_LIST);
 		this.tabs.forEach((tab, index) => {

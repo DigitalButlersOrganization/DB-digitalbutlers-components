@@ -48,75 +48,117 @@ tabs.init();
 
 ### Config Properties
 
-##### tabbuttonsListSelector
-**Type:** `string`
-**Default:** `'[data-tabs="tabs"]'`
-**Description:** Css selector for elements with tabs
+### `tabbuttonsListSelector`
+*Type:* `string`  
+*Default:* `'[data-tabs="tabs"]'`  
+*Description:* Css selector for elements with tabs  
 
-##### tabpanelsListSelector
-**Type:** `string`
-**Default:** `'[data-tabs="content"]'`
-**Description:** Css selector for elements with tabs content
+### `tabpanelsListSelector`
+*Type:* `string`  
+*Default:* `'[data-tabs="content"]'`  
+*Description:* Css selector for elements with tabs content  
 
-##### deletableTabs
-**Type:** `boolean`
-**Default:** `false`
-**Description:** Ability to delete tabs and their contents.
+### `deletableTabs`
+*Type:* `boolean`  
+*Default:* `false`  
+*Description:* Ability to delete tabs and their contents.  
 
-##### initialTab
-**Type:** `number`
-**Default:** `0`
-**Description:** Id of the tab will be active after tabs initialization. buttons.
+### `initialTab`
+*Type:* `number`  
+*Default:* `0`  
+*Description:* Id of the tab will be active after tabs initialization. buttons.  
 
-##### vertical
-**Type:** `boolaen`
-**Default:** `false`
-**Description:** Vertical layout of slides.
+### `vertical`
+*Type:* `boolean`  
+*Default:* `false`  
+*Description:* Init if slides has vertical layout.  
 
-##### autoplay
-**Type:** `object`
+### `autoplay`
+*Type:* `object`  
 
-###### Autoplay config properties
-##### delay
-**Delay:** `number`
-**Default:** `0`
-**Description:** Autoplay delay. A value of 0 disables autoplay.
+#### Autoplay config properties
+
+### `delay`  
+*Type:* `number`  
+*Default:* `0`  
+*Description:* Autoplay delay. A value of 0 disables autoplay.  
+
+
+### Properties
+
+### `currentActive`  
+*Type:* `number`  
+*Description:* Index of current active tab.  
+
+### `nextIndex`  
+*Type:* `number`  
+*Description:* Index of tab after current active (0 if cuurent tab is last).  
+
+### `prevIndex`  
+*Type:* `number`  
+*Description:* Index of tab before current active (last if cuurent tab is first).  
+
+### `lastIndex`  
+*Type:* `number`  
+*Description:* Index of last tab.
+
+### `tabsWrapper`  
+*Type:* `HTMLElement`  
+*Description:* Main Tabs wrapper HTML Element.  
+
+### `tabList`  
+*Type:* `HTMLElement`  
+*Description:* Tab buttons wrapper HTML Element.  
+
+### `tabPanelsList`  
+*Type:* `HTMLElement`  
+*Description:* Tab content wrapper HTML Element.  
+
+### `tabs`  
+*Type:* `HTMLElement[]`  
+*Description:* Array of tab-buttons HTML elements  
+
+### `panels`  
+*Type:* `HTMLElement[]`  
+*Description:* Array of tab-panels HTML elements
+
+### `generatedId`  
+*Type:* `string`  
+*Description:* Automatically generated unique identificator which is assigned as the prefix in id's to each element inside main tabs wrapper
 
 
 ### Methods
 
-##### init()
-**Return:** -
-**Arguments:** -
-**Required to use**
-**Description:** Initialize all listeners and methods.
+### `init()`
+*Return:* -  
+*Arguments:* -  
+*Required to use*  
+*Description:* Initialize all listeners and methods.  
 
-##### setActive(index)
-**Return:** -
-**Arguments:** `id`
-**Description:** makes tab with target id active.
+### `goTo(index)`
+*Return:* -  
+*Arguments:* `id`  
+*Description:* makes tab with target id active.  
 
-##### getNextIndex()
-**Return:** Index of slide fater active, and 0 if current active slide is last
-**Arguments:** -
+### `goToNext()`
+*Return:* -  
+*Arguments:* -  
+*Description:* go to next tab.  
 
-##### getPreviousIndex()
-**Return:** Index of slide before active, and index of last slide if current index = 0
-**Arguments:** -
+### `goToPrev()`
+*Return:* -  
+*Arguments:* -  
+*Description:* go to previous tab.  
 
-##### getLastIndex()
-**Return:** Index of last slide
-**Arguments:** -
+### `stopAutoPlay() ` 
+*Return:* -  
+*Arguments:* -  
+*Description:* Stop the autoplay animation.  
 
-##### stopAutoPlay()
-**Return:** -
-**Arguments:** -
-**Description:** Stop the autoplay animation.
-
-##### update()
-**Return:** -
-**Arguments:** -
-**Description:** Update all indexes, properties and attributes for each tab.
+### `update()`
+*Return:* -  
+*Arguments:* -  
+*Description:* Update all indexes, properties and attributes for each tab.  
 
 
 ## License
