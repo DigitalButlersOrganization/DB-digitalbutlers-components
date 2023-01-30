@@ -109,9 +109,9 @@ export class Tabs {
 		});
 	};
 
-	setPanelsListHeight = (height: number) => {
-		// this.tabPanelsList?.style.height = `${height}px`;
-	};
+	// setPanelsListHeight = (height: number) => {
+	// 	// this.tabPanelsList?.style.height = `${height}px`;
+	// };
 
 	public setActive = (index: number, setFocus: boolean = true) => {
 		this.currentActive = index;
