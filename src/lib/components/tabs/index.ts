@@ -1,4 +1,5 @@
 import { CLASSES } from '../../../constants/classes';
+import { CUSTOM_CLASSES } from './custom-classes';
 import { KEYS } from '../../../constants/keys';
 import { getChildrenArray, getRandomId } from '../../index';
 import './index.scss';
@@ -100,7 +101,7 @@ export class Tabs {
 
 	setEqualHeight = () => {
 		this.panels.forEach((element) => {
-			console.log(element.style);
+			// console.log(element.style);
 			element.style.height = 'auto';
 		});
 		const maxHeight = Math.max(...this.panels.map((element) => element.offsetHeight));
@@ -287,17 +288,17 @@ export class Tabs {
 
 	private assigningTabsAttributes = () => {
 		this.tabsWrapper.setAttribute('aria-orientation', this.orientation);
-		this.tabList?.classList.add(CLASSES.TAB_LIST);
-		this.tabPanelsList?.classList.add(CLASSES.PANEL_LIST);
+		this.tabList?.classList.add(CUSTOM_CLASSES.TAB_LIST);
+		this.tabPanelsList?.classList.add(CUSTOM_CLASSES.PANEL_LIST);
 		this.tabs.forEach((tab, index) => {
-			tab.classList.add(CLASSES.TAB);
+			tab.classList.add(CUSTOM_CLASSES.TAB);
 			tab.setAttribute('aria-label', `${index}`);
 			tab.setAttribute('role', this.defaultRoles.tab);
 			tab.setAttribute('id', `${this.randomId}-tab-${index}`);
 			tab.setAttribute('aria-controls', `${this.randomId}-tabpanel-${index}`);
 
 			tab.dataset.deletable = `${this.deletableTabs}`;
-			this.panels[index].classList.add(CLASSES.PANEL);
+			this.panels[index].classList.add(CUSTOM_CLASSES.PANEL);
 			this.panels[index].setAttribute('aria-labelledby', `${this.randomId}-tab-${index}`);
 			this.panels[index].setAttribute('id', `${this.randomId}-tabpanel-${index}`);
 			this.panels[index].setAttribute('aria-label', `${index}`);
