@@ -19,6 +19,9 @@ const mainTabs = new Tabs('.app', {
 		delay: 1000,
 	},
 	equalHeight: true,
+	autoplay: {
+		delay: 1000,
+	},
 	// deletableTabs: true,
 });
 

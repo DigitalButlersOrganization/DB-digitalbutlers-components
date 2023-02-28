@@ -19,7 +19,7 @@ export class Tabs {
 	#autoplay: AutoPlayModel;
 	#autoplayTimeout: number;
 	#listenersAdded: boolean;
-	#maxPanelHeight: number;
+	// #maxPanelHeight: number;
 	generatedId: string;
 	#equalHeight: boolean;
 	tabsWrapper: HTMLElement;
@@ -66,7 +66,7 @@ export class Tabs {
 		this.#autoplay = autoplay;
 		this.#autoplayTimeout = 0;
 		this.#listenersAdded = false;
-		this.#maxPanelHeight = 0;
+		// this.#maxPanelHeight = 0;
 		this.generatedId = getRandomId();
 		this.#equalHeight = equalHeight;
 		this.#defaultRoles = {
