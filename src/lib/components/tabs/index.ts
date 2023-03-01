@@ -106,7 +106,7 @@ export class Tabs {
 						this.addListenersForTabs();
 						this.#listenersAdded = true;
 					}
-					this.goTo(this.currentActive);
+					this.goTo(this.currentActive, false);
 					if (this.#autoplay.delay > 0) {
 						this.runAutoPlay();
 					}
