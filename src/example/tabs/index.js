@@ -8,7 +8,6 @@ wrappers.forEach((wrapper) => {
 		tabbuttonsListSelector: '[data-tabs="tabs"]',
 		deletableTabs: true,
 	});
-	tabs.init();
 });
 
 const mainTabs = new Tabs('.app', {
@@ -30,7 +29,6 @@ const mainTabs = new Tabs('.app', {
 	// deletableTabs: true,
 });
 
-mainTabs.init();
 console.log(mainTabs);
 console.log(mainTabs.equalHei);
 

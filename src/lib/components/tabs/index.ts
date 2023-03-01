@@ -81,6 +81,7 @@ export class Tabs {
 			tab: '[role="tab"]',
 			tabpanel: '[role="tabpanel"]',
 		};
+		this.init();
 	}
 
 	init() {
