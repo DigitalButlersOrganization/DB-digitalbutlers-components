@@ -156,12 +156,7 @@ export class Tabs {
 
 	private addListenersForTabs = () => {
 		this.tabsWrapper.addEventListener('click', this.clickHandler);
-		window.addEventListener('keyup', this.keyupHandler);
-		this.tabButtonsList?.addEventListener('keydown', (event) => {
-			if (event.key === KEYS.ENTER) {
-				event.preventDefault();
-			}
-		});
+		window.addEventListener('keydown', this.keydownHandler);
 	};
 
 	private clickHandler = (event: MouseEvent) => {
@@ -172,7 +167,7 @@ export class Tabs {
 		}
 	};
 
-	private keyupHandler = (event: KeyboardEvent) => {
+	private keydownHandler = (event: KeyboardEvent) => {
 		const eventDetails: EventDetailsModel = this.getEventDetails(event);
 		const { targetButton, targetIndex, key } = eventDetails;
 		if (targetButton && targetIndex !== undefined && this.tabs.includes(targetButton)) {
@@ -199,6 +194,7 @@ export class Tabs {
 				break;
 			}
 			case KEYS.ENTER || KEYS.SPACE: {
+				event.preventDefault();
 				this.goTo(+targetIndex);
 				break;
 			}
