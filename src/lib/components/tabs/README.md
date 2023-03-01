@@ -94,6 +94,16 @@ tabs.init();
 *Default:* `undefined`  
 *Description:* Callback will be started after every tab changing event  
 
+### `beforeInit`  
+*Type:* `function`  
+*Default:* `undefined`  
+*Description:* Callback will be started before tabs initialization  
+
+### `afterInit`  
+*Type:* `function`  
+*Default:* `undefined`  
+*Description:* Callback will be started after tabs initialization  
+
 
 ### Properties
 

@@ -1,3 +1,5 @@
+import { Tabs } from '.';
+
 export type OrientationType = 'horizontal' | 'vertical'
 
 export interface AutoPlayModel {
@@ -6,7 +8,11 @@ export interface AutoPlayModel {
 
 export interface EventsModel {
 	// eslint-disable-next-line no-unused-vars
-	tabChange?: (tabs: any) => void,
+	tabChange?: (tabs: Tabs) => void,
+	// eslint-disable-next-line no-unused-vars
+	beforeInit?: (tabs: Tabs) => void,
+	// eslint-disable-next-line no-unused-vars
+	afterInit?: (tabs: Tabs) => void,
 }
 
 export interface TabsConfigModel {

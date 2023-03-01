@@ -88,6 +88,9 @@ export class Tabs {
 
 	init() {
 		if (this.tabsWrapper && !this.#destroyed) {
+			if (this.on.beforeInit) {
+				this.on.beforeInit(this);
+			}
 			this.tabButtonsList = this.tabsWrapper.querySelector(this.#tabbuttonsListSelector) as HTMLElement;
 			this.tabPanelsList = this.tabsWrapper.querySelector(this.#tabpanelsListSelector) as HTMLElement;
 			if (this.tabButtonsList && this.tabPanelsList) {
@@ -108,6 +111,9 @@ export class Tabs {
 						this.runAutoPlay();
 					}
 				}
+			}
+			if (this.on.afterInit) {
+				this.on.afterInit(this);
 			}
 		}
 	}
