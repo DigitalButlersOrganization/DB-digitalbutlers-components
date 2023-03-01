@@ -33,5 +33,8 @@ console.log(mainTabs);
 console.log(mainTabs.equalHei);
 
 document.querySelector('.next').addEventListener('click', () => {
-	mainTabs.goToNext();
+	mainTabs.destroy();
+});
+document.querySelector('.prev').addEventListener('click', () => {
+	mainTabs.init();
 });

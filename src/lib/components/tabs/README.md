@@ -171,6 +171,11 @@ tabs.init();
 *Arguments:* -  
 *Description:* Update all indexes, properties and attributes for each tab.  
 
+### `destroy()`
+*Return:* -  
+*Arguments:* -  
+*Description:* Irreversible action! Remove all indexes, classes, properties and attributes for each tab.  
+
 
 ## License
 

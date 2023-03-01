@@ -28,6 +28,7 @@ export class Tabs {
 	tabs: HTMLElement[];
 	panels: HTMLElement[];
 	on: EventsModel;
+	#destroyed: boolean;
 	#defaultRoles: {
 		[key: string]: string
 	};
@@ -81,11 +82,12 @@ export class Tabs {
 			tab: '[role="tab"]',
 			tabpanel: '[role="tabpanel"]',
 		};
+		this.#destroyed = false;
 		this.init();
 	}
 
 	init() {
-		if (this.tabsWrapper) {
+		if (this.tabsWrapper && !this.#destroyed) {
 			this.tabButtonsList = this.tabsWrapper.querySelector(this.#tabbuttonsListSelector) as HTMLElement;
 			this.tabPanelsList = this.tabsWrapper.querySelector(this.#tabpanelsListSelector) as HTMLElement;
 			if (this.tabButtonsList && this.tabPanelsList) {
@@ -96,7 +98,7 @@ export class Tabs {
 						this.setEqualHeight();
 						window.addEventListener('resize', this.setEqualHeight);
 					}
-					this.assigningTabsAttributes();
+					this.assignTabsAttributes();
 					if (!this.#listenersAdded) {
 						this.addListenersForTabs();
 						this.#listenersAdded = true;
@@ -158,6 +160,11 @@ export class Tabs {
 	private addListenersForTabs = () => {
 		this.tabsWrapper.addEventListener('click', this.clickHandler);
 		window.addEventListener('keydown', this.keydownHandler);
+	};
+
+	private removeListenersForTabs = () => {
+		this.tabsWrapper.removeEventListener('click', this.clickHandler);
+		window.removeEventListener('keydown', this.keydownHandler);
 	};
 
 	private clickHandler = (event: MouseEvent) => {
@@ -299,7 +306,7 @@ export class Tabs {
 		}
 	};
 
-	private assigningTabsAttributes = () => {
+	private assignTabsAttributes = () => {
 		this.tabsWrapper.classList.add(CUSTOM_CLASSES.TABS_WRAPPER);
 		this.tabsWrapper.setAttribute('aria-orientation', this.orientation);
 		this.tabButtonsList?.classList.add(CUSTOM_CLASSES.TAB_LIST);
@@ -319,6 +326,34 @@ export class Tabs {
 			this.panels[index].setAttribute('role', this.#defaultRoles.tabpanel);
 		});
 		this.setUnactiveAll();
+	};
+
+	private removeTabsAttributes = () => {
+		this.tabsWrapper.classList.remove(CUSTOM_CLASSES.TABS_WRAPPER);
+		this.tabsWrapper.removeAttribute('aria-orientation');
+		this.tabButtonsList?.classList.remove(CUSTOM_CLASSES.TAB_LIST);
+		this.tabPanelsList?.classList.remove(CUSTOM_CLASSES.PANEL_LIST);
+		this.tabs.forEach((tab, index) => {
+			tab.classList.remove(CUSTOM_CLASSES.TAB);
+			tab.classList.remove(CLASSES.ACTIVE);
+			tab.classList.remove(CLASSES.UNACTIVE);
+			tab.removeAttribute('tabindex');
+			tab.removeAttribute('aria-label');
+			tab.removeAttribute('aria-selected');
+			tab.removeAttribute('role');
+			tab.removeAttribute('id');
+			tab.removeAttribute('aria-controls');
+
+			delete tab.dataset.deletable;
+			this.panels[index].classList.remove(CUSTOM_CLASSES.PANEL);
+			this.panels[index].classList.remove(CLASSES.ACTIVE);
+			this.panels[index].classList.remove(CLASSES.UNACTIVE);
+			this.panels[index].removeAttribute('aria-labelledby');
+			this.panels[index].removeAttribute('id');
+			this.panels[index].removeAttribute('aria-label');
+			this.panels[index].removeAttribute('role');
+			this.panels[index].removeAttribute('inert');
+		});
 	};
 
 	private getEventDetails = (event: KeyboardEvent | MouseEvent): EventDetailsModel => {
@@ -346,21 +381,14 @@ export class Tabs {
 	public update = () => {
 		this.updateProperties();
 		this.init();
-		this.assigningTabsAttributes();
+		this.assignTabsAttributes();
 	};
 
-	// private getPublicProperties = () => ({
-	// 	currentActive: this.currentActive,
-	// 	nextIndex: this.nextIndex,
-	// 	prevIndex: this.prevIndex,
-	// 	lastIndex: this.lastIndex,
-	// 	goTo: this.goTo,
-	// 	goToNext: this.goToNext,
-	// 	goToPrev: this.goToPrev,
-	// 	runAutoPlay: this.runAutoPlay,
-	// 	stopAutoPlay: this.stopAutoPlay,
-	// 	update: this.update,
-	// 	generatedId: this.generatedId,
-	// });
+	public destroy = () => {
+		this.removeTabsAttributes();
+		this.removeListenersForTabs();
+		window.removeEventListener('resize', this.setEqualHeight);
+		this.#destroyed = true;
+	};
 }
 
