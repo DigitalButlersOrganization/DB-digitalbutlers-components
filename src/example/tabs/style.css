@@ -1,7 +1,8 @@
 body {
   display: flex;
   flex-flow: column;
-  justify-content: center;
+  min-height: 100vh;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -50,4 +51,8 @@ body {
 
 .tab.js--active {
   background-color: red;
+}
+
+.row {
+  padding: 1.25rem;
 }

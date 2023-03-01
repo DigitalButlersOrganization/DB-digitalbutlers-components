@@ -76,17 +76,28 @@ tabs.init();
 ### `autoplay`
 *Type:* `object`  
 
-#### Autoplay config properties
+#### Autoplay config object
 
 ### `delay`  
 *Type:* `number`  
 *Default:* `0`  
 *Description:* Autoplay delay. A value of 0 disables autoplay.  
 
+### `autoplay`
+*Type:* `object`  
+*Description:* Callbacks that can be initialized after some events with tabs  
+
+#### Events callback config object
+
+### `tabChange`  
+*Type:* `function`  
+*Default:* `undefined`  
+*Description:* Callback will be started after every tab changing event  
+
 
 ### Properties
 
-### `currentActive`  
+### `activeIndex`  
 *Type:* `number`  
 *Description:* Index of current active tab.  
 

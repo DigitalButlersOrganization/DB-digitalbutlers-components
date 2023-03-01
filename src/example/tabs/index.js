@@ -18,11 +18,22 @@ const mainTabs = new Tabs('.app', {
 	animation: {
 		delay: 1000,
 	},
-	equalHeight: true,
+	// equalHeight: true,
 	autoplay: {
-		delay: 1000,
+		delay: 0,
+	},
+	on: {
+		tabChange: (mainTabs) => {
+			console.log(mainTabs.activeIndex);
+		},
 	},
 	// deletableTabs: true,
 });
 
 mainTabs.init();
+console.log(mainTabs);
+console.log(mainTabs.equalHei);
+
+document.querySelector('.next').addEventListener('click', () => {
+	mainTabs.goToNext();
+});

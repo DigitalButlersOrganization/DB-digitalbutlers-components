@@ -4,7 +4,7 @@ import { KEYS } from '../../../constants/keys';
 import { getChildrenArray, getRandomId } from '../../index';
 import './index.scss';
 import {
-	AutoPlayModel, EventDetailsModel, TabsConfigModel,
+	AutoPlayModel, EventDetailsModel, EventsModel, TabsConfigModel,
 } from './interfaces';
 
 export class Tabs {
@@ -23,10 +23,11 @@ export class Tabs {
 	generatedId: string;
 	#equalHeight: boolean;
 	tabsWrapper: HTMLElement;
-	tabList: HTMLElement | undefined;
+	tabButtonsList: HTMLElement | undefined;
 	tabPanelsList: HTMLElement | undefined;
 	tabs: HTMLElement[];
 	panels: HTMLElement[];
+	on: EventsModel;
 	#defaultRoles: {
 		[key: string]: string
 	};
@@ -47,6 +48,7 @@ export class Tabs {
 			autoplay = {
 				delay: 0,
 			},
+			on = {},
 		}: TabsConfigModel) {
 		this.#tabpanelsListSelector = tabpanelsListSelector;
 		this.#tabbuttonsListSelector = tabbuttonsListSelector;
@@ -54,8 +56,9 @@ export class Tabs {
 		this.tabsWrapper = typeof tabsWrapper === 'string'
 			? document.querySelector(tabsWrapper) as HTMLElement
 			: tabsWrapper;
-		this.tabList = undefined;
+		this.tabButtonsList = undefined;
 		this.tabPanelsList = undefined;
+		this.tabButtonsList = undefined;
 		this.tabs = [];
 		this.panels = [];
 		this.#orientation = vertical ? 'vertical' : 'horizontal';
@@ -66,6 +69,7 @@ export class Tabs {
 		this.#autoplay = autoplay;
 		this.#autoplayTimeout = 0;
 		this.#listenersAdded = false;
+		this.on = on;
 		// this.#maxPanelHeight = 0;
 		this.generatedId = getRandomId();
 		this.#equalHeight = equalHeight;
@@ -81,10 +85,10 @@ export class Tabs {
 
 	init() {
 		if (this.tabsWrapper) {
-			this.tabList = this.tabsWrapper.querySelector(this.#tabbuttonsListSelector) as HTMLElement;
+			this.tabButtonsList = this.tabsWrapper.querySelector(this.#tabbuttonsListSelector) as HTMLElement;
 			this.tabPanelsList = this.tabsWrapper.querySelector(this.#tabpanelsListSelector) as HTMLElement;
-			if (this.tabList && this.tabPanelsList) {
-				this.tabs = getChildrenArray(this.tabList);
+			if (this.tabButtonsList && this.tabPanelsList) {
+				this.tabs = getChildrenArray(this.tabButtonsList);
 				this.panels = getChildrenArray(this.tabPanelsList);
 				if (this.tabs.length === this.panels.length) {
 					if (this.#equalHeight) {
@@ -105,7 +109,7 @@ export class Tabs {
 		}
 	}
 
-	setEqualHeight = () => {
+	private setEqualHeight = () => {
 		this.panels.forEach((element) => {
 			// console.log(element.style);
 			element.style.height = 'auto';
@@ -125,6 +129,9 @@ export class Tabs {
 		// Set focus when required
 		if (setFocus) {
 			this.focusTab(index);
+		}
+		if (this.on.tabChange) {
+			this.on.tabChange(this);
 		}
 	};
 
@@ -150,6 +157,11 @@ export class Tabs {
 	private addListenersForTabs = () => {
 		this.tabsWrapper.addEventListener('click', this.clickHandler);
 		window.addEventListener('keyup', this.keyupHandler);
+		this.tabButtonsList?.addEventListener('keydown', (event) => {
+			if (event.key === KEYS.ENTER) {
+				event.preventDefault();
+			}
+		});
 	};
 
 	private clickHandler = (event: MouseEvent) => {
@@ -292,7 +304,7 @@ export class Tabs {
 	private assigningTabsAttributes = () => {
 		this.tabsWrapper.classList.add(CUSTOM_CLASSES.TABS_WRAPPER);
 		this.tabsWrapper.setAttribute('aria-orientation', this.#orientation);
-		this.tabList?.classList.add(CUSTOM_CLASSES.TAB_LIST);
+		this.tabButtonsList?.classList.add(CUSTOM_CLASSES.TAB_LIST);
 		this.tabPanelsList?.classList.add(CUSTOM_CLASSES.PANEL_LIST);
 		this.tabs.forEach((tab, index) => {
 			tab.classList.add(CUSTOM_CLASSES.TAB);
@@ -338,5 +350,19 @@ export class Tabs {
 		this.init();
 		this.assigningTabsAttributes();
 	};
+
+	// private getPublicProperties = () => ({
+	// 	currentActive: this.currentActive,
+	// 	nextIndex: this.nextIndex,
+	// 	prevIndex: this.prevIndex,
+	// 	lastIndex: this.lastIndex,
+	// 	goTo: this.goTo,
+	// 	goToNext: this.goToNext,
+	// 	goToPrev: this.goToPrev,
+	// 	runAutoPlay: this.runAutoPlay,
+	// 	stopAutoPlay: this.stopAutoPlay,
+	// 	update: this.update,
+	// 	generatedId: this.generatedId,
+	// });
 }
 
