@@ -158,7 +158,7 @@ export class Tabs {
 
 	private runAutoPlay = () => {
 		this.#autoplayTimeout = setTimeout(() => {
-			this.goTo(this.nextIndex as number);
+			this.goTo(this.nextIndex as number, false);
 			this.runAutoPlay();
 		}, this.#autoplay.delay);
 	};
@@ -207,9 +207,15 @@ export class Tabs {
 				this.deleteTab(eventDetails);
 				break;
 			}
-			case KEYS.ENTER || KEYS.SPACE: {
+			case KEYS.ENTER: {
 				event.preventDefault();
 				this.goTo(+targetIndex);
+				break;
+			}
+			case KEYS.SPACE: {
+				event.preventDefault();
+				targetButton.click();
+				// this.goTo(+targetIndex);
 				break;
 			}
 			case KEYS.END: {
