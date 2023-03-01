@@ -37,6 +37,7 @@ const tabs = new Tabs(
   }
 );
 ```
+Tabs will not initialize, if quantity of buttons and content blocks are not equal
 
 ## API
 
@@ -77,7 +78,7 @@ const tabs = new Tabs(
 *Default:* `0`  
 *Description:* Autoplay delay. A value of 0 disables autoplay.  
 
-### `autoplay`
+### `on`
 *Type:* `object`  
 *Description:* Callbacks that can be initialized after some events with tabs  
 
