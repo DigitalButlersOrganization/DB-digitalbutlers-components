@@ -38,12 +38,6 @@ const tabs = new Tabs(
 );
 ```
 
-### Initialize tabs
-
-```javascript
-tabs.init();
-```
-
 ## API
 
 ### Config Properties
@@ -149,12 +143,6 @@ tabs.init();
 
 
 ### Methods
-
-### `init()`
-*Return:* -  
-*Arguments:* -  
-*Required to use*  
-*Description:* Initialize all listeners and methods.  
 
 ### `goTo(index)`
 *Return:* -  
