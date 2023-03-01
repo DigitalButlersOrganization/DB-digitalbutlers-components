@@ -14,6 +14,7 @@ const mainTabs = new Tabs('.app', {
 	tabpanelsListSelector: '.content',
 	tabbuttonsListSelector: '.app-tabs',
 	orientation: 'vertical',
+	deletableTabs: true,
 	animation: {
 		delay: 1000,
 	},
@@ -22,19 +23,17 @@ const mainTabs = new Tabs('.app', {
 		delay: 0,
 	},
 	on: {
-		tabChange: (mainTabs) => {
-			console.log(mainTabs.activeIndex);
+		tabChange: (tabs) => {
+			console.log(tabs.activeIndex);
 		},
 	},
 	// deletableTabs: true,
 });
 
-console.log(mainTabs);
-console.log(mainTabs.equalHei);
 
-document.querySelector('.next').addEventListener('click', () => {
-	mainTabs.destroy();
-});
-document.querySelector('.prev').addEventListener('click', () => {
-	mainTabs.init();
-});
+// document.querySelector('.next').addEventListener('click', () => {
+// 	mainTabs.destroy();
+// });
+// document.querySelector('.prev').addEventListener('click', () => {
+// 	mainTabs.init();
+// });

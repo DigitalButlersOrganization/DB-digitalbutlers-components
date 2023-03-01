@@ -10,7 +10,7 @@ import {
 export class Tabs {
 	#tabpanelsListSelector: string;
 	#tabbuttonsListSelector: string;
-	currentActive: number;
+	activeIndex: number;
 	nextIndex: number | undefined;
 	prevIndex: number | undefined;
 	lastIndex: number | undefined;
@@ -63,7 +63,7 @@ export class Tabs {
 		this.tabs = [];
 		this.panels = [];
 		this.orientation = orientation === 'vertical' ? 'vertical' : 'horizontal';
-		this.currentActive = initialTab;
+		this.activeIndex = initialTab;
 		this.nextIndex = undefined;
 		this.prevIndex = undefined;
 		this.lastIndex = undefined;
@@ -106,7 +106,7 @@ export class Tabs {
 						this.addListenersForTabs();
 						this.#listenersAdded = true;
 					}
-					this.goTo(this.currentActive, false);
+					this.goTo(this.activeIndex, false);
 					if (this.#autoplay.delay > 0) {
 						this.runAutoPlay();
 					}
@@ -130,7 +130,7 @@ export class Tabs {
 	};
 
 	public goTo = (index: number, setFocus: boolean = true) => {
-		this.currentActive = index;
+		this.activeIndex = index;
 		this.updateProperties();
 		this.setUnactiveAll();
 		this.setActiveAttributes(index);
@@ -204,6 +204,7 @@ export class Tabs {
 				break;
 			}
 			case KEYS.DELETE: {
+				event.preventDefault();
 				this.deleteTab(eventDetails);
 				break;
 			}
@@ -301,20 +302,18 @@ export class Tabs {
 	// Deletes a tab and its panel
 	private deleteTab = (eventDetails: EventDetailsModel) => {
 		const { targetButton, targetIndex } = eventDetails;
-		if (targetButton.dataset.deletable && targetIndex !== undefined) {
+		if (targetButton.dataset.deletable === 'true' && targetIndex !== undefined) {
 			this.tabs[targetIndex].remove();
 			this.panels[targetIndex].remove();
-			const newTabsLength = this.tabs.length - 1;
-			if (targetIndex < this.currentActive) {
-				this.goTo(targetIndex);
-			} else if (targetIndex >= this.currentActive) {
-				if (targetIndex === newTabsLength || targetIndex === newTabsLength) {
-					this.goTo(targetIndex - 1);
+			this.update();
+			if (this.tabs.length > 0 && this.panels.length > 0) {
+				const newTabsLength = this.tabs.length - 1;
+				if (targetIndex < this.activeIndex || this.activeIndex > newTabsLength) {
+					this.goTo(this.activeIndex - 1);
 				} else {
-					this.goTo(targetIndex);
+					this.goTo(this.activeIndex);
 				}
 			}
-			this.update();
 		}
 	};
 
@@ -384,15 +383,16 @@ export class Tabs {
 
 	private updateProperties = (): void => {
 		this.lastIndex = this.tabs.length - 1;
-		this.nextIndex = (this.currentActive >= this.lastIndex)
-			? 0 : this.currentActive + 1;
-		this.prevIndex = (this.currentActive - 1 < 0
-			? this.lastIndex : this.currentActive - 1);
+		this.nextIndex = (this.activeIndex >= this.lastIndex)
+			? 0 : this.activeIndex + 1;
+		this.prevIndex = (this.activeIndex - 1 < 0
+			? this.lastIndex : this.activeIndex - 1);
 	};
 
 	public update = () => {
+		this.tabs = getChildrenArray(this.tabButtonsList as HTMLElement);
+		this.panels = getChildrenArray(this.tabPanelsList as HTMLElement);
 		this.updateProperties();
-		this.init();
 		this.assignTabsAttributes();
 	};
 
