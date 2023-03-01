@@ -14,7 +14,7 @@ wrappers.forEach((wrapper) => {
 const mainTabs = new Tabs('.app', {
 	tabpanelsListSelector: '.content',
 	tabbuttonsListSelector: '.app-tabs',
-	vertical: true,
+	orientation: 'vertical',
 	animation: {
 		delay: 1000,
 	},

@@ -1,3 +1,5 @@
+export type OrientationType = 'horizontal' | 'vertical'
+
 export interface AutoPlayModel {
 	delay: number,
 }
@@ -12,7 +14,7 @@ export interface TabsConfigModel {
 	tabbuttonsListSelector: string,
 	deletableTabs: boolean,
 	initialTab: number,
-	vertical: boolean,
+	orientation: OrientationType,
 	equalHeight: boolean,
 	autoplay: AutoPlayModel,
 	on: EventsModel,
@@ -26,6 +28,7 @@ export interface EventDetailsModel {
 	event: KeyboardEvent | MouseEvent
 }
 
+
 export interface TabsModel {
 	tabpanelsListSelector: string;
 	tabbuttonsListSelector: string;
@@ -34,7 +37,7 @@ export interface TabsModel {
 	prevIndex: number | undefined;
 	lastIndex: number | undefined;
 	deletableTabs: boolean;
-	orientation: 'vertical' | 'horizontal';
+	orientation: OrientationType;
 	autoplay: AutoPlayModel;
 	autoplayTimeout: number;
 	listenersAdded: boolean;

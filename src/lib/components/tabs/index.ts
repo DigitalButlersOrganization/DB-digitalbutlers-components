@@ -4,7 +4,7 @@ import { KEYS } from '../../../constants/keys';
 import { getChildrenArray, getRandomId } from '../../index';
 import './index.scss';
 import {
-	AutoPlayModel, EventDetailsModel, EventsModel, TabsConfigModel,
+	AutoPlayModel, EventDetailsModel, EventsModel, OrientationType, TabsConfigModel,
 } from './interfaces';
 
 export class Tabs {
@@ -15,7 +15,7 @@ export class Tabs {
 	prevIndex: number | undefined;
 	lastIndex: number | undefined;
 	#deletableTabs: boolean;
-	#orientation: 'vertical' | 'horizontal';
+	orientation: OrientationType;
 	#autoplay: AutoPlayModel;
 	#autoplayTimeout: number;
 	#listenersAdded: boolean;
@@ -44,7 +44,7 @@ export class Tabs {
 			deletableTabs = false,
 			initialTab = 0,
 			equalHeight = false,
-			vertical = false,
+			orientation = 'horizontal',
 			autoplay = {
 				delay: 0,
 			},
@@ -61,7 +61,7 @@ export class Tabs {
 		this.tabButtonsList = undefined;
 		this.tabs = [];
 		this.panels = [];
-		this.#orientation = vertical ? 'vertical' : 'horizontal';
+		this.orientation = orientation === 'vertical' ? 'vertical' : 'horizontal';
 		this.currentActive = initialTab;
 		this.nextIndex = undefined;
 		this.prevIndex = undefined;
@@ -181,7 +181,7 @@ export class Tabs {
 			case KEYS.LEFT:
 			case KEYS.RIGHT: {
 				event.preventDefault();
-				if (this.#orientation === 'horizontal') {
+				if (this.orientation === 'horizontal') {
 					this.switchTabOnArrowPress(eventDetails);
 				}
 				break;
@@ -189,7 +189,7 @@ export class Tabs {
 			case KEYS.UP:
 			case KEYS.DOWN: {
 				event.preventDefault(); // prevent page scroll
-				if (this.#orientation === 'vertical') {
+				if (this.orientation === 'vertical') {
 					this.switchTabOnArrowPress(eventDetails);
 				}
 				break;
@@ -257,7 +257,8 @@ export class Tabs {
 	// When a tablist is aria-orientation is set to vertical, only up and down arrow
 	// should function. In all other cases only left and right arrow function.
 	private switchTabOnArrowPress = (eventDetails: EventDetailsModel) => {
-		const { key, targetIndex } = eventDetails;
+		const { key, targetIndex, event } = eventDetails;
+		event.preventDefault();
 		switch (key) {
 		case KEYS.LEFT:
 		case KEYS.UP: {
@@ -303,7 +304,7 @@ export class Tabs {
 
 	private assigningTabsAttributes = () => {
 		this.tabsWrapper.classList.add(CUSTOM_CLASSES.TABS_WRAPPER);
-		this.tabsWrapper.setAttribute('aria-orientation', this.#orientation);
+		this.tabsWrapper.setAttribute('aria-orientation', this.orientation);
 		this.tabButtonsList?.classList.add(CUSTOM_CLASSES.TAB_LIST);
 		this.tabPanelsList?.classList.add(CUSTOM_CLASSES.PANEL_LIST);
 		this.tabs.forEach((tab, index) => {

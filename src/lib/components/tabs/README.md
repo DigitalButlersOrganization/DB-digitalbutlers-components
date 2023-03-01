@@ -68,10 +68,10 @@ tabs.init();
 *Default:* `0`  
 *Description:* Id of the tab will be active after tabs initialization. buttons.  
 
-### `vertical`
-*Type:* `boolean`  
-*Default:* `false`  
-*Description:* Init if slides has vertical layout.  
+### `orientation`
+*Type:* `horizontal | vertical`  
+*Default:* `horizontal`  
+*Description:* orientation of tab buttons layout.  
 
 ### `autoplay`
 *Type:* `object`  

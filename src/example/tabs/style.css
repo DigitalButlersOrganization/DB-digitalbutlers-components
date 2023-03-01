@@ -1,7 +1,7 @@
 body {
   display: flex;
   flex-flow: column;
-  min-height: 100vh;
+  min-height: 200vh;
   justify-content: space-between;
   align-items: center;
 }
