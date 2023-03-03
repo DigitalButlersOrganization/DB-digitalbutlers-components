@@ -12,9 +12,15 @@ body {
   grid-template-columns: 1fr 4fr;
 }
 
-.app-panel {
+.content {
+  overflow: hidden;
   background-color: bisque;
-  padding: 25px
+  transition: all 1s ease-in-out;
+}
+
+.app-panel {
+  padding: 25px;
+  transition: all 1s ease-in-out;
 }
 
 .app-tabs {

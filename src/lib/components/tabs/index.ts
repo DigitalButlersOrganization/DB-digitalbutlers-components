@@ -4,7 +4,7 @@ import { KEYS } from '../../../constants/keys';
 import { getChildrenArray, getRandomId } from '../../index';
 import './index.scss';
 import {
-	AutoPlayModel, EventDetailsModel, EventsModel, OrientationType, TabsConfigModel,
+	AutoPlayModel, EventDetailsModel, EventsModel, OrientationType, TabsConfigModel, TabsHeightType,
 } from './interfaces';
 
 export class Tabs {
@@ -21,7 +21,9 @@ export class Tabs {
 	#listenersAdded: boolean;
 	// #maxPanelHeight: number;
 	generatedId: string;
-	#equalHeight: boolean;
+	#tabsHeight: TabsHeightType;
+	// #equalHeight: boolean;
+	// #animatedHeight: boolean;
 	tabsWrapper: HTMLElement;
 	tabButtonsList: HTMLElement | undefined;
 	tabPanelsList: HTMLElement | undefined;
@@ -44,7 +46,9 @@ export class Tabs {
 			tabpanelsListSelector = '[data-tabs="content"]',
 			deletableTabs = false,
 			initialTab = 0,
-			equalHeight = false,
+			tabsHeight,
+			// equalHeight = false,
+			// animatedHeight = false,
 			orientation = 'horizontal',
 			autoplay = {
 				delay: 0,
@@ -73,7 +77,9 @@ export class Tabs {
 		this.on = on;
 		// this.#maxPanelHeight = 0;
 		this.generatedId = getRandomId();
-		this.#equalHeight = equalHeight;
+		this.#tabsHeight = tabsHeight;
+		// this.#equalHeight = equalHeight;
+		// this.#animatedHeight = animatedHeight;
 		this.#defaultRoles = {
 			tab: 'tab',
 			tabpanel: 'tabpanel',
@@ -97,16 +103,20 @@ export class Tabs {
 				this.tabs = getChildrenArray(this.tabButtonsList);
 				this.panels = getChildrenArray(this.tabPanelsList);
 				if (this.tabs.length === this.panels.length) {
-					if (this.#equalHeight) {
-						this.setEqualHeight();
-						window.addEventListener('resize', this.setEqualHeight);
-					}
 					this.assignTabsAttributes();
 					if (!this.#listenersAdded) {
 						this.addListenersForTabs();
 						this.#listenersAdded = true;
 					}
 					this.goTo(this.activeIndex, false);
+					if (this.#tabsHeight === 'equal') {
+						this.setEqualHeight();
+						window.addEventListener('resize', this.setEqualHeight);
+					}
+					if (this.#tabsHeight === 'animated') {
+						this.setAnimatedHeight();
+						window.addEventListener('resize', this.setAnimatedHeight);
+					}
 					if (this.#autoplay.delay > 0) {
 						this.runAutoPlay();
 					}
@@ -120,13 +130,19 @@ export class Tabs {
 
 	private setEqualHeight = () => {
 		this.panels.forEach((element) => {
-			// console.log(element.style);
 			element.style.height = 'auto';
 		});
 		const maxHeight = Math.max(...this.panels.map((element) => element.offsetHeight));
 		this.panels.forEach((element) => {
 			element.style.height = `${maxHeight}px`;
 		});
+		(this.tabPanelsList as HTMLElement).style.height = `${maxHeight}px`;
+	};
+
+	private setAnimatedHeight = () => {
+		const activePanel = this.panels[this.activeIndex];
+		const activeHeight = activePanel.offsetHeight;
+		(this.tabPanelsList as HTMLElement).style.height = `${activeHeight}px`;
 	};
 
 	public goTo = (index: number, setFocus: boolean = true) => {
@@ -135,6 +151,9 @@ export class Tabs {
 		this.setUnactiveAll();
 		this.setActiveAttributes(index);
 		this.setActiveClasses(index);
+		if (this.#tabsHeight === 'animated') {
+			this.setAnimatedHeight();
+		}
 		// Set focus when required
 		if (setFocus) {
 			this.focusTab(index);

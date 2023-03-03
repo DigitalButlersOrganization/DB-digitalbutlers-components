@@ -1,6 +1,7 @@
 import { Tabs } from '.';
 
 export type OrientationType = 'horizontal' | 'vertical'
+export type TabsHeightType = 'equal' | 'animated' | undefined
 
 export interface AutoPlayModel {
 	delay: number,
@@ -21,7 +22,9 @@ export interface TabsConfigModel {
 	deletableTabs: boolean,
 	initialTab: number,
 	orientation: OrientationType,
-	equalHeight: boolean,
+	tabsHeight: TabsHeightType,
+	// equalHeight: boolean,
+	// animatedHeight: boolean,
 	autoplay: AutoPlayModel,
 	on: EventsModel,
 }

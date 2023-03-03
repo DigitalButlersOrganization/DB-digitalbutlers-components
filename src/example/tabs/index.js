@@ -7,6 +7,7 @@ wrappers.forEach((wrapper) => {
 		tabpanelsListSelector: '[data-tabs="content"]',
 		tabbuttonsListSelector: '[data-tabs="tabs"]',
 		deletableTabs: true,
+		tabsHeight: 'equal',
 	});
 });
 
@@ -18,6 +19,7 @@ const mainTabs = new Tabs('.app', {
 	animation: {
 		delay: 1000,
 	},
+	tabsHeight: 'equal',
 	// equalHeight: true,
 	autoplay: {
 		delay: 0,
