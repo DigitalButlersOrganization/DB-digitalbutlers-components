@@ -68,6 +68,11 @@ Tabs will not initialize, if quantity of buttons and content blocks are not equa
 *Default:* `horizontal`  
 *Description:* orientation of tab buttons layout.  
 
+### `equalHeight`
+*Type:* `boolean`  
+*Default:* `false`  
+*Description:* set height of tab panels as same as the tallest panel.  
+
 ### `autoplay`
 *Type:* `object`  
 
