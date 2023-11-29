@@ -4,7 +4,7 @@ import { KEYS } from '../../../constants/keys';
 import { getChildrenArray, getRandomId } from '../../index';
 import './index.scss';
 import {
-	AutoPlayModel, EventDetailsModel, EventsModel, OrientationType, TabsConfigModel,
+	AutoPlayModel, EventDetailsModel, EventsModel, OrientationType, TabsConfigModel, TriggerEvents,
 } from './interfaces';
 
 export class Tabs {
@@ -16,6 +16,7 @@ export class Tabs {
 	lastIndex: number | undefined;
 	#deletableTabs: boolean;
 	orientation: OrientationType;
+	triggerEvent: TriggerEvents;
 	#autoplay: AutoPlayModel;
 	#autoplayTimeout: number;
 	#listenersAdded: boolean;
@@ -46,6 +47,7 @@ export class Tabs {
 			initialTab = 0,
 			equalHeight = false,
 			orientation = 'horizontal',
+			triggerEvent = TriggerEvents.click,
 			autoplay = {
 				delay: 0,
 			},
@@ -63,6 +65,7 @@ export class Tabs {
 		this.tabs = [];
 		this.panels = [];
 		this.orientation = orientation === 'vertical' ? 'vertical' : 'horizontal';
+		this.triggerEvent = triggerEvent;
 		this.activeIndex = initialTab;
 		this.nextIndex = undefined;
 		this.prevIndex = undefined;
@@ -96,7 +99,7 @@ export class Tabs {
 			if (this.tabButtonsList && this.tabPanelsList) {
 				this.tabs = getChildrenArray(this.tabButtonsList);
 				this.panels = getChildrenArray(this.tabPanelsList);
-				if (this.tabs.length === this.panels.length) {
+				if (this.tabs.length > 0 && this.tabs.length === this.panels.length) {
 					if (this.#equalHeight) {
 						this.setEqualHeight();
 						window.addEventListener('resize', this.setEqualHeight);
@@ -164,12 +167,12 @@ export class Tabs {
 	};
 
 	private addListenersForTabs = () => {
-		this.tabsWrapper.addEventListener('click', this.clickHandler);
+		this.tabsWrapper.addEventListener(this.triggerEvent, this.clickHandler);
 		window.addEventListener('keydown', this.keydownHandler);
 	};
 
 	private removeListenersForTabs = () => {
-		this.tabsWrapper.removeEventListener('click', this.clickHandler);
+		this.tabsWrapper.removeEventListener(this.triggerEvent, this.clickHandler);
 		window.removeEventListener('keydown', this.keydownHandler);
 	};
 
@@ -280,16 +283,28 @@ export class Tabs {
 		case KEYS.LEFT:
 		case KEYS.UP: {
 			if (targetIndex !== undefined) {
-				this.focusTab(targetIndex - 1 < 0
-					? (this.lastIndex as number) : targetIndex - 1);
+				const nextIndex = targetIndex - 1 < 0
+					? (Number(this.lastIndex)) : targetIndex - 1;
+				// this.focusTab(nextIndex);
+				if (this.triggerEvent === TriggerEvents.mouseover) {
+					this.goTo(nextIndex);
+				} else {
+					this.focusTab(nextIndex);
+				}
 			}
 			break;
 		}
 		case KEYS.RIGHT:
 		case KEYS.DOWN: {
 			if (targetIndex !== undefined) {
-				this.focusTab(targetIndex >= (this.lastIndex as number)
-					? 0 : targetIndex + 1);
+				const nextIndex = targetIndex >= (Number(this.lastIndex))
+					? 0 : targetIndex + 1;
+				// this.focusTab(nextIndex);
+				if (this.triggerEvent === TriggerEvents.mouseover) {
+					this.goTo(nextIndex);
+				} else {
+					this.focusTab(nextIndex);
+				}
 			}
 			break;
 		}

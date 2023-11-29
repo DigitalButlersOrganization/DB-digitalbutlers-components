@@ -68,6 +68,11 @@ Tabs will not initialize, if quantity of buttons and content blocks are not equa
 *Default:* `horizontal`  
 *Description:* orientation of tab buttons layout.  
 
+### `triggerEvent`
+*Type:* `click | mouseover`  
+*Default:* `click`  
+*Description:* which event will trigger the tab changing.  
+
 ### `equalHeight`
 *Type:* `boolean`  
 *Default:* `false`  
