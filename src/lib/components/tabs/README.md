@@ -78,7 +78,7 @@ Tabs will not initialize, if quantity of buttons and content blocks are not equa
 *Default:* `false`  
 *Description:* set height of tab panels as same as the tallest panel.  
 
-### `natchMediaRule`
+### `matchMediaRule`
 *Type:* `mediaQueryString`  
 *Default:* `undefined`  
 *Description:* will prevent the tab changings if window.matchmedia doesn't match  
