@@ -26,6 +26,7 @@ const mainTabs = new Tabs('.app', {
 	autoplay: {
 		delay: 0,
 	},
+	matchMediaRule: '(min-width: 600px)',
 	on: {
 		tabChange: (tabs) => {
 			console.log(tabs.activeIndex);

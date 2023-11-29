@@ -33,6 +33,7 @@ export interface TabsConfigModel {
 	autoplay: AutoPlayModel,
 	triggerEvent: TriggerEvents,
 	on: EventsModel,
+	matchMediaRule?: string,
 }
 
 export interface EventDetailsModel {
@@ -68,10 +69,11 @@ export interface TabsModel {
 	defaultRoles: {
 		[key: string]: string
 	};
-
 	defaultSelectors: {
 		[key: string]: `[role="${string}"]`
 	};
+	matchMediaRule: string;
+	isInMatchMedia: boolean;
 }
 
 
