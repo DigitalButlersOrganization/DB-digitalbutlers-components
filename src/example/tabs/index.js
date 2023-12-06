@@ -22,11 +22,11 @@ const mainTabs = new Tabs('.app', {
 		delay: 1000,
 	},
 	triggerEvent: 'mouseover',
+	matchMediaRule: '(min-width: 600px)',
 	// equalHeight: true,
 	autoplay: {
 		delay: 0,
 	},
-	matchMediaRule: '(min-width: 600px)',
 	on: {
 		tabChange: (tabs) => {
 			console.log(tabs.activeIndex);

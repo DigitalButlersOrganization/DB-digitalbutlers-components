@@ -30,6 +30,7 @@ export class Tabs {
 	panels: HTMLElement[];
 	on: EventsModel;
 	#destroyed: boolean;
+	#inited: boolean;
 	#defaultRoles: {
 		[key: string]: string
 	};
@@ -92,6 +93,7 @@ export class Tabs {
 			tabpanel: '[role="tabpanel"]',
 		};
 		this.#destroyed = false;
+		this.#inited = false;
 		this.init();
 	}
 
@@ -123,6 +125,7 @@ export class Tabs {
 					}
 				}
 			}
+			this.#inited = true;
 			if (this.on.afterInit) {
 				this.on.afterInit(this);
 			}
@@ -145,17 +148,19 @@ export class Tabs {
 	};
 
 	public goTo = (index: number, setFocus: boolean = true) => {
-		this.activeIndex = index;
-		this.updateProperties();
-		this.setUnactiveAll();
-		this.setActiveAttributes(index);
-		this.setActiveClasses(index);
-		// Set focus when required
-		if (setFocus) {
-			this.focusTab(index);
-		}
-		if (this.on.tabChange) {
-			this.on.tabChange(this);
+		if (this.activeIndex !== index || !this.#inited) {
+			this.activeIndex = index;
+			this.updateProperties();
+			this.setUnactiveAll();
+			this.setActiveAttributes(index);
+			this.setActiveClasses(index);
+			// Set focus when required
+			if (setFocus) {
+				this.focusTab(index);
+			}
+			if (this.on.tabChange) {
+				this.on.tabChange(this);
+			}
 		}
 	};
 
@@ -169,6 +174,17 @@ export class Tabs {
 
 	public stopAutoPlay = () => {
 		clearTimeout(this.#autoplayTimeout);
+	};
+
+	public changeTriggerEvent = (eventName: TriggerEvents) => {
+		if (eventName in TriggerEvents) {
+			this.removeListenersForTabs();
+			this.triggerEvent = eventName;
+			this.addListenersForTabs();
+		} else {
+			// eslint-disable-next-line no-console
+			console.error('Icorrect type of event');
+		}
 	};
 
 	private runAutoPlay = () => {

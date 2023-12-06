@@ -185,6 +185,11 @@ Tabs will not initialize, if quantity of buttons and content blocks are not equa
 *Arguments:* -  
 *Description:* Update all indexes, properties and attributes for each tab.  
 
+### `changeTriggerEvent(event)`
+*Return:* -  
+*Arguments:* 'click' | 'mouseover'  
+*Description:* Changes the trigger event. Shows console error for unsupported events.  
+
 ### `destroy()`
 *Return:* -  
 *Arguments:* -  
