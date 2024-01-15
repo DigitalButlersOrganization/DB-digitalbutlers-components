@@ -75,7 +75,7 @@ export class Pagination {
 	};
 
 	initVariables = () => {
-		this.dynamicElements = [...this.component.querySelectorAll(this.dynamicElementSelector)];
+		this.dynamicElements = Array.from(this.component.querySelectorAll(this.dynamicElementSelector));
 		this.totalPages = Math.ceil(this.dynamicElements.length / this.itemsPerPage);
 		this.createButtonsMap();
 		this.addCustomButtons();
@@ -246,7 +246,7 @@ export class Pagination {
 		);
 	};
 
-	clickHandler = (event: PointerEvent) => {
+	clickHandler = (event: MouseEvent) => {
 		const targetButton = (event.target as HTMLElement).closest('.js--pagination-button');
 		if (targetButton && targetButton.getAttribute('disabled') !== 'true') {
 			const targetPage = targetButton.getAttribute('aria-label');

@@ -32,6 +32,7 @@ module.exports = {
 		'import/prefer-default-export': 0,
 		'unicorn/no-for-loop': 0,
 		'unicorn/no-array-for-each': 0,
+		'unicorn/prefer-spread': 0,
 		'lines-between-class-members': [1, 'always', { exceptAfterSingleLine: true }],
 	},
 	settings: {
