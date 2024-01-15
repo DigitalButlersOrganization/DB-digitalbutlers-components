@@ -1,25 +1,28 @@
-import { Tabs } from '../../lib/index';
+import { Tabs } from "../../lib/index";
 
-const wrappers = document.querySelectorAll('.wrapper');
+const wrappers = document.querySelectorAll(".wrapper");
 
 wrappers.forEach((wrapper) => {
+	// eslint-disable-next-line no-unused-vars
 	const tabs = new Tabs(wrapper, {
 		tabpanelsListSelector: '[data-tabs="content"]',
 		tabbuttonsListSelector: '[data-tabs="tabs"]',
 		deletableTabs: true,
-		tabsHeight: 'equal',
+		triggerEevent: "mouseover",
 	});
 });
 
-const mainTabs = new Tabs('.app', {
-	tabpanelsListSelector: '.content',
-	tabbuttonsListSelector: '.app-tabs',
-	orientation: 'vertical',
+// eslint-disable-next-line no-unused-vars
+const mainTabs = new Tabs(".app", {
+	tabpanelsListSelector: ".content",
+	tabbuttonsListSelector: ".app-tabs",
+	orientation: "vertical",
 	deletableTabs: true,
 	animation: {
 		delay: 1000,
 	},
-	tabsHeight: 'equal',
+	triggerEvent: "mouseover",
+	matchMediaRule: "(min-width: 600px)",
 	// equalHeight: true,
 	autoplay: {
 		delay: 0,

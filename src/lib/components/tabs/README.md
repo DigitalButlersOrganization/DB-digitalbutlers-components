@@ -68,10 +68,20 @@ Tabs will not initialize, if quantity of buttons and content blocks are not equa
 *Default:* `horizontal`  
 *Description:* orientation of tab buttons layout.  
 
+### `triggerEvent`
+*Type:* `click | mouseover`  
+*Default:* `click`  
+*Description:* which event will trigger the tab changing.  
+
 ### `equalHeight`
 *Type:* `boolean`  
 *Default:* `false`  
 *Description:* set height of tab panels as same as the tallest panel.  
+
+### `matchMediaRule`
+*Type:* `mediaQueryString`  
+*Default:* `undefined`  
+*Description:* will prevent the tab changings if window.matchmedia doesn't match  
 
 ### `autoplay`
 *Type:* `object`  
@@ -174,6 +184,11 @@ Tabs will not initialize, if quantity of buttons and content blocks are not equa
 *Return:* -  
 *Arguments:* -  
 *Description:* Update all indexes, properties and attributes for each tab.  
+
+### `changeTriggerEvent(event)`
+*Return:* -  
+*Arguments:* 'click' | 'mouseover'  
+*Description:* Changes the trigger event. Shows console error for unsupported events.  
 
 ### `destroy()`
 *Return:* -  

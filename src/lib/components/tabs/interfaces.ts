@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import { Tabs } from '.';
 
 export type OrientationType = 'horizontal' | 'vertical'
@@ -15,6 +17,12 @@ export interface EventsModel {
 	afterInit?: (tabs: Tabs) => void,
 }
 
+// eslint-disable-next-line no-shadow
+export enum TriggerEvents {
+	click = 'click',
+	mouseover = 'mouseover'
+}
+
 export interface TabsConfigModel {
 	tabpanelsListSelector: string,
 	tabbuttonsListSelector: string,
@@ -23,7 +31,9 @@ export interface TabsConfigModel {
 	orientation: OrientationType,
 	equalHeight: boolean,
 	autoplay: AutoPlayModel,
+	triggerEvent: TriggerEvents,
 	on: EventsModel,
+	matchMediaRule?: string,
 }
 
 export interface EventDetailsModel {
@@ -59,10 +69,11 @@ export interface TabsModel {
 	defaultRoles: {
 		[key: string]: string
 	};
-
 	defaultSelectors: {
 		[key: string]: `[role="${string}"]`
 	};
+	matchMediaRule: string;
+	isInMatchMedia: boolean;
 }
 
 
