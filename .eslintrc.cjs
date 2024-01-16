@@ -16,6 +16,7 @@ module.exports = {
 	ignorePatterns: ['dist/**/*.*'],
 	rules: {
 		'linebreak-style': 0,
+		'no-param-reassign': 0,
 		'no-multiple-empty-lines': [1, { max: 2 }],
 		indent: [1, 'tab'],
 		'no-tabs': [1, { allowIndentationTabs: true }],

@@ -1,0 +1,58 @@
+body {
+  display: flex;
+  flex-flow: column;
+  min-height: 200vh;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app {
+  width: 60%;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+}
+
+.app-panel {
+  background-color: bisque;
+  padding: 25px
+}
+
+.app-tabs {
+  display: flex;
+  flex-flow: column;
+  row-gap: 10px;
+  padding: 0 10px 0 0;
+}
+
+.wrapper {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 10px;
+}
+
+.tab {
+  background-color: #DDD;
+  border: none;
+  outline: none;
+  padding: 10px;
+}
+
+.tab:focus {
+  outline: 3px solid black;
+}
+
+.tab.js--active {
+  background-color: red;
+}
+
+.row {
+  padding: 1.25rem;
+}
