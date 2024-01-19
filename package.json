@@ -2,6 +2,13 @@
 	"name": "digitalbutlers-components",
 	"version": "0.0.1",
 	"type": "module",
+	"description": "A convenient library with various components for everyday tasks",
+	"keywords": [
+		"pagination",
+		"modals",
+		"accordion",
+		"tabs"
+	],
 	"private": false,
 	"main": "./dist/digitalbutlers-components.umd.cjs",
 	"module": "./dist/digitalbutlers-components.js",
