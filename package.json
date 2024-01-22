@@ -1,12 +1,10 @@
 {
-	"name": "@digital-butlers/digitalbutlers-components",
-	"version": "0.0.3",
+	"name": "@digital-butlers/components",
+	"version": "0.0.5",
 	"type": "module",
 	"description": "A convenient library with various components for everyday tasks",
 	"keywords": [
 		"pagination",
-		"modals",
-		"accordion",
 		"tabs"
 	],
 	"private": false,
@@ -16,7 +14,7 @@
 	"website": "https://www.digitalbutlers.team/",
 	"bugs": {
 		"url": "https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/issues",
-		"email": ""
+		"email": "digitalbutlers.team@gmail.com"
 	},
 	"exports": {
 		".": {
@@ -29,7 +27,7 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"post": "npm publish --access public",
+		"post": "npm publish --access public"
 	},
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^5.46.1",
