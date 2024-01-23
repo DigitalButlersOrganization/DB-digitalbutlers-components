@@ -6,13 +6,15 @@
 
 ```
 npm install @digital-butlers/components
+```
 
 or
 
+```
 pnpm add @digital-butlers/components
 ```
 
-### Import library and initialize animation instance
+### Import library and initialize script
 ```javascript
 // for tabs
 import { Tabs } from '@digital-butlers/components';
@@ -37,7 +39,7 @@ const mainTabs = new Tabs('.app', {
 		},
 	},
 });
-
+```
 
 [Documentation for tabs](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/tree/master/src/lib/components/tabs)
 
