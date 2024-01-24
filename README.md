@@ -4,6 +4,7 @@
 
 ### Install library
 
+
 ```
 npm install @digital-butlers/components
 ```
@@ -15,6 +16,8 @@ pnpm add @digital-butlers/components
 ```
 
 ### Import library and initialize script
+
+
 ```javascript
 // for tabs
 import { Tabs } from '@digital-butlers/components';

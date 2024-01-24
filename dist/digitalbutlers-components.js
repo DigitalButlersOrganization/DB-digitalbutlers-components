@@ -22,7 +22,7 @@ var __privateSet = (obj, member, value, setter) => {
   setter ? setter.call(obj, value) : member.set(obj, value);
   return value;
 };
-var _tabpanelsListSelector, _tabbuttonsListSelector, _deletableTabs, _autoplay, _autoplayTimeout, _listenersAdded, _equalHeight, _destroyed, _defaultRoles, _defaultSelectors;
+var _tabpanelsListSelector, _tabbuttonsListSelector, _deletableTabs, _autoplay, _autoplayTimeout, _listenersAdded, _equalHeight, _destroyed, _inited, _defaultRoles, _defaultSelectors;
 const CLASSES = {
   ACTIVE: "js--active",
   UNACTIVE: "js--unactive",
@@ -50,6 +50,11 @@ const KEYS = {
   SPACE: " "
 };
 const index = "";
+var TriggerEvents = /* @__PURE__ */ ((TriggerEvents2) => {
+  TriggerEvents2["click"] = "click";
+  TriggerEvents2["mouseover"] = "mouseover";
+  return TriggerEvents2;
+})(TriggerEvents || {});
 class Tabs {
   constructor(tabsWrapper = '[data-tabs="wrapper"]', {
     tabbuttonsListSelector = '[data-tabs="tabs"]',
@@ -58,10 +63,12 @@ class Tabs {
     initialTab = 0,
     equalHeight = false,
     orientation = "horizontal",
+    triggerEvent = TriggerEvents.click,
     autoplay = {
       delay: 0
     },
-    on = {}
+    on = {},
+    matchMediaRule
   }) {
     __privateAdd(this, _tabpanelsListSelector, void 0);
     __privateAdd(this, _tabbuttonsListSelector, void 0);
@@ -71,6 +78,7 @@ class Tabs {
     __publicField(this, "lastIndex");
     __privateAdd(this, _deletableTabs, void 0);
     __publicField(this, "orientation");
+    __publicField(this, "triggerEvent");
     __privateAdd(this, _autoplay, void 0);
     __privateAdd(this, _autoplayTimeout, void 0);
     __privateAdd(this, _listenersAdded, void 0);
@@ -83,8 +91,14 @@ class Tabs {
     __publicField(this, "panels");
     __publicField(this, "on");
     __privateAdd(this, _destroyed, void 0);
+    __privateAdd(this, _inited, void 0);
     __privateAdd(this, _defaultRoles, void 0);
     __privateAdd(this, _defaultSelectors, void 0);
+    __publicField(this, "matchMediaRule");
+    __publicField(this, "isInMatchMedia");
+    __publicField(this, "checkMatchMedia", () => {
+      this.isInMatchMedia = !this.matchMediaRule || window.matchMedia(this.matchMediaRule).matches;
+    });
     __publicField(this, "setEqualHeight", () => {
       this.panels.forEach((element) => {
         element.style.height = "auto";
@@ -95,16 +109,18 @@ class Tabs {
       });
     });
     __publicField(this, "goTo", (index2, setFocus = true) => {
-      this.activeIndex = index2;
-      this.updateProperties();
-      this.setUnactiveAll();
-      this.setActiveAttributes(index2);
-      this.setActiveClasses(index2);
-      if (setFocus) {
-        this.focusTab(index2);
-      }
-      if (this.on.tabChange) {
-        this.on.tabChange(this);
+      if (this.activeIndex !== index2 || !__privateGet(this, _inited)) {
+        this.activeIndex = index2;
+        this.updateProperties();
+        this.setUnactiveAll();
+        this.setActiveAttributes(index2);
+        this.setActiveClasses(index2);
+        if (setFocus) {
+          this.focusTab(index2);
+        }
+        if (this.on.tabChange) {
+          this.on.tabChange(this);
+        }
       }
     });
     __publicField(this, "goToNext", () => {
@@ -116,6 +132,15 @@ class Tabs {
     __publicField(this, "stopAutoPlay", () => {
       clearTimeout(__privateGet(this, _autoplayTimeout));
     });
+    __publicField(this, "changeTriggerEvent", (eventName) => {
+      if (eventName in TriggerEvents) {
+        this.removeListenersForTabs();
+        this.triggerEvent = eventName;
+        this.addListenersForTabs();
+      } else {
+        console.error("Icorrect type of event");
+      }
+    });
     __publicField(this, "runAutoPlay", () => {
       __privateSet(this, _autoplayTimeout, setTimeout(() => {
         this.goTo(this.nextIndex, false);
@@ -123,66 +148,70 @@ class Tabs {
       }, __privateGet(this, _autoplay).delay));
     });
     __publicField(this, "addListenersForTabs", () => {
-      this.tabsWrapper.addEventListener("click", this.clickHandler);
+      this.tabsWrapper.addEventListener(this.triggerEvent, this.clickHandler);
       window.addEventListener("keydown", this.keydownHandler);
     });
     __publicField(this, "removeListenersForTabs", () => {
-      this.tabsWrapper.removeEventListener("click", this.clickHandler);
+      this.tabsWrapper.removeEventListener(this.triggerEvent, this.clickHandler);
       window.removeEventListener("keydown", this.keydownHandler);
     });
     __publicField(this, "clickHandler", (event) => {
-      this.stopAutoPlay();
-      const { targetIndex, targetButton } = this.getEventDetails(event);
-      if (targetIndex !== void 0 && this.tabs.includes(targetButton)) {
-        this.goTo(+targetIndex);
+      if (this.isInMatchMedia) {
+        this.stopAutoPlay();
+        const { targetIndex, targetButton } = this.getEventDetails(event);
+        if (targetIndex !== void 0 && this.tabs.includes(targetButton)) {
+          this.goTo(+targetIndex);
+        }
       }
     });
     __publicField(this, "keydownHandler", (event) => {
-      const eventDetails = this.getEventDetails(event);
-      const { targetButton, targetIndex, key } = eventDetails;
-      if (targetButton && targetIndex !== void 0 && this.tabs.includes(targetButton)) {
-        this.stopAutoPlay();
-        switch (key) {
-          case KEYS.LEFT:
-          case KEYS.RIGHT: {
-            event.preventDefault();
-            if (this.orientation === "horizontal") {
-              this.switchTabOnArrowPress(eventDetails);
+      if (this.isInMatchMedia) {
+        const eventDetails = this.getEventDetails(event);
+        const { targetButton, targetIndex, key } = eventDetails;
+        if (targetButton && targetIndex !== void 0 && this.tabs.includes(targetButton)) {
+          this.stopAutoPlay();
+          switch (key) {
+            case KEYS.LEFT:
+            case KEYS.RIGHT: {
+              event.preventDefault();
+              if (this.orientation === "horizontal") {
+                this.switchTabOnArrowPress(eventDetails);
+              }
+              break;
             }
-            break;
-          }
-          case KEYS.UP:
-          case KEYS.DOWN: {
-            event.preventDefault();
-            if (this.orientation === "vertical") {
-              this.switchTabOnArrowPress(eventDetails);
+            case KEYS.UP:
+            case KEYS.DOWN: {
+              event.preventDefault();
+              if (this.orientation === "vertical") {
+                this.switchTabOnArrowPress(eventDetails);
+              }
+              break;
             }
-            break;
-          }
-          case KEYS.DELETE: {
-            event.preventDefault();
-            this.deleteTab(eventDetails);
-            break;
-          }
-          case KEYS.ENTER: {
-            event.preventDefault();
-            this.goTo(+targetIndex);
-            break;
-          }
-          case KEYS.SPACE: {
-            event.preventDefault();
-            targetButton.click();
-            break;
-          }
-          case KEYS.END: {
-            event.preventDefault();
-            this.focusTab(this.lastIndex);
-            break;
-          }
-          case KEYS.HOME: {
-            event.preventDefault();
-            this.focusTab(0);
-            break;
+            case KEYS.DELETE: {
+              event.preventDefault();
+              this.deleteTab(eventDetails);
+              break;
+            }
+            case KEYS.ENTER: {
+              event.preventDefault();
+              this.goTo(+targetIndex);
+              break;
+            }
+            case KEYS.SPACE: {
+              event.preventDefault();
+              targetButton.click();
+              break;
+            }
+            case KEYS.END: {
+              event.preventDefault();
+              this.focusTab(this.lastIndex);
+              break;
+            }
+            case KEYS.HOME: {
+              event.preventDefault();
+              this.focusTab(0);
+              break;
+            }
           }
         }
       }
@@ -224,14 +253,24 @@ class Tabs {
         case KEYS.LEFT:
         case KEYS.UP: {
           if (targetIndex !== void 0) {
-            this.focusTab(targetIndex - 1 < 0 ? this.lastIndex : targetIndex - 1);
+            const nextIndex = targetIndex - 1 < 0 ? Number(this.lastIndex) : targetIndex - 1;
+            if (this.triggerEvent === TriggerEvents.mouseover) {
+              this.goTo(nextIndex);
+            } else {
+              this.focusTab(nextIndex);
+            }
           }
           break;
         }
         case KEYS.RIGHT:
         case KEYS.DOWN: {
           if (targetIndex !== void 0) {
-            this.focusTab(targetIndex >= this.lastIndex ? 0 : targetIndex + 1);
+            const nextIndex = targetIndex >= Number(this.lastIndex) ? 0 : targetIndex + 1;
+            if (this.triggerEvent === TriggerEvents.mouseover) {
+              this.goTo(nextIndex);
+            } else {
+              this.focusTab(nextIndex);
+            }
           }
           break;
         }
@@ -341,6 +380,7 @@ class Tabs {
     this.tabs = [];
     this.panels = [];
     this.orientation = orientation === "vertical" ? "vertical" : "horizontal";
+    this.triggerEvent = triggerEvent;
     this.activeIndex = initialTab;
     this.nextIndex = void 0;
     this.prevIndex = void 0;
@@ -349,6 +389,8 @@ class Tabs {
     __privateSet(this, _autoplayTimeout, 0);
     __privateSet(this, _listenersAdded, false);
     this.on = on;
+    this.matchMediaRule = matchMediaRule;
+    this.isInMatchMedia = false;
     this.generatedId = getRandomId();
     __privateSet(this, _equalHeight, equalHeight);
     __privateSet(this, _defaultRoles, {
@@ -360,6 +402,7 @@ class Tabs {
       tabpanel: '[role="tabpanel"]'
     });
     __privateSet(this, _destroyed, false);
+    __privateSet(this, _inited, false);
     this.init();
   }
   init() {
@@ -367,12 +410,14 @@ class Tabs {
       if (this.on.beforeInit) {
         this.on.beforeInit(this);
       }
+      this.checkMatchMedia();
+      window.addEventListener("resize", this.checkMatchMedia);
       this.tabButtonsList = this.tabsWrapper.querySelector(__privateGet(this, _tabbuttonsListSelector));
       this.tabPanelsList = this.tabsWrapper.querySelector(__privateGet(this, _tabpanelsListSelector));
       if (this.tabButtonsList && this.tabPanelsList) {
         this.tabs = getChildrenArray(this.tabButtonsList);
         this.panels = getChildrenArray(this.tabPanelsList);
-        if (this.tabs.length === this.panels.length) {
+        if (this.tabs.length > 0 && this.tabs.length === this.panels.length) {
           if (__privateGet(this, _equalHeight)) {
             this.setEqualHeight();
             window.addEventListener("resize", this.setEqualHeight);
@@ -383,11 +428,12 @@ class Tabs {
             __privateSet(this, _listenersAdded, true);
           }
           this.goTo(this.activeIndex, false);
-          if (__privateGet(this, _autoplay).delay > 0) {
+          if (__privateGet(this, _autoplay).delay > 0 && this.isInMatchMedia) {
             this.runAutoPlay();
           }
         }
       }
+      __privateSet(this, _inited, true);
       if (this.on.afterInit) {
         this.on.afterInit(this);
       }
@@ -402,6 +448,7 @@ _autoplayTimeout = new WeakMap();
 _listenersAdded = new WeakMap();
 _equalHeight = new WeakMap();
 _destroyed = new WeakMap();
+_inited = new WeakMap();
 _defaultRoles = new WeakMap();
 _defaultSelectors = new WeakMap();
 const PREFIX = "js--";
