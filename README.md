@@ -22,9 +22,15 @@ pnpm add @digital-butlers/components
 // for tabs
 import { Tabs } from '@digital-butlers/components';
 
-const mainTabs = new Tabs('.app', {
-	tabpanelsListSelector: '.content',
-	tabbuttonsListSelector: '.app-tabs',
+const SELECTORS = {
+	TABS_WRAPPER: '[data-role="tabs-wrapper"]',
+	PANEL_LIST: '[data-role="panel-list"]',
+	TAB_LIST: '[data-role="tab-list"]',
+};
+
+	const tabsVertical = new Tabs(SELECTORS.COMPONENT, {
+	tabpanelsListSelector: SELECTORS.PANEL_LIST,
+	tabbuttonsListSelector: SELECTORS.TAB_LIST,
 	orientation: 'vertical',
 	deletableTabs: true,
 	animation: {

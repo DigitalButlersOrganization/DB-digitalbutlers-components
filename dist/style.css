@@ -16,6 +16,7 @@
 }
 .js--tabs-wrapper .js--panel-list .js--panel.js--active {
   opacity: 1;
+  position: relative;
 }
 .js--tabs-wrapper .js--tab-list .js--tab {
   cursor: pointer;
