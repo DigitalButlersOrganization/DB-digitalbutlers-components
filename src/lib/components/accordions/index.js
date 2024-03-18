@@ -1,6 +1,6 @@
 const generateId = (length) => {
-	let id = "";
-	const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	let id = '';
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 	for (let index = 0; index < length; index += 1) {
 		id += characters.charAt(Math.floor(Math.random() * characters.length));
@@ -10,36 +10,37 @@ const generateId = (length) => {
 
 const INSTANCE_ID_LENGTH = 4;
 
-const PARAMS_KEY = "_accordion";
+const PARAMS_KEY = '_accordion';
 const PARAMS = {
-	IS_SINGLE: "isSingle",
-	IS_OPEN: "isOpen",
-	ACCORDION_ID: "accordionId",
-	ITEM_ID: "itemId",
-	ITEMS_IDS: "itemsIds",
-	SUMMARY_ELEMENT: "summaryElement",
-	DETAILS_ELEMENT: "detailsElement",
+	IS_SINGLE: 'isSingle',
+	IS_OPEN: 'isOpen',
+	ACCORDION_ID: 'accordionId',
+	ITEM_ID: 'itemId',
+	ITEMS_IDS: 'itemsIds',
+	SUMMARY_ELEMENT: 'summaryElement',
+	DETAILS_ELEMENT: 'detailsElement',
 };
 
 const DESTROYED_TYPES = {
-	MANUAL: "manual",
-	BREAKPOINT: "breakpoint",
+	MANUAL: 'manual',
+	BREAKPOINT: 'breakpoint',
 };
 
-const ATTRIBUTES_PREFIX = "data-accordion-";
+const ATTRIBUTES_PREFIX = 'data-accordion-';
 const ATTRIBUTES = {
 	IS_SINGLE: `${ATTRIBUTES_PREFIX}is-single`,
 };
 const DEFAULTS = {
-	openClass: "js--open",
+	openClass: 'js--open',
 	parentElement: document,
 	accordionSelector: '[data-role="accordion"]',
 	itemSelector: '[data-role="accordion-item"]',
 	summarySelector: '[data-role="accordion-summary"]',
 	detailsSelector: '[data-role="accordion-details"]',
-	breakpoint: window.matchMedia("screen"),
+	breakpoint: window.matchMedia('screen'),
 	isSingle: false,
 };
+
 export class Accordions {
 	constructor(customParameters = {}) {
 		const parameters = {
@@ -90,8 +91,7 @@ export class Accordions {
 
 	getItemById = (itemId) => this.itemElements.find((itemElement) => itemElement[PARAMS_KEY][PARAMS.ITEM_ID] === itemId);
 
-	getAccordionById = (accordionId) =>
-		this.elements.find((accordionElement) => accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID] === accordionId);
+	getAccordionById = (accordionId) => this.elements.find((accordionElement) => accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID] === accordionId);
 
 	// Initialisation
 	initAccordions = () => {
@@ -109,7 +109,7 @@ export class Accordions {
 		const parentItemElement = accordionElement.closest(this.itemSelector);
 		const parentItemId = parentItemElement && parentItemElement[PARAMS_KEY][PARAMS.ITEM_ID];
 		const isSingle = accordionElement.hasAttribute(ATTRIBUTES.IS_SINGLE)
-			? accordionElement.getAttribute(ATTRIBUTES.IS_SINGLE) === "true"
+			? accordionElement.getAttribute(ATTRIBUTES.IS_SINGLE) === 'true'
 			: this.isSingle;
 
 		accordionElement[PARAMS_KEY] = {};
@@ -134,7 +134,9 @@ export class Accordions {
 		});
 	};
 
-	initItem = ({ itemElement, itemId, accordionId, parentItemId }) => {
+	initItem = ({
+		itemElement, itemId, accordionId, parentItemId,
+	}) => {
 		if (itemElement[PARAMS_KEY]) {
 			return;
 		}
@@ -154,48 +156,43 @@ export class Accordions {
 
 		this.itemElements.push(itemElement);
 
-		summaryElement.setAttribute("tabindex", 0);
-		summaryElement.setAttribute("id", summaryId);
-		summaryElement.setAttribute("aria-controls", detailsId);
+		summaryElement.setAttribute('tabindex', 0);
+		summaryElement.setAttribute('id', summaryId);
+		summaryElement.setAttribute('aria-controls', detailsId);
 		summaryElement[PARAMS_KEY] = {};
 		summaryElement[PARAMS_KEY][PARAMS.ITEM_ID] = itemId;
 
-		detailsElement.setAttribute("id", detailsId);
-		detailsElement.setAttribute("aria-labelledby", summaryId);
+		detailsElement.setAttribute('id', detailsId);
+		detailsElement.setAttribute('aria-labelledby', summaryId);
 		detailsElement[PARAMS_KEY] = {};
 		detailsElement[PARAMS_KEY][PARAMS.ITEM_ID] = itemId;
 		if (parentItemId) {
-			detailsElement.addEventListener("transitionend", this.onDetailsTransitionEnd);
+			detailsElement.addEventListener('transitionend', this.onDetailsTransitionEnd);
 		}
-		summaryElement.addEventListener("click", this.onSummaryClick);
+		summaryElement.addEventListener('click', this.onSummaryClick);
 	};
 
 	// Destroying
 	destroyAccordion = (accordion) => {
-		const accordionElement = typeof accordion === "string" ? this.getAccordionById(accordion) : accordion;
+		const accordionElement = typeof accordion === 'string' ? this.getAccordionById(accordion) : accordion;
 
 		if (!accordionElement[PARAMS_KEY]) {
 			return;
 		}
 
-		const accordionItemsElements = this.itemElements.filter(
-			(itemElement) =>
-				itemElement[PARAMS_KEY][PARAMS.ACCORDION_ID] === accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID]
-		);
+		const accordionItemsElements = this.itemElements.filter((itemElement) => itemElement[PARAMS_KEY][PARAMS.ACCORDION_ID] === accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID]);
 
 		accordionItemsElements.forEach((accordionItemElement) => {
 			this.destroyItem(accordionItemElement);
 		});
 
-		this.elements = this.elements.filter(
-			(element) => element[PARAMS_KEY][PARAMS.ACCORDION_ID] !== accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID]
-		);
+		this.elements = this.elements.filter((element) => element[PARAMS_KEY][PARAMS.ACCORDION_ID] !== accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID]);
 		delete accordionElement[PARAMS_KEY];
-		accordionElement.removeAttribute("id");
+		accordionElement.removeAttribute('id');
 	};
 
 	destroyItem = (item) => {
-		const itemElement = typeof item === "string" ? this.getItemById(item) : item;
+		const itemElement = typeof item === 'string' ? this.getItemById(item) : item;
 
 		if (!itemElement[PARAMS_KEY]) {
 			return;
@@ -204,23 +201,21 @@ export class Accordions {
 		const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT];
 		const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
 
-		this.itemElements = this.itemElements.filter(
-			(itemElement_) => itemElement_[PARAMS_KEY][PARAMS.ITEM_ID] !== itemElement[PARAMS_KEY][PARAMS.ITEM_ID]
-		);
+		this.itemElements = this.itemElements.filter((itemElement_) => itemElement_[PARAMS_KEY][PARAMS.ITEM_ID] !== itemElement[PARAMS_KEY][PARAMS.ITEM_ID]);
 		delete itemElement[PARAMS_KEY];
-		itemElement.removeAttribute("id");
+		itemElement.removeAttribute('id');
 
 		delete summaryElement[PARAMS_KEY];
-		summaryElement.removeAttribute("id");
-		summaryElement.removeAttribute("aria-controls");
-		summaryElement.removeAttribute("aria-expanded");
+		summaryElement.removeAttribute('id');
+		summaryElement.removeAttribute('aria-controls');
+		summaryElement.removeAttribute('aria-expanded');
 
 		delete detailsElement[PARAMS_KEY];
-		detailsElement.removeAttribute("id");
-		detailsElement.removeAttribute("aria-labelledby");
-		detailsElement.removeAttribute("inert");
+		detailsElement.removeAttribute('id');
+		detailsElement.removeAttribute('aria-labelledby');
+		detailsElement.removeAttribute('inert');
 
-		summaryElement.removeEventListener("click", this.onSummaryClick);
+		summaryElement.removeEventListener('click', this.onSummaryClick);
 	};
 
 	// Event handlers
@@ -250,7 +245,7 @@ export class Accordions {
 		this.isDestroyed = false;
 		this.destroyedBy = undefined;
 
-		this.breakpoint.addEventListener("change", this.onBreakpointChange);
+		this.breakpoint.addEventListener('change', this.onBreakpointChange);
 		this.onBreakpointChange();
 
 		this.closeAll();
@@ -266,7 +261,7 @@ export class Accordions {
 	};
 
 	open = (item) => {
-		const itemElement = typeof item === "string" ? this.getItemById(item) : item;
+		const itemElement = typeof item === 'string' ? this.getItemById(item) : item;
 
 		const accordionElement = this.getAccordionById(itemElement[PARAMS_KEY][PARAMS.ACCORDION_ID]);
 		const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
@@ -278,12 +273,12 @@ export class Accordions {
 
 		itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = true;
 		itemElement.classList.add(this.openClass);
-		summaryElement.setAttribute("aria-expanded", "true");
-		detailsElement.removeAttribute("inert");
+		summaryElement.setAttribute('aria-expanded', 'true');
+		detailsElement.removeAttribute('inert');
 	};
 
 	close = (item) => {
-		const itemElement = typeof item === "string" ? this.getItemById(item) : item;
+		const itemElement = typeof item === 'string' ? this.getItemById(item) : item;
 
 		const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
 		const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT];
@@ -294,12 +289,12 @@ export class Accordions {
 
 		itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = false;
 		itemElement.classList.remove(this.openClass);
-		summaryElement.setAttribute("aria-expanded", "false");
-		detailsElement.setAttribute("inert", "");
+		summaryElement.setAttribute('aria-expanded', 'false');
+		detailsElement.setAttribute('inert', '');
 	};
 
 	toggle = (item) => {
-		const itemElement = typeof item === "string" ? this.getItemById(item) : item;
+		const itemElement = typeof item === 'string' ? this.getItemById(item) : item;
 
 		if (itemElement[PARAMS_KEY][PARAMS.IS_OPEN]) {
 			this.close(itemElement);
@@ -309,7 +304,7 @@ export class Accordions {
 	};
 
 	closeAccordion = (accordion) => {
-		const accordionElement = typeof accordion === "string" ? this.getAccordionById(accordion) : accordion;
+		const accordionElement = typeof accordion === 'string' ? this.getAccordionById(accordion) : accordion;
 
 		const itemsIds = accordionElement[PARAMS_KEY][PARAMS.ITEMS_IDS];
 
