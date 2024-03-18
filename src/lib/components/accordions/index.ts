@@ -110,11 +110,12 @@ export class Accordions {
 		if (accordionElement[PARAMS_KEY]) {
 			return;
 		}
-		const parentItemElement = accordionElement.closest(this.itemSelector) as AccordionElement;
-		if (!parentItemElement[PARAMS_KEY]) {
+		const parentItemElement = accordionElement.closest(this.itemSelector) as AccordionElement ?? undefined;
+		if (parentItemElement && !parentItemElement[PARAMS_KEY]) {
 			parentItemElement[PARAMS_KEY] = {};
 		}
-		const parentItemId = parentItemElement && parentItemElement[PARAMS_KEY][PARAMS.ITEM_ID];
+		const parentItemId = parentItemElement
+			&& (parentItemElement[PARAMS_KEY] as AccordionProperties)[PARAMS.ITEM_ID];
 		const isSingle = accordionElement.hasAttribute(ATTRIBUTES.IS_SINGLE)
 			? accordionElement.getAttribute(ATTRIBUTES.IS_SINGLE) === 'true'
 			: this.isSingle;
