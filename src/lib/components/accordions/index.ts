@@ -1,25 +1,7 @@
-const generateId = (length) => {
-	let id = '';
-	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-	for (let index = 0; index < length; index += 1) {
-		id += characters.charAt(Math.floor(Math.random() * characters.length));
-	}
-	return id;
-};
-
-const INSTANCE_ID_LENGTH = 4;
-
-const PARAMS_KEY = '_accordion';
-const PARAMS = {
-	IS_SINGLE: 'isSingle',
-	IS_OPEN: 'isOpen',
-	ACCORDION_ID: 'accordionId',
-	ITEM_ID: 'itemId',
-	ITEMS_IDS: 'itemsIds',
-	SUMMARY_ELEMENT: 'summaryElement',
-	DETAILS_ELEMENT: 'detailsElement',
-};
+import { getRandomId } from '../../utils/get-random-id';
+import {
+	PARAMS_KEY, PARAMS, AccordionElement, AccordionProperties,
+} from './interfaces';
 
 const DESTROYED_TYPES = {
 	MANUAL: 'manual',
@@ -38,10 +20,26 @@ const DEFAULTS = {
 	summarySelector: '[data-role="accordion-summary"]',
 	detailsSelector: '[data-role="accordion-details"]',
 	breakpoint: window.matchMedia('screen'),
+	onDetailsTransitionEnd: () => {},
 	isSingle: false,
 };
 
 export class Accordions {
+	instanceId: string | undefined;
+	openClass: string;
+	accordionSelector: string;
+	itemSelector: string;
+	summarySelector: string;
+	detailsSelector: string;
+	isSingle: boolean;
+	breakpoint: MediaQueryList;
+	parentElement: HTMLElement | Document;
+	elements: AccordionElement[];
+	itemElements: AccordionElement[];
+	isDestroyed: boolean;
+	destroyedBy: string | undefined;
+	onDetailsTransitionEnd: () => void;
+
 	constructor(customParameters = {}) {
 		const parameters = {
 			...DEFAULTS,
@@ -65,6 +63,10 @@ export class Accordions {
 
 		this.isDestroyed = true;
 		this.destroyedBy = undefined;
+
+		this.onDetailsTransitionEnd = parameters.onDetailsTransitionEnd || (() => {});
+
+		this.init();
 	}
 
 	// Instance id
@@ -72,41 +74,46 @@ export class Accordions {
 		this.instanceId = Accordions.generateInstanceId();
 	};
 
-	static generateInstanceId = () => {
-		const instanceId = generateId(INSTANCE_ID_LENGTH);
+	static generateInstanceId = (): string => {
+		const instanceId = getRandomId();
 
-		return Accordions.isInstanceIdUnique(instanceId) ? instanceId : Accordions.generateInstanceId();
+		return this.isInstanceIdUnique(instanceId) ? instanceId : this.generateInstanceId();
 	};
 
-	static isInstanceIdUnique = (instanceId) => !document.querySelector(`[id^="accordion-${instanceId}]"`);
+	static isInstanceIdUnique = (instanceId: string): boolean => !document.querySelector(`[id^="accordion-${instanceId}]"`);
 
 	// Elements ids
-	generateAccordionId = (accordionId) => `accordion-${this.instanceId}-${accordionId}`;
+	generateAccordionId = (accordionId: string | number) => `accordion-${this.instanceId}-${accordionId}`;
 
-	generateItemId = (itemId) => `accordion-item-${this.instanceId}-${itemId}`;
+	generateItemId = (itemId: string | number) => `accordion-item-${this.instanceId}-${itemId}`;
 
-	generateSummaryId = (itemId) => `accordion-summary-${this.instanceId}-${itemId}`;
+	generateSummaryId = (itemId: string | number) => `accordion-summary-${this.instanceId}-${itemId}`;
 
-	generateDetailsId = (itemId) => `accordion-details-${this.instanceId}-${itemId}`;
+	generateDetailsId = (itemId: string | number) => `accordion-details-${this.instanceId}-${itemId}`;
 
-	getItemById = (itemId) => this.itemElements.find((itemElement) => itemElement[PARAMS_KEY][PARAMS.ITEM_ID] === itemId);
+	getItemById = (itemId: string) => this.itemElements
+		.find((itemElement) => itemElement[PARAMS_KEY]?.[PARAMS.ITEM_ID] === itemId);
 
-	getAccordionById = (accordionId) => this.elements.find((accordionElement) => accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID] === accordionId);
+	getAccordionById = (accordionId: string) => this.elements
+		.find((accordionElement) => accordionElement[PARAMS_KEY]?.[PARAMS.ACCORDION_ID] === accordionId);
 
 	// Initialisation
 	initAccordions = () => {
-		this.elements = [...this.parentElement.querySelectorAll(this.accordionSelector)];
+		this.elements = Array.from(this.parentElement.querySelectorAll(this.accordionSelector));
 
 		this.elements.forEach((accordionElement, accordionIndex) => {
 			this.initAccordion(accordionElement, accordionIndex);
 		});
 	};
 
-	initAccordion = (accordionElement, accordionId) => {
+	initAccordion = (accordionElement: AccordionElement, accordionId: number) => {
 		if (accordionElement[PARAMS_KEY]) {
 			return;
 		}
-		const parentItemElement = accordionElement.closest(this.itemSelector);
+		const parentItemElement = accordionElement.closest(this.itemSelector) as AccordionElement;
+		if (!parentItemElement[PARAMS_KEY]) {
+			parentItemElement[PARAMS_KEY] = {};
+		}
 		const parentItemId = parentItemElement && parentItemElement[PARAMS_KEY][PARAMS.ITEM_ID];
 		const isSingle = accordionElement.hasAttribute(ATTRIBUTES.IS_SINGLE)
 			? accordionElement.getAttribute(ATTRIBUTES.IS_SINGLE) === 'true'
@@ -119,10 +126,17 @@ export class Accordions {
 
 		accordionElement.id = this.generateAccordionId(accordionId);
 
-		const itemElements = [...accordionElement.children].filter((element) => element.matches(this.itemSelector));
+		const accordionChildren = Array.from(accordionElement.children) as AccordionElement[];
+
+		const itemElements = accordionChildren
+			.filter((element) => element.matches(this.itemSelector));
 
 		itemElements.forEach((itemElement, itemIndex) => {
 			const itemId = `${accordionId}-${itemIndex}`;
+
+			if (!itemElement[PARAMS_KEY]) {
+				itemElement[PARAMS_KEY] = {};
+			}
 
 			this.initItem({
 				itemElement,
@@ -130,19 +144,19 @@ export class Accordions {
 				accordionId,
 				parentItemId,
 			});
-			accordionElement[PARAMS_KEY][PARAMS.ITEMS_IDS].push(itemId);
+			((accordionElement[PARAMS_KEY] as AccordionProperties)[PARAMS.ITEMS_IDS] as string[]).push(itemId);
 		});
 	};
 
 	initItem = ({
 		itemElement, itemId, accordionId, parentItemId,
-	}) => {
+	}: {itemElement: AccordionElement, itemId: string, accordionId: number, parentItemId?: string}) => {
 		if (itemElement[PARAMS_KEY]) {
 			return;
 		}
 
-		const summaryElement = itemElement.querySelector(this.summarySelector);
-		const detailsElement = itemElement.querySelector(this.detailsSelector);
+		const summaryElement = itemElement.querySelector(this.summarySelector) as AccordionElement ?? undefined;
+		const detailsElement = itemElement.querySelector(this.detailsSelector) as AccordionElement ?? undefined;
 
 		const summaryId = this.generateSummaryId(itemId);
 		const detailsId = this.generateDetailsId(itemId);
@@ -156,7 +170,7 @@ export class Accordions {
 
 		this.itemElements.push(itemElement);
 
-		summaryElement.setAttribute('tabindex', 0);
+		summaryElement.setAttribute('tabindex', '0');
 		summaryElement.setAttribute('id', summaryId);
 		summaryElement.setAttribute('aria-controls', detailsId);
 		summaryElement[PARAMS_KEY] = {};
@@ -173,42 +187,66 @@ export class Accordions {
 	};
 
 	// Destroying
-	destroyAccordion = (accordion) => {
+	destroyAccordion = (accordion: AccordionElement | string) => {
 		const accordionElement = typeof accordion === 'string' ? this.getAccordionById(accordion) : accordion;
 
-		if (!accordionElement[PARAMS_KEY]) {
+		if (!accordionElement || !accordionElement[PARAMS_KEY]) {
 			return;
 		}
 
-		const accordionItemsElements = this.itemElements.filter((itemElement) => itemElement[PARAMS_KEY][PARAMS.ACCORDION_ID] === accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID]);
+		const accordionItemsElements = this.itemElements
+			.filter((itemElement) => {
+				if (!itemElement[PARAMS_KEY] || !accordionElement[PARAMS_KEY]) {
+					return false;
+				}
+				return itemElement[PARAMS_KEY][PARAMS.ACCORDION_ID]
+					=== accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID];
+			});
 
 		accordionItemsElements.forEach((accordionItemElement) => {
 			this.destroyItem(accordionItemElement);
 		});
 
-		this.elements = this.elements.filter((element) => element[PARAMS_KEY][PARAMS.ACCORDION_ID] !== accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID]);
+		this.elements = this.elements
+			.filter((element) => {
+				if (!element[PARAMS_KEY] || !accordionElement[PARAMS_KEY]) {
+					return false;
+				}
+				return element[PARAMS_KEY][PARAMS.ACCORDION_ID]
+					!== accordionElement[PARAMS_KEY][PARAMS.ACCORDION_ID];
+			});
 		delete accordionElement[PARAMS_KEY];
 		accordionElement.removeAttribute('id');
 	};
 
-	destroyItem = (item) => {
+	destroyItem = (item: AccordionElement | string) => {
 		const itemElement = typeof item === 'string' ? this.getItemById(item) : item;
 
-		if (!itemElement[PARAMS_KEY]) {
+		if (!itemElement || !itemElement[PARAMS_KEY]) {
 			return;
 		}
 
-		const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT];
-		const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
+		const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT] as AccordionElement ?? undefined;
+		const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT] as AccordionElement ?? undefined;
 
-		this.itemElements = this.itemElements.filter((itemElement_) => itemElement_[PARAMS_KEY][PARAMS.ITEM_ID] !== itemElement[PARAMS_KEY][PARAMS.ITEM_ID]);
+		this.itemElements = this.itemElements
+			.filter((itemElement_) => {
+				if (!itemElement_[PARAMS_KEY] || !itemElement[PARAMS_KEY]) {
+					return false;
+				}
+				return itemElement_[PARAMS_KEY][PARAMS.ITEM_ID] !== itemElement[PARAMS_KEY][PARAMS.ITEM_ID];
+			});
 		delete itemElement[PARAMS_KEY];
 		itemElement.removeAttribute('id');
 
-		delete summaryElement[PARAMS_KEY];
-		summaryElement.removeAttribute('id');
-		summaryElement.removeAttribute('aria-controls');
-		summaryElement.removeAttribute('aria-expanded');
+		if (summaryElement) {
+			if (summaryElement[PARAMS_KEY]) {
+				delete summaryElement[PARAMS_KEY];
+			}
+			summaryElement.removeAttribute('id');
+			summaryElement.removeAttribute('aria-controls');
+			summaryElement.removeAttribute('aria-expanded');
+		}
 
 		delete detailsElement[PARAMS_KEY];
 		detailsElement.removeAttribute('id');
@@ -219,12 +257,14 @@ export class Accordions {
 	};
 
 	// Event handlers
-	onSummaryClick = (event) => {
+	onSummaryClick = (event: MouseEvent) => {
 		if (!this.breakpoint.matches) {
 			return;
 		}
-		const itemId = event.currentTarget[PARAMS_KEY][PARAMS.ITEM_ID];
-		this.toggle(itemId);
+		const itemId = (event.currentTarget as AccordionElement)[PARAMS_KEY]?.[PARAMS.ITEM_ID];
+		if (itemId) {
+			this.toggle(itemId);
+		}
 	};
 
 	onBreakpointChange = () => {
@@ -260,53 +300,77 @@ export class Accordions {
 		this.destroyedBy = destroyedBy;
 	};
 
-	open = (item) => {
+	open = (item: AccordionElement | string) => {
 		const itemElement = typeof item === 'string' ? this.getItemById(item) : item;
 
-		const accordionElement = this.getAccordionById(itemElement[PARAMS_KEY][PARAMS.ACCORDION_ID]);
+		if (!itemElement || !itemElement[PARAMS_KEY]) {
+			return;
+		}
+
+		const accordionElement = this.getAccordionById(itemElement[PARAMS_KEY]?.[PARAMS.ACCORDION_ID] ?? '');
 		const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
 		const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT];
 
-		if (accordionElement[PARAMS_KEY][PARAMS.IS_SINGLE]) {
+		if (accordionElement?.[PARAMS_KEY]?.[PARAMS.IS_SINGLE]) {
 			this.closeAccordion(accordionElement);
 		}
 
 		itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = true;
 		itemElement.classList.add(this.openClass);
-		summaryElement.setAttribute('aria-expanded', 'true');
-		detailsElement.removeAttribute('inert');
+		summaryElement?.setAttribute('aria-expanded', 'true');
+		detailsElement?.removeAttribute('inert');
 	};
 
-	close = (item) => {
+	close = (item: AccordionElement | string) => {
 		const itemElement = typeof item === 'string' ? this.getItemById(item) : item;
 
-		const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
-		const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT];
+		if (itemElement && !itemElement[PARAMS_KEY]) {
+			itemElement[PARAMS_KEY] = {};
+		}
+
+		const detailsElement = itemElement?.[PARAMS_KEY]?.[PARAMS.DETAILS_ELEMENT];
+		const summaryElement = itemElement?.[PARAMS_KEY]?.[PARAMS.SUMMARY_ELEMENT];
 
 		if (!detailsElement) {
 			return;
 		}
 
-		itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = false;
+		(itemElement[PARAMS_KEY] as AccordionProperties)[PARAMS.IS_OPEN] = false;
 		itemElement.classList.remove(this.openClass);
-		summaryElement.setAttribute('aria-expanded', 'false');
+		summaryElement?.setAttribute('aria-expanded', 'false');
 		detailsElement.setAttribute('inert', '');
 	};
 
-	toggle = (item) => {
+	toggle = (item: AccordionElement | string) => {
 		const itemElement = typeof item === 'string' ? this.getItemById(item) : item;
 
-		if (itemElement[PARAMS_KEY][PARAMS.IS_OPEN]) {
+		if (itemElement && !itemElement[PARAMS_KEY]) {
+			itemElement[PARAMS_KEY] = {};
+		}
+
+		if (!itemElement) {
+			return;
+		}
+
+		if ((itemElement[PARAMS_KEY] as AccordionProperties)[PARAMS.IS_OPEN]) {
 			this.close(itemElement);
 		} else {
 			this.open(itemElement);
 		}
 	};
 
-	closeAccordion = (accordion) => {
+	closeAccordion = (accordion: AccordionElement | string) => {
 		const accordionElement = typeof accordion === 'string' ? this.getAccordionById(accordion) : accordion;
 
-		const itemsIds = accordionElement[PARAMS_KEY][PARAMS.ITEMS_IDS];
+		if (!accordionElement) {
+			return;
+		}
+
+		if (!accordionElement[PARAMS_KEY]) {
+			accordionElement[PARAMS_KEY] = {};
+		}
+
+		const itemsIds = accordionElement[PARAMS_KEY][PARAMS.ITEMS_IDS] ?? [];
 
 		itemsIds.forEach((itemId) => {
 			this.close(itemId);
