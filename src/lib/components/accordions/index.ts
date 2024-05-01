@@ -135,10 +135,6 @@ export class Accordions {
 		itemElements.forEach((itemElement, itemIndex) => {
 			const itemId = `${accordionId}-${itemIndex}`;
 
-			if (!itemElement[PARAMS_KEY]) {
-				itemElement[PARAMS_KEY] = {};
-			}
-
 			this.initItem({
 				itemElement,
 				itemId,
@@ -151,7 +147,7 @@ export class Accordions {
 
 	initItem = ({
 		itemElement, itemId, accordionId, parentItemId,
-	}: {itemElement: AccordionElement, itemId: string, accordionId: number, parentItemId?: string}) => {
+	}: { itemElement: AccordionElement, itemId: string, accordionId: number, parentItemId?: string }) => {
 		if (itemElement[PARAMS_KEY]) {
 			return;
 		}
