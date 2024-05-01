@@ -1,0 +1,16 @@
+body {
+  display: flex;
+  flex-flow: column;
+  min-height: 200vh;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dynamic-element {
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.dynamic-element.js--unactive {
+  opacity: 0;
+}
