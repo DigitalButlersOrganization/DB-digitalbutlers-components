@@ -1,7 +1,8 @@
 import { CLASSES } from '../../../constants/classes';
 import { CUSTOM_CLASSES } from './custom-classes';
 import { KEYS } from '../../../constants/keys';
-import { getChildrenArray, getRandomId } from '../../index';
+import { getChildrenArray } from '../../utils/get-children-array';
+import { getRandomId } from '../../utils/get-random-id';
 import './index.scss';
 import {
 	AutoPlayModel, EventDetailsModel, EventsModel, OrientationType, TabsConfigModel, TriggerEvents,

@@ -1,19 +1,25 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
-    "moduleResolution": "Node",
-    "strict": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "noEmit": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "skipLibCheck": true
-  },
-  "include": ["src"]
+	"compilerOptions": {
+		"target": "ESNext",
+		"useDefineForClassFields": true,
+		"module": "ESNext",
+		"lib": ["ESNext", "DOM"],
+		"moduleResolution": "Node",
+		"strict": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"noEmit": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"skipLibCheck": true,
+		//
+		"importHelpers": true, // Позволяет использовать вспомогательные функции из tslib
+		"allowSyntheticDefaultImports": true, // Разрешает импорт из модулей без дефолтного экспорта
+		"forceConsistentCasingInFileNames": true, // Требует согласованности регистра в именах файлов
+		"outDir": "./dist", // Указывает папку для вывода файлов (используется только для справки, Vite управляет этим сам)
+		"baseUrl": "." // Базовый путь для разрешения немодульных путей
+	},
+	"include": ["src/**/*"]
 }

@@ -1,15 +1,14 @@
 {
 	"name": "@digital-butlers/components",
-	"version": "0.0.9",
+	"version": "0.0.17",
 	"type": "module",
 	"description": "A convenient library with various components for everyday tasks",
 	"keywords": [
-		"pagination",
+		"accordions",
 		"tabs"
 	],
 	"private": false,
-	"main": "./dist/digitalbutlers-components.umd.cjs",
-	"module": "./dist/digitalbutlers-components.js",
+	"main": "./dist/index.js",
 	"homepage": "https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components#readme",
 	"website": "https://www.digitalbutlers.team/",
 	"bugs": {
@@ -18,10 +17,9 @@
 	},
 	"exports": {
 		".": {
-			"import": "./dist/digitalbutlers-components.js",
-			"require": "./dist/digitalbutlers-components.umd.cjs"
-		},
-		"./style": "./dist/style.css"
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		}
 	},
 	"scripts": {
 		"dev": "vite",
@@ -49,5 +47,9 @@
 		"typescript": "^4.9.4",
 		"vite": "^3.2.5",
 		"vite-plugin-eslint": "^1.8.1"
+	},
+	"dependencies": {
+		"@rollup/plugin-typescript": "^11.1.6",
+		"path": "^0.12.7"
 	}
 }
