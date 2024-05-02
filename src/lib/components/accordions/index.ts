@@ -320,10 +320,6 @@ export class Accordions {
 		itemElement.classList.add(this.openClass);
 		summaryElement?.setAttribute('aria-expanded', 'true');
 		detailsElement?.removeAttribute('inert');
-
-		// if (this.on.open) {
-		// 	this.on.open(this);
-		// }
 	};
 
 	close = (item: AccordionElement | string) => {
@@ -344,10 +340,6 @@ export class Accordions {
 		itemElement.classList.remove(this.openClass);
 		summaryElement?.setAttribute('aria-expanded', 'false');
 		detailsElement.setAttribute('inert', '');
-
-		// if (this.on.close) {
-		// 	this.on.close(this);
-		// }
 	};
 
 	toggle = (item: AccordionElement | string) => {
