@@ -1,6 +1,8 @@
 import { getRandomId } from '../../utils/get-random-id';
 import {
 	PARAMS_KEY, PARAMS, AccordionElement, AccordionProperties,
+	AccordionCallbacks,
+	AccordionCallback,
 } from './interfaces';
 
 const DESTROYED_TYPES = {
@@ -20,8 +22,8 @@ const DEFAULTS = {
 	summarySelector: '[data-role="accordion-summary"]',
 	detailsSelector: '[data-role="accordion-details"]',
 	breakpoint: window.matchMedia('screen'),
-	onDetailsTransitionEnd: () => {},
 	isSingle: false,
+	on: {},
 };
 
 export class Accordions {
@@ -38,7 +40,7 @@ export class Accordions {
 	itemElements: AccordionElement[];
 	isDestroyed: boolean;
 	destroyedBy: string | undefined;
-	onDetailsTransitionEnd: () => void;
+	on: AccordionCallbacks;
 
 	constructor(customParameters = {}) {
 		const parameters = {
@@ -64,7 +66,7 @@ export class Accordions {
 		this.isDestroyed = true;
 		this.destroyedBy = undefined;
 
-		this.onDetailsTransitionEnd = parameters.onDetailsTransitionEnd || (() => {});
+		this.on = parameters.on;
 
 		this.init();
 	}
@@ -177,8 +179,10 @@ export class Accordions {
 		detailsElement.setAttribute('aria-labelledby', summaryId);
 		detailsElement[PARAMS_KEY] = {};
 		detailsElement[PARAMS_KEY][PARAMS.ITEM_ID] = itemId;
-		if (parentItemId) {
-			detailsElement.addEventListener('transitionend', this.onDetailsTransitionEnd);
+		if (parentItemId && this.on.detailsTransitionEnd) {
+			detailsElement.addEventListener('transitionend', () => {
+				(this.on.detailsTransitionEnd as AccordionCallback)(this);
+			});
 		}
 		summaryElement.addEventListener('click', this.onSummaryClick);
 	};
@@ -316,6 +320,10 @@ export class Accordions {
 		itemElement.classList.add(this.openClass);
 		summaryElement?.setAttribute('aria-expanded', 'true');
 		detailsElement?.removeAttribute('inert');
+
+		// if (this.on.open) {
+		// 	this.on.open(this);
+		// }
 	};
 
 	close = (item: AccordionElement | string) => {
@@ -336,6 +344,10 @@ export class Accordions {
 		itemElement.classList.remove(this.openClass);
 		summaryElement?.setAttribute('aria-expanded', 'false');
 		detailsElement.setAttribute('inert', '');
+
+		// if (this.on.close) {
+		// 	this.on.close(this);
+		// }
 	};
 
 	toggle = (item: AccordionElement | string) => {
@@ -353,6 +365,10 @@ export class Accordions {
 			this.close(itemElement);
 		} else {
 			this.open(itemElement);
+		}
+
+		if (this.on.toggle) {
+			this.on.toggle(this);
 		}
 	};
 

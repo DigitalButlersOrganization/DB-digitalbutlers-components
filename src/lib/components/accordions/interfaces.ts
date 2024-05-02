@@ -1,4 +1,7 @@
 /* eslint-disable no-unused-vars */
+
+import { Accordions } from '.';
+
 /* eslint-disable no-shadow */
 export const PARAMS_KEY = '_accordion';
 
@@ -21,7 +24,14 @@ export interface AccordionProperties {
   [PARAMS.SUMMARY_ELEMENT]?: HTMLElement
   [PARAMS.DETAILS_ELEMENT]?: HTMLElement
 }
-
 export interface AccordionElement extends HTMLElement {
   [PARAMS_KEY]?: AccordionProperties
 }
+
+export type AccordionCallback = (self: Accordions) => void
+
+export interface AccordionCallbacks {
+  toggle?: AccordionCallback,
+  detailsTransitionEnd?: AccordionCallback
+}
+
