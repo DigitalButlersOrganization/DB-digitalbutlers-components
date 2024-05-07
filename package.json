@@ -1,15 +1,16 @@
 {
   "name": "@digital-butlers/components",
-  "version": "0.0.17",
+  "version": "0.2.0",
   "type": "module",
   "description": "A convenient library with various components for everyday tasks",
   "keywords": [
     "pagination",
-    "tabs"
+    "tabs",
+    "accordions"
   ],
   "private": false,
-  "main": "./dist/digitalbutlers-components.umd.cjs",
-  "module": "./dist/digitalbutlers-components.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "homepage": "https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components#readme",
   "website": "https://www.digitalbutlers.team/",
   "bugs": {
@@ -29,7 +30,7 @@
     "dev": "vite --open",
     "build": "tsc && vite build && node build-configuration.js",
     "preview": "vite preview",
-    "post": "npm publish --access public"
+    "post": "npm run build && npm publish --access public"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.46.1",

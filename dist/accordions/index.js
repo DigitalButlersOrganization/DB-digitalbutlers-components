@@ -32,9 +32,8 @@ const DEFAULTS = {
   summarySelector: '[data-role="accordion-summary"]',
   detailsSelector: '[data-role="accordion-details"]',
   breakpoint: window.matchMedia("screen"),
-  onDetailsTransitionEnd: () => {
-  },
-  isSingle: false
+  isSingle: false,
+  on: {}
 };
 const _Accordions = class {
   constructor(customParameters = {}) {
@@ -51,7 +50,7 @@ const _Accordions = class {
     __publicField(this, "itemElements");
     __publicField(this, "isDestroyed");
     __publicField(this, "destroyedBy");
-    __publicField(this, "onDetailsTransitionEnd");
+    __publicField(this, "on");
     __publicField(this, "updateInstanceId", () => {
       this.instanceId = _Accordions.generateInstanceId();
     });
@@ -93,9 +92,6 @@ const _Accordions = class {
       const itemElements = accordionChildren.filter((element) => element.matches(this.itemSelector));
       itemElements.forEach((itemElement, itemIndex) => {
         const itemId = `${accordionId}-${itemIndex}`;
-        if (!itemElement[PARAMS_KEY]) {
-          itemElement[PARAMS_KEY] = {};
-        }
         this.initItem({
           itemElement,
           itemId,
@@ -130,8 +126,10 @@ const _Accordions = class {
       detailsElement.setAttribute("aria-labelledby", summaryId);
       detailsElement[PARAMS_KEY] = {};
       detailsElement[PARAMS_KEY][PARAMS.ITEM_ID] = itemId;
-      if (parentItemId) {
-        detailsElement.addEventListener("transitionend", this.onDetailsTransitionEnd);
+      if (parentItemId && this.on.detailsTransitionEnd) {
+        detailsElement.addEventListener("transitionend", () => {
+          this.on.detailsTransitionEnd(this);
+        });
       }
       summaryElement.addEventListener("click", this.onSummaryClick);
     });
@@ -269,6 +267,9 @@ const _Accordions = class {
       } else {
         this.open(itemElement);
       }
+      if (this.on.toggle) {
+        this.on.toggle(this);
+      }
     });
     __publicField(this, "closeAccordion", (accordion) => {
       var _a;
@@ -306,8 +307,7 @@ const _Accordions = class {
     this.itemElements = [];
     this.isDestroyed = true;
     this.destroyedBy = void 0;
-    this.onDetailsTransitionEnd = parameters.onDetailsTransitionEnd || (() => {
-    });
+    this.on = parameters.on;
     this.init();
   }
 };

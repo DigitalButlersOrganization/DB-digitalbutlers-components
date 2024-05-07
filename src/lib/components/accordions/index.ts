@@ -1,7 +1,9 @@
 import { getRandomId } from '../../utils/get-random-id';
 import {
 	PARAMS_KEY, PARAMS, AccordionElement, AccordionProperties,
-} from './custom-constants/interfaces';
+	AccordionCallbacks,
+	AccordionCallback,
+} from './interfaces';
 
 const DESTROYED_TYPES = {
 	MANUAL: 'manual',
@@ -20,8 +22,8 @@ const DEFAULTS = {
 	summarySelector: '[data-role="accordion-summary"]',
 	detailsSelector: '[data-role="accordion-details"]',
 	breakpoint: window.matchMedia('screen'),
-	onDetailsTransitionEnd: () => {},
 	isSingle: false,
+	on: {},
 };
 
 export class Accordions {
@@ -38,7 +40,7 @@ export class Accordions {
 	itemElements: AccordionElement[];
 	isDestroyed: boolean;
 	destroyedBy: string | undefined;
-	onDetailsTransitionEnd: () => void;
+	on: AccordionCallbacks;
 
 	constructor(customParameters = {}) {
 		const parameters = {
@@ -64,7 +66,7 @@ export class Accordions {
 		this.isDestroyed = true;
 		this.destroyedBy = undefined;
 
-		this.onDetailsTransitionEnd = parameters.onDetailsTransitionEnd || (() => {});
+		this.on = parameters.on;
 
 		this.init();
 	}
@@ -135,10 +137,6 @@ export class Accordions {
 		itemElements.forEach((itemElement, itemIndex) => {
 			const itemId = `${accordionId}-${itemIndex}`;
 
-			if (!itemElement[PARAMS_KEY]) {
-				itemElement[PARAMS_KEY] = {};
-			}
-
 			this.initItem({
 				itemElement,
 				itemId,
@@ -151,7 +149,7 @@ export class Accordions {
 
 	initItem = ({
 		itemElement, itemId, accordionId, parentItemId,
-	}: {itemElement: AccordionElement, itemId: string, accordionId: number, parentItemId?: string}) => {
+	}: { itemElement: AccordionElement, itemId: string, accordionId: number, parentItemId?: string }) => {
 		if (itemElement[PARAMS_KEY]) {
 			return;
 		}
@@ -181,8 +179,10 @@ export class Accordions {
 		detailsElement.setAttribute('aria-labelledby', summaryId);
 		detailsElement[PARAMS_KEY] = {};
 		detailsElement[PARAMS_KEY][PARAMS.ITEM_ID] = itemId;
-		if (parentItemId) {
-			detailsElement.addEventListener('transitionend', this.onDetailsTransitionEnd);
+		if (parentItemId && this.on.detailsTransitionEnd) {
+			detailsElement.addEventListener('transitionend', () => {
+				(this.on.detailsTransitionEnd as AccordionCallback)(this);
+			});
 		}
 		summaryElement.addEventListener('click', this.onSummaryClick);
 	};
@@ -357,6 +357,10 @@ export class Accordions {
 			this.close(itemElement);
 		} else {
 			this.open(itemElement);
+		}
+
+		if (this.on.toggle) {
+			this.on.toggle(this);
 		}
 	};
 
