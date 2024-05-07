@@ -1,4 +1,4 @@
-import { ClassesModel } from '../../../constants/classes';
+import { ClassesModel } from '../../constants/classes';
 
 export const CUSTOM_CLASSES: ClassesModel = {
 	TAB: 'js--tab',

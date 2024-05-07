@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { Accordions } from '.';
+import { Accordions } from './index';
 
 /* eslint-disable no-shadow */
 export const PARAMS_KEY = '_accordion';
