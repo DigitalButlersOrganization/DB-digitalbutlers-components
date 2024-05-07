@@ -1,56 +1,59 @@
 {
-	"name": "@digital-butlers/components",
-	"version": "0.0.17",
-	"type": "module",
-	"description": "A convenient library with various components for everyday tasks",
-	"keywords": [
-		"pagination",
-		"tabs"
-	],
-	"private": false,
-	"main": "./dist/digitalbutlers-components.umd.cjs",
-	"module": "./dist/digitalbutlers-components.js",
-	"homepage": "https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components#readme",
-	"website": "https://www.digitalbutlers.team/",
-	"bugs": {
-		"url": "https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/issues",
-		"email": "digitalbutlers.team@gmail.com"
-	},
-	"exports": {
-		".": {
-			"import": "./dist/digitalbutlers-components.js",
-			"require": "./dist/digitalbutlers-components.umd.cjs"
-		},
-		"./style": "./dist/style.css"
-	},
-	"scripts": {
-		"dev": "vite --open",
-		"build": "tsc && vite build",
-		"preview": "vite preview",
-		"post": "npm publish --access public"
-	},
-	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^5.46.1",
-		"@typescript-eslint/parser": "^5.46.1",
-		"eslint": "^8.29.0",
-		"eslint-config-airbnb-base": "^15.0.0",
-		"eslint-config-airbnb-typescript": "^17.0.0",
-		"eslint-plugin-import": "^2.26.0",
-		"eslint-plugin-unicorn": "^42.0.0",
-		"postcss": "^8.4.20",
-		"postcss-scss": "^4.0.6",
-		"sass": "^1.56.2",
-		"stylelint": "^14.16.0",
-		"stylelint-color-format": "^1.1.0",
-		"stylelint-config-idiomatic-order": "^8.1.0",
-		"stylelint-config-recommended": "^7.0.0",
-		"stylelint-scss": "^4.3.0",
-		"stylelint-use-logical-spec": "^4.1.0",
-		"typescript": "^4.9.4",
-		"vite": "^3.2.5",
-		"vite-plugin-eslint": "^1.8.1"
-	},
-	"dependencies": {
-		"prettier": "^3.2.5"
-	}
+  "name": "@digital-butlers/components",
+  "version": "0.0.17",
+  "type": "module",
+  "description": "A convenient library with various components for everyday tasks",
+  "keywords": [
+    "pagination",
+    "tabs"
+  ],
+  "private": false,
+  "main": "./dist/digitalbutlers-components.umd.cjs",
+  "module": "./dist/digitalbutlers-components.js",
+  "homepage": "https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components#readme",
+  "website": "https://www.digitalbutlers.team/",
+  "bugs": {
+    "url": "https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/issues",
+    "email": "digitalbutlers.team@gmail.com"
+  },
+  "exports": {
+    ".": "./dist/index.js",
+    "./accordions": "./dist/accordions/index.js",
+    "./accordions/index.css": "./dist/accordions/index.css",
+    "./pagination": "./dist/pagination/index.js",
+    "./pagination/index.css": "./dist/pagination/index.css",
+    "./tabs": "./dist/tabs/index.js",
+    "./tabs/index.css": "./dist/tabs/index.css"
+  },
+  "scripts": {
+    "dev": "vite --open",
+    "build": "tsc && vite build && node build-configuration.js",
+    "preview": "vite preview",
+    "post": "npm publish --access public"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "@typescript-eslint/parser": "^5.46.1",
+    "eslint": "^8.29.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-unicorn": "^42.0.0",
+    "postcss": "^8.4.20",
+    "postcss-scss": "^4.0.6",
+    "sass": "^1.56.2",
+    "stylelint": "^14.16.0",
+    "stylelint-color-format": "^1.1.0",
+    "stylelint-config-idiomatic-order": "^8.1.0",
+    "stylelint-config-recommended": "^7.0.0",
+    "stylelint-scss": "^4.3.0",
+    "stylelint-use-logical-spec": "^4.1.0",
+    "typescript": "^4.9.4",
+    "vite-plugin-eslint": "^1.8.1"
+  },
+  "dependencies": {
+    "@rollup/plugin-typescript": "^11.1.6",
+    "prettier": "^3.2.5",
+    "vite": "^3.2.5"
+  }
 }

@@ -1,7 +1,7 @@
 import { getRandomId } from '../../utils/get-random-id';
 import {
 	PARAMS_KEY, PARAMS, AccordionElement, AccordionProperties,
-} from './interfaces';
+} from './custom-constants/interfaces';
 
 const DESTROYED_TYPES = {
 	MANUAL: 'manual',
