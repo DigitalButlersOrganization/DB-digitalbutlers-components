@@ -1,4 +1,3 @@
-"use strict";
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => {
@@ -24,12 +23,8 @@ var __privateSet = (obj, member, value, setter) => {
   return value;
 };
 var _tabpanelsListSelector, _tabbuttonsListSelector, _deletableTabs, _autoplay, _autoplayTimeout, _listenersAdded, _equalHeight, _destroyed, _inited, _defaultRoles, _defaultSelectors;
-Object.defineProperties(exports, { __esModule: { value: true }, [Symbol.toStringTag]: { value: "Module" } });
-const CLASSES = {
-  ACTIVE: "js--active",
-  UNACTIVE: "js--unactive",
-  VISIBLE: "js--visible"
-};
+import { C as CLASSES } from "../assets/f962fdbe.js";
+import { g as getRandomId } from "../assets/7d6eccdb.js";
 const CUSTOM_CLASSES = {
   TAB: "js--tab",
   PANEL: "js--panel",
@@ -52,17 +47,6 @@ const KEYS = {
   SPACE: " "
 };
 const getChildrenArray = (element) => element ? Array.prototype.slice.call(element.children) : [];
-const getRandomId = (length = 5) => {
-  let result = "";
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const charactersLength = characters.length;
-  let counter = 0;
-  while (counter < length) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    counter += 1;
-  }
-  return result;
-};
 const index = "";
 var TriggerEvents;
 (function(TriggerEvents2) {
@@ -454,4 +438,6 @@ _destroyed = new WeakMap();
 _inited = new WeakMap();
 _defaultRoles = new WeakMap();
 _defaultSelectors = new WeakMap();
-exports.Tabs = Tabs;
+export {
+  Tabs
+};

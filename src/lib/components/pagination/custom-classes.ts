@@ -1,4 +1,4 @@
-import { ClassesModel } from '../../../constants/classes';
+import { ClassesModel } from '../../constants/classes';
 
 const PREFIX = 'js--';
 
