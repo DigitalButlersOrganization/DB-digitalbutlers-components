@@ -18,7 +18,6 @@
     "email": "digitalbutlers.team@gmail.com"
   },
   "exports": {
-    ".": "./dist/index.js",
     "./accordions": "./dist/accordions/index.js",
     "./accordions/index.css": "./dist/accordions/index.css",
     "./pagination": "./dist/pagination/index.js",
