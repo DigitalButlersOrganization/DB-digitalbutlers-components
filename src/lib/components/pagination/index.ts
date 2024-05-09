@@ -1,8 +1,5 @@
 import { CLASSES } from '../../constants/classes';
 import { CUSTOM_CLASSES } from './custom-classes';
-// import { KEYS } from '../../../constants/keys';
-// import { getChildrenArray, getRandomId } from '../../index';
-// import './index.scss';
 
 import {
 	PaginationConfigModel, addButtonsPropertiesModel, hiddenButtonsConfigModel, pageMapItemModel,

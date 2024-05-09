@@ -16,6 +16,7 @@ var PARAMS;
   PARAMS2["SUMMARY_ELEMENT"] = "summaryElement";
   PARAMS2["DETAILS_ELEMENT"] = "detailsElement";
 })(PARAMS || (PARAMS = {}));
+const index = "";
 const DESTROYED_TYPES = {
   MANUAL: "manual",
   BREAKPOINT: "breakpoint"

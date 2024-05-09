@@ -4,6 +4,7 @@ import {
 	AccordionCallbacks,
 	AccordionCallback,
 } from './interfaces';
+import './index.scss';
 
 const DESTROYED_TYPES = {
 	MANUAL: 'manual',
