@@ -2,7 +2,7 @@
 
 ## Examples of components
 
-[You can view examples of components here](https://webflow-start-kit.webflow.io/)
+[You can view examples of components here](https://digitalbutlers-components.webflow.io/)
 
 ## Documentation
 
