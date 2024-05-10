@@ -2,10 +2,16 @@
 	display: grid;
 	grid-template-rows: max-content 0fr;
 	transition: grid 0.5s ease;
+
+	[data-role="accordion-summary"] {
+		cursor: pointer;
+	}
+
 	&.js--open {
 		grid-template-rows: max-content 1fr;
-}
-[data-role="accordion-details"]{
-	overflow: hidden;
-}
+	}
+
+	[data-role="accordion-details"] {
+		overflow: hidden;
+	}
 }

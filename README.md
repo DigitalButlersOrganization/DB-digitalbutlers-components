@@ -7,6 +7,7 @@
 ## Documentation
 
 [Documentation for tabs](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/tabs/README.md)
+[Documentation for accordions](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md)
 
 ## Usage
 
@@ -23,11 +24,11 @@ or
 pnpm add @digital-butlers/components
 ```
 
-### Import a class and create an instance of tabs
+### Import a class and create an instance of TABS
 
 
 ```javascript
-// for tabs
+
 import { Tabs } from '@digital-butlers/components/tabs';
 
 const SELECTORS = {
@@ -56,4 +57,19 @@ const SELECTORS = {
 		},
 	},
 });
+```
+### Import a class and create an instance of ACCORDIONS:
+
+
+```javascript
+
+import { Accordions } from '@digital-butlers/components/accordions';
+
+const componentElement = document.querySelector('[data-component-id="accordions"]'); //
+
+const accordions = new Accordions({
+	parentElement: componentElement, // Any node that is the parent of an accordion. It is advisable to specify the nearest parent
+	isSingle: true,
+});
+accordions.init();
 ```
