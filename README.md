@@ -7,6 +7,7 @@
 ## Documentation
 
 [Documentation for tabs](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/tabs/README.md)
+
 [Documentation for accordions](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md)
 
 ## Usage
@@ -26,6 +27,7 @@ pnpm add @digital-butlers/components
 
 ### Import a class and create an instance of TABS
 
+<hr>
 
 ```javascript
 
@@ -60,6 +62,7 @@ const SELECTORS = {
 ```
 ### Import a class and create an instance of ACCORDIONS:
 
+<hr>
 
 ```javascript
 
