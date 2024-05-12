@@ -1,14 +1,4 @@
-    openClass: 'js--open',
-    parentElement: document,
-    accordionSelector: '[data-role="accordion"]',
-    itemSelector: '[data-role="accordion-item"]',
-    summarySelector: '[data-role="accordion-summary"]',
-    detailsSelector: '[data-role="accordion-details"]',
-    breakpoint: window.matchMedia('screen'),
-    isSingle: false,
-    on: {},
-
-# Tabs
+# Accordions
 
 ## Usage
 
@@ -49,3 +39,48 @@ const accordions = new Accordions({
 });
 accordions.init();
 ```
+
+## API
+
+### Config Properties
+
+### `openClass`
+*Type:* `string`
+*Default:* `'js--open'`
+*Description:* The class that will be added to the active accordion item
+
+### `parentElement`
+*Type:* `HTMLElement | Document`
+*Default:* `document`
+*Description:* Any node that is the parent of an accordion. It is advisable to specify the nearest parent
+
+### `accordionSelector`
+*Type:* `string`
+*Default:* `'[data-role="accordion"]'`
+*Description:* Css selector for wrapping all accordion elements
+
+### `itemSelector`
+*Type:* `string`
+*Default:* `'[data-role="accordion-item"]'`
+*Description:* Css selector for creating a separate element inside the accordion, which will include "summary" and "details"
+
+### `summarySelector`
+*Type:* `string`
+*Default:* `'[data-role="accordion-summary"]'`
+*Description:* Css selector for creating a "summary" inside a separate accordion item
+
+### `detailsSelector`
+*Type:* `string`
+*Default:* `'[data-role="accordion-details"]'`
+*Description:* Css selector for creating a "details" inside a separate accordion item
+
+### `breakpoint`
+*Type:* `MediaQueryList`
+*Default:* `window.matchMedia('screen')`
+*Description:* prevents changing the accordions if the breakpoint does not match the window.matchmedia
+
+### `isSingle`
+*Type:* `AccordionCallbacks`
+*Default:* `false`
+*Description:* If set to 'true', then only one active accordion element can be turned on at a time
+

@@ -1,6 +1,6 @@
 {
   "name": "@digital-butlers/components",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "type": "module",
   "description": "A convenient library with various components for everyday tasks",
   "keywords": [
@@ -8,7 +8,7 @@
     "tabs",
     "accordions"
   ],
-  "private": false,
+
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "homepage": "https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components#readme",
@@ -25,12 +25,18 @@
     "./tabs": "./dist/tabs/index.js",
     "./tabs/index.css": "./dist/tabs/index.css"
   },
-  "scripts": {
+	"scripts": {
     "dev": "vite --open",
     "build": "tsc && vite build && node build-configuration.js",
     "preview": "vite preview",
     "post": "npm run build && npm publish --access public"
   },
+	"repository": {
+    "type": "git",
+    "url": "https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components"
+  },
+	"license": "MIT",
+  "private": false,
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",

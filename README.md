@@ -29,6 +29,7 @@ pnpm add @digital-butlers/components
 
 <hr>
 
+
 ```javascript
 
 import { Tabs } from '@digital-butlers/components/tabs';
@@ -49,7 +50,6 @@ const SELECTORS = {
 	},
 	triggerEvent: 'mouseover',
 	matchMediaRule: '(min-width: 600px)',
-	// equalHeight: true,
 	autoplay: {
 		delay: 0,
 	},
@@ -64,6 +64,7 @@ const SELECTORS = {
 
 <hr>
 
+
 ```javascript
 
 import { Accordions } from '@digital-butlers/components/accordions';
@@ -72,7 +73,12 @@ const componentElement = document.querySelector('[data-component-id="accordions"
 
 const accordions = new Accordions({
 	parentElement: componentElement, // Any node that is the parent of an accordion. It is advisable to specify the nearest parent
-	isSingle: true,
+	isSingle: true, // If set to 'true', then only one active accordion element can be turned on at a time
 });
 accordions.init();
 ```
+
+You can see more class parameters in the [documentation](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md)
+
+<hr>
+
