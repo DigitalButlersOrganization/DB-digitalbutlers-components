@@ -3,6 +3,9 @@
   grid-template-rows: max-content 0fr;
   transition: grid 0.5s ease;
 }
+[data-role=accordion-item] [data-role=accordion-summary] {
+  cursor: pointer;
+}
 [data-role=accordion-item].js--open {
   grid-template-rows: max-content 1fr;
 }
