@@ -1,19 +1,20 @@
 # Digitalbutlers-components
+<div style="display: flex">
 
-## Examples of components
+## Examples of components <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/arrow-down.svg" width="25" height="25"/>
+</div>
 
 [You can view examples of components here](https://digitalbutlers-components.webflow.io/)
 
-## Documentation
+## Documentation <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/arrow-down.svg" width="25" height="25"/>
 
 [Documentation for tabs](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/tabs/README.md)
 
 [Documentation for accordions](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md)
 
-## Usage
+## Usage <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/arrow-down.svg" width="25" height="25"/>
 
 ### Install library
-
 
 ```
 npm install @digital-butlers/components
@@ -60,6 +61,8 @@ const SELECTORS = {
 	},
 });
 ```
+#### You can see more class parameters in the [documentation](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/tabs/README.md) <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/exclamation-mark.svg" width="25" height="25"/>
+
 ### Import a class and create an instance of ACCORDIONS:
 
 <hr>
@@ -78,7 +81,8 @@ const accordions = new Accordions({
 accordions.init();
 ```
 
-You can see more class parameters in the [documentation](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md)
+#### You can see more class parameters in the [documentation](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md) <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/exclamation-mark.svg" width="25" height="25"/>
+
 
 <hr>
 
