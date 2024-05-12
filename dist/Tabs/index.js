@@ -25,16 +25,6 @@ var __privateSet = (obj, member, value, setter) => {
 var _tabpanelsListSelector, _tabbuttonsListSelector, _deletableTabs, _autoplay, _autoplayTimeout, _listenersAdded, _equalHeight, _destroyed, _inited, _defaultRoles, _defaultSelectors;
 import { C as CLASSES } from "../assets/f962fdbe.js";
 import { g as getRandomId } from "../assets/7d6eccdb.js";
-const CUSTOM_CLASSES = {
-  TAB: "js--tab",
-  PANEL: "js--panel",
-  TABS_WRAPPER: "js--tabs-wrapper",
-  TAB_LIST: "js--tab-list",
-  PANEL_LIST: "js--panel-list",
-  ANIMATED_FADE: "js--animated-fade",
-  ANIMATED_OPACITY: "js--animated-opacity",
-  ANIMATED_SLIDE: "js--animated-slide"
-};
 const KEYS = {
   END: "End",
   HOME: "Home",
@@ -45,6 +35,16 @@ const KEYS = {
   DELETE: "Delete",
   ENTER: "Enter",
   SPACE: " "
+};
+const CUSTOM_CLASSES = {
+  TAB: "js--tab",
+  PANEL: "js--panel",
+  TABS_WRAPPER: "js--tabs-wrapper",
+  TAB_LIST: "js--tab-list",
+  PANEL_LIST: "js--panel-list",
+  ANIMATED_FADE: "js--animated-fade",
+  ANIMATED_OPACITY: "js--animated-opacity",
+  ANIMATED_SLIDE: "js--animated-slide"
 };
 const getChildrenArray = (element) => element ? Array.prototype.slice.call(element.children) : [];
 const index = "";

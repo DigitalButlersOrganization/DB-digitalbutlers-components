@@ -1,4 +1,4 @@
-import { CLASSES } from '../../constants/classes';
+import { CLASSES } from '../../constants';
 import { CUSTOM_CLASSES } from './custom-classes';
 
 import {

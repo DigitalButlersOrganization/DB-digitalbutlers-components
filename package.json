@@ -1,6 +1,6 @@
 {
   "name": "@digital-butlers/components",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "type": "module",
   "description": "A convenient library with various components for everyday tasks",
   "keywords": [
@@ -17,7 +17,7 @@
     "email": "digitalbutlers.team@gmail.com"
   },
   "exports": {
-    "./": "./index.js",
+    ".": "./index.js",
     "./accordions": "././dist/accordions/index.js",
     "./accordions/index.css": "./dist/accordions/index.css",
     "./pagination": "././dist/pagination/index.js",
@@ -57,6 +57,7 @@
     "vite-plugin-eslint": "^1.8.1"
   },
   "dependencies": {
+    "rollup-plugin-smart-asset": "^2.1.2",
     "@rollup/plugin-typescript": "^11.1.6",
     "prettier": "^3.2.5",
     "vite": "^3.2.5"
