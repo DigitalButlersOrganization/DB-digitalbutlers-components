@@ -1,6 +1,6 @@
 {
   "name": "@digital-butlers/components",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "type": "module",
   "description": "A convenient library with various components for everyday tasks",
   "keywords": [
@@ -20,6 +20,7 @@
     ".": "./index.js",
     "./accordions": "././dist/accordions/index.js",
     "./accordions/index.css": "./dist/accordions/index.css",
+    "./marquee": "././dist/marquee/index.js",
     "./pagination": "././dist/pagination/index.js",
     "./tabs": "././dist/tabs/index.js",
     "./tabs/index.css": "./dist/tabs/index.css"
