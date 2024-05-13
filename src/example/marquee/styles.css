@@ -1,0 +1,65 @@
+
+@keyframes movingLine {
+	0% {
+    transform: translateX(0);
+}
+100% {
+    transform: translateX(-50%);
+}
+}
+[data-marquee-role="parent"]{
+	overflow: hidden;
+}
+[data-marquee-role="moving-line"]{
+	animation-play-state: running;
+	animation-iteration-count: infinite;
+	animation-duration: 10s;
+	animation-timing-function: linear;
+	animation-name: movingLine;
+	width: max-content;
+}
+[data-marquee-role="list"]{
+	display: flex;
+	gap: 0;
+}
+
+/*  */
+body{
+	background-color: #ccc;
+	margin: 0;
+	padding: 0;
+}
+.section{
+	width: 100%;
+}
+.container{
+	width: 100%;
+	margin: 0 auto;
+	max-width: 1440px;
+	padding: 0 2rem;
+}
+.marquee-parent{
+	width: 100%;
+}
+.card-wrapper{
+	padding-right: 1rem;
+}
+.card{
+	width: 300px;
+	height: 300px;
+	background-color: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+@media screen and (max-width: 1280px) {
+	.card{
+		width: 100px;
+		height: 100px;
+	}
+}
+
+[data-role="marquee-list"]{
+	display: flex;
+	width: max-content;
+}

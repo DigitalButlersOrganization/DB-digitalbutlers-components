@@ -1,9 +1,9 @@
-import { Accordions } from '../../lib/index';
+import { Accordions } from '../../../dist/index';
 
 const component = document.querySelector('.component');
 // eslint-disable-next-line no-unused-vars
-const accirdions = new Accordions({
+const accordions = new Accordions({
 	parentElement: component,
 });
 
-// console.log(accirdions);
+console.log(accordions);
