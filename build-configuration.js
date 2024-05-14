@@ -18,9 +18,9 @@ function generateExportsObjectAndIndexJS() {
 
 		const functionName = `${componentName[0].toUpperCase()}${componentName.slice(1)}`;
 		const jsFilePath = path.posix.join(componentName, 'index.js');
-		const jsPath = `./${path.posix.join(
+		const jsPath = path.posix.join(
 			distributionDirection, componentName, 'index.js',
-		)}`;
+		);
 		const cssFilePath = path.posix.join(
 			distributionDirection, componentName, 'index.css',
 		);

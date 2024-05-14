@@ -1,12 +1,18 @@
 {
   "name": "@digital-butlers/components",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "type": "module",
   "description": "A convenient library with various components for everyday tasks",
   "keywords": [
     "pagination",
     "tabs",
-    "accordions"
+    "accordions",
+		"marquee",
+		"running line",
+		"a11y tabs",
+		"accessibility tabs",
+		"a11y accordions",
+		"accessibility accordions"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
