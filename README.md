@@ -12,6 +12,9 @@
 
 [Documentation for accordions](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md)
 
+[Documentation for marquee](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/marquee/README.md)
+
+
 ## Usage <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/arrow-down.svg" width="25" height="25"/>
 
 ### Install library
@@ -86,3 +89,29 @@ accordions.init();
 
 <hr>
 
+
+### Import a class and create an instance of MARQUEE:
+
+<hr>
+
+
+```javascript
+
+import { Marquee } from '@digital-butlers/components/marquee';
+
+const marquee = new Marquee({
+	marqueeParent: document.querySelector('[data-component-id="marquee"]'),
+	marqueeMovingLineSelector: '[data-role="marquee-moving-line"]',
+	marqueeListSelector: '[data-role="marquee-list"]',
+	wrapperOfVisiblePartOfMarquee: document.documentElement, // it is needed to measure the width of the visible part of the running line
+	matchMediaRule: window.matchMedia('(min-width: 800px)'), // will prevent the tab changing if window.matchMedia doesn't match
+});
+
+marquee.init();
+
+```
+
+#### You can see more class parameters in the [documentation](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/marquee/README.md) <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/exclamation-mark.svg" width="25" height="25"/>
+
+
+<hr>
