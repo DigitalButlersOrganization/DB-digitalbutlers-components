@@ -1,4 +1,4 @@
-
+import './index.scss';
 
 const DEFAULT_PARAMETERS = {
 	marqueeParent: document.documentElement,
@@ -7,36 +7,45 @@ const DEFAULT_PARAMETERS = {
 	duration: 10,
 	divisibleNumber: 0,
 	wrapperOfVisiblePartOfMarquee: document.documentElement,
-	matchMedia: window.matchMedia('screen'),
+	matchMediaRule: window.matchMedia('screen'),
 };
 
 export class Marquee {
 	marqueeParent;
-	constructor(CUSTOM_PARAMETERS) {
-		const parameters = { ...DEFAULT_PARAMETERS, ...CUSTOM_PARAMETERS };
+	constructor(customParameters) {
+		const parameters = { ...DEFAULT_PARAMETERS, ...customParameters };
 		this.marqueeParent = parameters.marqueeParent;
 		this.marqueeMovingLineElement = this.marqueeParent.querySelector(parameters.marqueeMovingLineSelector);
 		this.marqueeListElement = this.marqueeParent.querySelector(parameters.marqueeListSelector);
-		this.duration = parameters.duration
-		|| Number.parseInt(window.getComputedStyle(this.marqueeMovingLineElement).animationDuration, 10);
+		this.numberOfListChildren = this.marqueeListElement.children.length;
+		this.duration = Number.parseInt(window.getComputedStyle(this.marqueeMovingLineElement).animationDuration, 10)
+		|| parameters.duration;
 		this.divisibleNumber = parameters.divisibleNumber;
 		this.wrapperOfVisiblePartOfMarquee = parameters.wrapperOfVisiblePartOfMarquee;
-		this.matchMedia = parameters.matchMedia;
+		this.matchMediaRule = parameters.matchMediaRule;
 		this.copyOfMarqueeListElement = this.marqueeListElement.cloneNode(true);
-		this.marqueeListElementWidth = this.marqueeListElement.clientWidth;
 		this.listsNumber = 1;
+		this.fragmentForDuplicate = undefined;
 	}
 
-	greatestCommonDivisor = () => {
-		let firstNumber = this.divisibleNumber;
-		let secondNumber = this.copyOfMarqueeListElement.children.length;
+	init = () => {
+		// eslint-disable-next-line no-console
+		if (!this.hasAllRequiredNodes()) { console.error('Marquee has not all required nodes'); return; }
+		this.addCustomAttributes();
+		this.initResizeObserver();
+		window.marquee = this;
+	};
 
-		while (secondNumber !== 0) {
-			const temporary = secondNumber;
-			secondNumber = firstNumber % secondNumber;
-			firstNumber = temporary;
-		}
-		return firstNumber;
+	initResizeObserver = () => {
+		const resizeObserver = new ResizeObserver(() => {
+			if (this.matchMediaRule.matches) {
+				this.update();
+			} else {
+				this.disable();
+			}
+		});
+
+		resizeObserver.observe(this.marqueeParent);
 	};
 
 	hasAllRequiredNodes = () => {
@@ -55,60 +64,64 @@ export class Marquee {
 		this.marqueeListElement.dataset.marqueeRole = 'list';
 	};
 
-	init = () => {
-		if (this.hasAllRequiredNodes()) {
-			this.addCustomAttributes();
-			this.update();
-			this.initResizeObserver();
-		} else {
-			console.error('Marquee has not all required nodes');
-		}
-	};
 
 	getListsNumber = () => {
-		if (this.marqueeListElementWidth > 0) {
+		let width = 0;
+		const childrenWithoutDuplicates = [...this.marqueeListElement.children].slice(0, this.numberOfListChildren);
+		childrenWithoutDuplicates.forEach((element) => {
+			width += element.clientWidth;
+		});
+		if (width > 0) {
 			const { clientWidth } = this.wrapperOfVisiblePartOfMarquee;
-			console.log(this.marqueeListElementWidth, clientWidth);
-			return 2 * Math.ceil(clientWidth / this.marqueeListElementWidth);
+			return 2 * Math.ceil(clientWidth / width);
 		}
 
 		return 2;
 	};
 
+	greatestCommonDivisor = () => {
+		let firstNumber = this.divisibleNumber;
+		let secondNumber = this.copyOfMarqueeListElement.children.length;
+
+		while (secondNumber !== 0) {
+			const temporary = secondNumber;
+			secondNumber = firstNumber % secondNumber;
+			firstNumber = temporary;
+		}
+		return firstNumber;
+	};
+
 	leastCommonMultiple = () => Math.abs(this.divisibleNumber * this.copyOfMarqueeListElement.children.length)
 	/ this.greatestCommonDivisor();
 
-
-	initResizeObserver = () => {
-		const resizeObserver = new ResizeObserver(() => {
-			if (this.matchMedia.matches) {
-				this.update();
-			} else {
-				this.disable();
-			}
-		});
-
-		resizeObserver.observe(this.marqueeParent);
-	};
+	getCopyOfFragmentForDuplicate = () => (this.fragmentForDuplicate ? this.fragmentForDuplicate
+		: this.generateListElement());
 
 	disable = () => {
-		console.log('disable', this);
+		console.log('disable');
+		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
+		this.marqueeListElement.innerHTML = '';
+		this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
+		this.marqueeMovingLineElement.dataset.marqueeState = 'disabled';
 	};
 
+
 	update = () => {
+		this.marqueeMovingLineElement.dataset.marqueeState = 'enabled';
 		const listsNeeded = this.getListsNumber();
-		console.log(listsNeeded);
+
 		let addedLists = 1;
 
 		if (listsNeeded === this.listsNumber) return;
 
-		const listElementCopy = this.generateListElement();
-		const numberOfCopies = listElementCopy.children.length / this.copyOfMarqueeListElement.children.length;
+		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
+		const numberOfCopies = copyOfFragmentForDuplicate.children.length
+		/ this.copyOfMarqueeListElement.children.length;
 		this.marqueeListElement.innerHTML = '';
-		this.marqueeListElement.append(listElementCopy.cloneNode(true));
+		this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
 
 		while (addedLists < listsNeeded) {
-			this.marqueeListElement.append(listElementCopy.cloneNode(true));
+			this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
 			addedLists += numberOfCopies;
 		}
 		this.marqueeMovingLineElement.style.animationDuration = `${(addedLists + numberOfCopies) * this.duration}s`;
@@ -118,22 +131,23 @@ export class Marquee {
 	generateListElement = () => {
 		const fragment = document.createDocumentFragment();
 		const additionalFragment = document.createDocumentFragment();
-		const listChildren = this.copyOfMarqueeListElement.cloneNode(true).children;
+		const childrenWithoutDuplicates = [...this.marqueeListElement.children].slice(0, this.numberOfListChildren);
 
 		if (this.divisibleNumber > 0) {
 			const leastCommonMultiple = this.leastCommonMultiple();
-			const additionalElementNumbers = leastCommonMultiple - listChildren.length === 0
-				? 0 : leastCommonMultiple - listChildren.length;
+			const additionalElementNumbers = leastCommonMultiple - childrenWithoutDuplicates.length === 0
+				? 0 : leastCommonMultiple - childrenWithoutDuplicates.length;
 
 			for (let index = 0; index < additionalElementNumbers; index += 1) {
-				additionalFragment.append(listChildren[index % listChildren.length].cloneNode(true));
+				additionalFragment.append(childrenWithoutDuplicates[index % childrenWithoutDuplicates.length]
+					.cloneNode(true));
 			}
 		}
 
-		[...listChildren, ...additionalFragment.children].forEach((element) => {
+		[...childrenWithoutDuplicates, ...additionalFragment.children].forEach((element) => {
 			fragment.append(element);
 		});
-		console.log(fragment);
+		this.fragmentForDuplicate = fragment;
 		return fragment;
 	};
 }

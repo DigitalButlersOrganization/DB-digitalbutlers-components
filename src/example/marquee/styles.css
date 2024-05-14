@@ -1,29 +1,5 @@
+@import '../../../dist/marquee/index.css';
 
-@keyframes movingLine {
-	0% {
-    transform: translateX(0);
-}
-100% {
-    transform: translateX(-50%);
-}
-}
-[data-marquee-role="parent"]{
-	overflow: hidden;
-}
-[data-marquee-role="moving-line"]{
-	animation-play-state: running;
-	animation-iteration-count: infinite;
-	animation-duration: 10s;
-	animation-timing-function: linear;
-	animation-name: movingLine;
-	width: max-content;
-}
-[data-marquee-role="list"]{
-	display: flex;
-	gap: 0;
-}
-
-/*  */
 body{
 	background-color: #ccc;
 	margin: 0;
@@ -41,8 +17,23 @@ body{
 .marquee-parent{
 	width: 100%;
 }
+[data-role="marquee-moving-line"]{
+	animation-duration: 20s;
+}
 .card-wrapper{
 	padding-right: 1rem;
+}
+.card-wrapper:nth-child(5n -1) .card{
+	background-color: red;
+}
+.card-wrapper:nth-child(5n - 2) .card{
+	background-color: yellow;
+}
+.card-wrapper:nth-child(5n - 3) .card{
+	background-color: green;
+}
+.card-wrapper:nth-child(5n - 4) .card{
+	background-color: purple;
 }
 .card{
 	width: 300px;

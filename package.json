@@ -7,12 +7,12 @@
     "pagination",
     "tabs",
     "accordions",
-		"marquee",
-		"running line",
-		"a11y tabs",
-		"accessibility tabs",
-		"a11y accordions",
-		"accessibility accordions"
+    "marquee",
+    "running line",
+    "a11y tabs",
+    "accessibility tabs",
+    "a11y accordions",
+    "accessibility accordions"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -24,11 +24,12 @@
   },
   "exports": {
     ".": "./index.js",
-    "./accordions": "././dist/accordions/index.js",
+    "./accordions": "./dist/accordions/index.js",
     "./accordions/index.css": "./dist/accordions/index.css",
-    "./marquee": "././dist/marquee/index.js",
-    "./pagination": "././dist/pagination/index.js",
-    "./tabs": "././dist/tabs/index.js",
+    "./marquee": "./dist/marquee/index.js",
+    "./marquee/index.css": "./dist/marquee/index.css",
+    "./pagination": "./dist/pagination/index.js",
+    "./tabs": "./dist/tabs/index.js",
     "./tabs/index.css": "./dist/tabs/index.css"
   },
   "scripts": {
