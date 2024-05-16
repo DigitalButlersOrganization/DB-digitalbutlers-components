@@ -418,7 +418,11 @@ class Tabs {
           if (__privateGet(this, _autoplay).delay > 0 && this.isInMatchMedia) {
             this.runAutoPlay();
           }
+        } else {
+          throw new Error("Tabs and panels should have the length > 0. And their lengths should be equal");
         }
+      } else {
+        throw new Error("Tabs or panels not found");
       }
       __privateSet(this, _inited, true);
       if (this.on.afterInit) {
