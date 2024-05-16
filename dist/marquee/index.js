@@ -1,0 +1,166 @@
+var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+  return value;
+};
+const index = "";
+const DEFAULT_PARAMETERS = {
+  marqueeParent: document.documentElement,
+  marqueeMovingLineSelector: '[data-role="marquee-moving-line"]',
+  marqueeListSelector: '[data-role="marquee-list"]',
+  duration: 10,
+  divisibleNumber: 0,
+  wrapperOfVisiblePartOfMarquee: document.documentElement,
+  matchMediaRule: window.matchMedia("screen")
+};
+class Marquee {
+  constructor(customParameters) {
+    __publicField(this, "marqueeParent");
+    __publicField(this, "marqueeMovingLineElement");
+    __publicField(this, "marqueeListElement");
+    __publicField(this, "numberOfListChildren");
+    __publicField(this, "duration");
+    __publicField(this, "divisibleNumber");
+    __publicField(this, "wrapperOfVisiblePartOfMarquee");
+    __publicField(this, "matchMediaRule");
+    __publicField(this, "listsNumber");
+    __publicField(this, "fragmentForDuplicate");
+    __publicField(this, "init", () => {
+      if (!this.hasAllRequiredNodes()) {
+        console.error("Marquee has not all required nodes");
+        return;
+      }
+      this.addCustomAttributes();
+      this.initResizeObserver();
+    });
+    __publicField(this, "initResizeObserver", () => {
+      const resizeObserver = new ResizeObserver(() => {
+        if (this.matchMediaRule.matches) {
+          this.update();
+        } else {
+          this.disable();
+        }
+      });
+      resizeObserver.observe(this.marqueeParent);
+    });
+    __publicField(this, "hasAllRequiredNodes", () => {
+      const arrayOfRequiredParameters = [
+        this.marqueeParent,
+        this.marqueeMovingLineElement,
+        this.marqueeListElement,
+        this.wrapperOfVisiblePartOfMarquee
+      ];
+      return !arrayOfRequiredParameters.some((element) => !element);
+    });
+    __publicField(this, "addCustomAttributes", () => {
+      this.marqueeParent.dataset.marqueeRole = "parent";
+      if (this.marqueeMovingLineElement)
+        this.marqueeMovingLineElement.dataset.marqueeRole = "moving-line";
+      if (this.marqueeListElement)
+        this.marqueeListElement.dataset.marqueeRole = "list";
+    });
+    __publicField(this, "getListsNumber", () => {
+      let width = 0;
+      if (!this.marqueeListElement)
+        return 2;
+      const childrenWithoutDuplicates = Array.from(this.marqueeListElement.children).slice(0, this.numberOfListChildren);
+      childrenWithoutDuplicates.forEach((element) => {
+        width += element.clientWidth;
+      });
+      if (width > 0) {
+        const { clientWidth } = this.wrapperOfVisiblePartOfMarquee;
+        return 2 * Math.ceil(clientWidth / width);
+      }
+      return 2;
+    });
+    __publicField(this, "greatestCommonDivisor", () => {
+      let firstNumber = this.divisibleNumber;
+      let secondNumber = this.numberOfListChildren || 0;
+      while (secondNumber !== 0) {
+        const temporary = secondNumber;
+        if (secondNumber) {
+          secondNumber = firstNumber % secondNumber;
+          firstNumber = temporary;
+        }
+      }
+      return firstNumber;
+    });
+    __publicField(this, "leastCommonMultiple", () => {
+      if (this.numberOfListChildren) {
+        return Math.abs(this.divisibleNumber * this.numberOfListChildren) / this.greatestCommonDivisor();
+      }
+      return 0;
+    });
+    __publicField(this, "getCopyOfFragmentForDuplicate", () => this.fragmentForDuplicate ? this.fragmentForDuplicate : this.generateListElement());
+    __publicField(this, "disable", () => {
+      console.log("disable");
+      const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
+      if (this.marqueeMovingLineElement)
+        this.marqueeMovingLineElement.dataset.marqueeState = "disabled";
+      if (this.marqueeListElement) {
+        this.marqueeListElement.innerHTML = "";
+        this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
+      }
+    });
+    __publicField(this, "update", () => {
+      if (this.marqueeMovingLineElement)
+        this.marqueeMovingLineElement.dataset.marqueeState = "enabled";
+      const listsNeeded = this.getListsNumber();
+      let addedLists = 1;
+      if (listsNeeded === this.listsNumber)
+        return;
+      if (!this.numberOfListChildren)
+        return;
+      const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
+      const numberOfCopies = copyOfFragmentForDuplicate.children.length / this.numberOfListChildren;
+      if (this.marqueeListElement) {
+        this.marqueeListElement.innerHTML = "";
+        this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
+      }
+      while (addedLists < listsNeeded) {
+        if (this.marqueeListElement)
+          this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
+        addedLists += numberOfCopies;
+      }
+      if (this.marqueeMovingLineElement) {
+        this.marqueeMovingLineElement.style.animationDuration = `${(addedLists + numberOfCopies) * this.duration}s`;
+        this.listsNumber = listsNeeded;
+      }
+    });
+    __publicField(this, "generateListElement", () => {
+      const fragment = document.createDocumentFragment();
+      const additionalFragment = document.createDocumentFragment();
+      if (!this.marqueeListElement)
+        return fragment;
+      const childrenWithoutDuplicates = Array.from(this.marqueeListElement.children).slice(0, this.numberOfListChildren);
+      if (this.divisibleNumber > 0) {
+        const leastCommonMultiple = this.leastCommonMultiple();
+        const additionalElementNumbers = leastCommonMultiple - childrenWithoutDuplicates.length === 0 ? 0 : leastCommonMultiple - childrenWithoutDuplicates.length;
+        for (let index2 = 0; index2 < additionalElementNumbers; index2 += 1) {
+          additionalFragment.append(childrenWithoutDuplicates[index2 % childrenWithoutDuplicates.length].cloneNode(true));
+        }
+      }
+      [...childrenWithoutDuplicates, ...Array.from(additionalFragment.children)].forEach((element) => {
+        fragment.append(element);
+      });
+      this.fragmentForDuplicate = fragment;
+      return fragment;
+    });
+    var _a;
+    const parameters = { ...DEFAULT_PARAMETERS, ...customParameters };
+    this.marqueeParent = parameters.marqueeParent;
+    this.marqueeMovingLineElement = this.marqueeParent.querySelector(parameters.marqueeMovingLineSelector);
+    this.marqueeListElement = this.marqueeParent.querySelector(parameters.marqueeListSelector);
+    this.numberOfListChildren = (_a = this.marqueeListElement) == null ? void 0 : _a.children.length;
+    this.duration = Number.parseInt(window.getComputedStyle(this.marqueeMovingLineElement).animationDuration, 10) || parameters.duration;
+    this.divisibleNumber = parameters.divisibleNumber;
+    this.wrapperOfVisiblePartOfMarquee = parameters.wrapperOfVisiblePartOfMarquee;
+    this.matchMediaRule = parameters.matchMediaRule;
+    this.listsNumber = 1;
+    this.fragmentForDuplicate = void 0;
+  }
+}
+export {
+  Marquee
+};

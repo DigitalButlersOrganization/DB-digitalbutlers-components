@@ -1,4 +1,4 @@
-import { Tabs } from '../../lib/index';
+import { Tabs } from '../../../dist/index';
 
 const wrappers = document.querySelectorAll('.wrapper');
 

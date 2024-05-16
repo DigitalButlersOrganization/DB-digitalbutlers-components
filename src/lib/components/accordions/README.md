@@ -29,7 +29,7 @@
 </div>
 ```
 
-### Create tabs instance
+### Create accordion instance
 
 ```javascript
 const componentElement = document.querySelector('[data-component-id="accordions"]'); //

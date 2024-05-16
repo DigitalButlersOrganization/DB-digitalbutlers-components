@@ -1,4 +1,4 @@
-import { Pagination } from '../../lib/index';
+import { Pagination } from '../../../dist/index';
 
 const component = document.querySelector('.component');
 // eslint-disable-next-line no-unused-vars
