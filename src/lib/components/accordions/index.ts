@@ -281,6 +281,10 @@ export class Accordions {
 
 	// Public methods
 	init = () => {
+		if (this.on.beforeInit) {
+			this.on.beforeInit(this);
+		}
+
 		this.updateInstanceId();
 		this.initAccordions();
 
@@ -291,6 +295,10 @@ export class Accordions {
 		this.onBreakpointChange();
 
 		this.closeAll();
+
+		if (this.on.afterInit) {
+			this.on.afterInit(this);
+		}
 	};
 
 	destroy = (destroyedBy = DESTROYED_TYPES.MANUAL) => {

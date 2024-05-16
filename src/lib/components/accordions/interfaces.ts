@@ -31,6 +31,8 @@ export interface AccordionElement extends HTMLElement {
 export type AccordionCallback = (self: Accordions) => void
 
 export interface AccordionCallbacks {
+  afterInit?: AccordionCallback,
+  beforeInit?: AccordionCallback,
   toggle?: AccordionCallback,
   detailsTransitionEnd?: AccordionCallback
 }
