@@ -21,11 +21,11 @@
 	}
 	&[data-marquee-state="enabled"]{
 		width: max-content !important;
+		[data-marquee-role="list"]{
+			display: flex !important;
+			gap: 0 !important;
+		}
 	}
 }
 
-[data-marquee-role="list"]{
-	display: flex;
-	gap: 0;
-}
 
