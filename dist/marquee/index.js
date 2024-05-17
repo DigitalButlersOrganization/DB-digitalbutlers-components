@@ -12,7 +12,8 @@ const DEFAULT_PARAMETERS = {
   duration: 10,
   divisibleNumber: 0,
   wrapperOfVisiblePartOfMarquee: document.documentElement,
-  matchMediaRule: window.matchMedia("screen")
+  matchMediaRule: window.matchMedia("screen"),
+  on: {}
 };
 class Marquee {
   constructor(customParameters) {
@@ -26,13 +27,20 @@ class Marquee {
     __publicField(this, "matchMediaRule");
     __publicField(this, "listsNumber");
     __publicField(this, "fragmentForDuplicate");
+    __publicField(this, "on", {});
     __publicField(this, "init", () => {
+      if (this.on.beforeInit) {
+        this.on.beforeInit(this);
+      }
       if (!this.hasAllRequiredNodes()) {
         console.error("Marquee has not all required nodes");
         return;
       }
       this.addCustomAttributes();
       this.initResizeObserver();
+      if (this.on.afterInit) {
+        this.on.afterInit(this);
+      }
     });
     __publicField(this, "initResizeObserver", () => {
       const resizeObserver = new ResizeObserver(() => {
@@ -94,7 +102,9 @@ class Marquee {
     });
     __publicField(this, "getCopyOfFragmentForDuplicate", () => this.fragmentForDuplicate ? this.fragmentForDuplicate : this.generateListElement());
     __publicField(this, "disable", () => {
-      console.log("disable");
+      if (this.on.disable) {
+        this.on.disable(this);
+      }
       const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
       if (this.marqueeMovingLineElement)
         this.marqueeMovingLineElement.dataset.marqueeState = "disabled";
@@ -104,6 +114,9 @@ class Marquee {
       }
     });
     __publicField(this, "update", () => {
+      if (this.on.update) {
+        this.on.update(this);
+      }
       if (this.marqueeMovingLineElement)
         this.marqueeMovingLineElement.dataset.marqueeState = "enabled";
       const listsNeeded = this.getListsNumber();

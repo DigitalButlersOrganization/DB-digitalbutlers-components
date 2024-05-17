@@ -1,4 +1,5 @@
 import './index.scss';
+import { MarqueeCallbacks } from './interfaces';
 
 const DEFAULT_PARAMETERS = {
 	marqueeParent: document.documentElement,
@@ -8,6 +9,7 @@ const DEFAULT_PARAMETERS = {
 	divisibleNumber: 0,
 	wrapperOfVisiblePartOfMarquee: document.documentElement,
 	matchMediaRule: window.matchMedia('screen'),
+	on: {},
 };
 
 export class Marquee {
@@ -21,6 +23,7 @@ export class Marquee {
 	matchMediaRule: MediaQueryList;
 	listsNumber: number;
 	fragmentForDuplicate: DocumentFragment | undefined;
+	on: MarqueeCallbacks = {};
 
 	constructor(customParameters: {}) {
 		const parameters = { ...DEFAULT_PARAMETERS, ...customParameters };
@@ -39,10 +42,16 @@ export class Marquee {
 	}
 
 	init = () => {
+		if (this.on.beforeInit) {
+			this.on.beforeInit(this);
+		}
 		// eslint-disable-next-line no-console
 		if (!this.hasAllRequiredNodes()) { console.error('Marquee has not all required nodes'); return; }
 		this.addCustomAttributes();
 		this.initResizeObserver();
+		if (this.on.afterInit) {
+			this.on.afterInit(this);
+		}
 	};
 
 	initResizeObserver = () => {
@@ -115,7 +124,9 @@ export class Marquee {
 		: this.generateListElement());
 
 	disable = () => {
-		console.log('disable');
+		if (this.on.disable) {
+			this.on.disable(this);
+		}
 		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
 		if (this.marqueeMovingLineElement) this.marqueeMovingLineElement.dataset.marqueeState = 'disabled';
 		if (this.marqueeListElement) {
@@ -126,6 +137,9 @@ export class Marquee {
 
 
 	update = () => {
+		if (this.on.update) {
+			this.on.update(this);
+		}
 		if (this.marqueeMovingLineElement) this.marqueeMovingLineElement.dataset.marqueeState = 'enabled';
 		const listsNeeded = this.getListsNumber();
 
