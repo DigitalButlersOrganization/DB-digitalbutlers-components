@@ -1,9 +1,9 @@
-[data-role="accordion-item"] {
+[data-accordion-role="item"] {
 	display: grid;
 	grid-template-rows: max-content 0fr;
 	transition: grid 0.5s ease;
 
-	[data-role="accordion-summary"] {
+	[data-accordion-role="summary"] {
 		cursor: pointer;
 	}
 
@@ -11,7 +11,7 @@
 		grid-template-rows: max-content 1fr;
 	}
 
-	[data-role="accordion-details"] {
+	[data-accordion-role="details"] {
 		overflow: hidden;
 	}
 }

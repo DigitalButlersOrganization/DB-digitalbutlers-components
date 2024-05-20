@@ -1,14 +1,14 @@
-[data-role=accordion-item] {
+[data-accordion-role=item] {
   display: grid;
   grid-template-rows: max-content 0fr;
   transition: grid 0.5s ease;
 }
-[data-role=accordion-item] [data-role=accordion-summary] {
+[data-accordion-role=item] [data-accordion-role=summary] {
   cursor: pointer;
 }
-[data-role=accordion-item].js--open {
+[data-accordion-role=item].js--open {
   grid-template-rows: max-content 1fr;
 }
-[data-role=accordion-item] [data-role=accordion-details] {
+[data-accordion-role=item] [data-accordion-role=details] {
   overflow: hidden;
 }
