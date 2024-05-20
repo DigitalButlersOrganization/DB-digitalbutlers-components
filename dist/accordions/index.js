@@ -89,7 +89,7 @@ const _Accordions = class {
       accordionElement[PARAMS_KEY][PARAMS.ITEMS_IDS] = [];
       accordionElement[PARAMS_KEY][PARAMS.IS_SINGLE] = isSingle;
       accordionElement.id = this.generateAccordionId(accordionId);
-      accordionElement.dataset.accordionRole = "item";
+      accordionElement.dataset.accordionRole = "parent";
       const accordionChildren = Array.from(accordionElement.children);
       const itemElements = accordionChildren.filter((element) => element.matches(this.itemSelector));
       itemElements.forEach((itemElement, itemIndex) => {
@@ -118,7 +118,7 @@ const _Accordions = class {
       itemElement[PARAMS_KEY][PARAMS.ACCORDION_ID] = String(accordionId);
       itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT] = summaryElement;
       itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT] = detailsElement;
-      itemElement.dataset.accordionRole = "parent";
+      itemElement.dataset.accordionRole = "item";
       this.itemElements.push(itemElement);
       summaryElement.dataset.accordionRole = "summary";
       summaryElement.dataset.test = "summary";

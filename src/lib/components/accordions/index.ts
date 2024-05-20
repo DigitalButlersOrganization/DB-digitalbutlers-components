@@ -130,7 +130,7 @@ export class Accordions {
 		accordionElement[PARAMS_KEY][PARAMS.IS_SINGLE] = isSingle;
 
 		accordionElement.id = this.generateAccordionId(accordionId);
-		accordionElement.dataset.accordionRole = 'item';
+		accordionElement.dataset.accordionRole = 'parent';
 
 		const accordionChildren = Array.from(accordionElement.children) as AccordionElement[];
 
@@ -169,7 +169,7 @@ export class Accordions {
 		itemElement[PARAMS_KEY][PARAMS.ACCORDION_ID] = String(accordionId);
 		itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT] = summaryElement;
 		itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT] = detailsElement;
-		itemElement.dataset.accordionRole = 'parent';
+		itemElement.dataset.accordionRole = 'item';
 
 		this.itemElements.push(itemElement);
 
