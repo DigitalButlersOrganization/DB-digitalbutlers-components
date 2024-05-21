@@ -66,7 +66,6 @@ export class Accordions {
 
 		this.isDestroyed = true;
 		this.destroyedBy = undefined;
-
 		this.on = parameters.on;
 
 		this.init();

@@ -81,7 +81,6 @@ const accordions = new Accordions({
 	parentElement: componentElement, // Any node that is the parent of an accordion. It is advisable to specify the nearest parent
 	isSingle: true, // If set to 'true', then only one active accordion element can be turned on at a time
 });
-accordions.init();
 ```
 
 #### You can see more class parameters in the [documentation](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md) <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/exclamation-mark.svg" width="25" height="25"/>

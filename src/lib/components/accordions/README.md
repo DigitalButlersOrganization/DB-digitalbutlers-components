@@ -37,7 +37,6 @@ const componentElement = document.querySelector('[data-component-id="accordions"
 const accordions = new Accordions({
 	parentElement: componentElement, // Any node that is the parent of an accordion. It is advisable to specify the nearest parent
 });
-accordions.init();
 ```
 
 ## API
