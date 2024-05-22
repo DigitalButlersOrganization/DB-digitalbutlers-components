@@ -83,3 +83,28 @@ const accordions = new Accordions({
 *Default:* `false`
 *Description:* If set to 'true', then only one active accordion element can be turned on at a time
 
+### `on`
+*Type:* `object`
+*Description:* Callbacks that can be initialized after some events with accordions
+
+#### Events callback config object
+
+### `detailsTransitionEnd`
+*Type:* `function`
+*Default:* `undefined`
+*Description:* Callback will be started after every transition end
+
+### `toggle`
+*Type:* `function`
+*Default:* `undefined`
+*Description:* Callback will be started after every accordion changing event
+
+### `beforeInit`
+*Type:* `function`
+*Default:* `undefined`
+*Description:* Callback will be started before accordion initialization
+
+### `afterInit`
+*Type:* `function`
+*Default:* `undefined`
+*Description:* Callback will be started after accordion initialization
