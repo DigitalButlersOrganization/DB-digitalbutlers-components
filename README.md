@@ -14,6 +14,8 @@
 
 [Documentation for marquee](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/marquee/README.md)
 
+[Documentation for sharePageLinks](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/share-page-links/README.md)
+
 
 ## Usage <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/arrow-down.svg" width="25" height="25"/>
 
@@ -111,6 +113,30 @@ marquee.init();
 ```
 
 #### You can see more class parameters in the [documentation](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/marquee/README.md) <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/exclamation-mark.svg" width="25" height="25"/>
+
+
+<hr>
+
+
+### Import a class and create an instance of MARQUEE:
+
+<hr>
+
+
+```javascript
+
+import { SharePageLinks } from '@digital-butlers/components/share-page-links';
+
+const shareLinks = new SharePageLinks({
+	messageForShareViaEmail: "This is really important! Don't miss it", // the text to insert in the "body of the message" field (if we share a link to the page in the email)
+	pageName: 'Custom page name', // if there is no 'title', 'h1', '[role="heading"][aria-level="1"]' on the page, this text will be used instead
+});
+
+shareLinks.init();
+
+```
+
+#### You can see more class parameters in the [documentation](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/share-page-links/README.md) <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/exclamation-mark.svg" width="25" height="25"/>
 
 
 <hr>

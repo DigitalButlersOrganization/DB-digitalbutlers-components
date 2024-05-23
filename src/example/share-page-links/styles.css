@@ -1,0 +1,40 @@
+* {
+	box-sizing: border-box;
+}
+
+body{
+	background-color: #ccc;
+	margin: 0;
+	padding: 0;
+}
+.section{
+	width: 100%;
+}
+.container{
+	width: 100%;
+	margin: 0 auto;
+	max-width: 1440px;
+	padding: 0 2rem;
+}
+/* // */
+
+.share-buttons-wrapper{
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	gap: 2.5rem;
+}
+.share-button{
+display: flex;
+align-items: center;
+justify-content: center;
+flex-direction: column;
+gap: 1rem;
+}
+.share-button__name{
+	font-size: 1.25rem;
+}
+.share-button__svg{
+	width: 5rem;
+	height: 5rem;
+}

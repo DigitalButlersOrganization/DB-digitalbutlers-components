@@ -1,6 +1,6 @@
 {
   "name": "@digital-butlers/components",
-  "version": "0.3.13",
+  "version": "0.4.1",
   "type": "module",
   "description": "A convenient library with various components for everyday tasks",
   "keywords": [
@@ -12,7 +12,8 @@
     "a11y tabs",
     "accessibility tabs",
     "a11y accordions",
-    "accessibility accordions"
+    "accessibility accordions",
+    "'share page' links"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -29,6 +30,8 @@
     "./marquee": "./dist/marquee/index.js",
     "./marquee/index.css": "./dist/marquee/index.css",
     "./pagination": "./dist/pagination/index.js",
+    "./share-page-links": "./dist/share-page-links/index.js",
+    "./share-page-links/index.css": "./dist/share-page-links/index.css",
     "./tabs": "./dist/tabs/index.js",
     "./tabs/index.css": "./dist/tabs/index.css"
   },
