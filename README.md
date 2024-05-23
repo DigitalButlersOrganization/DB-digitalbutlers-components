@@ -8,13 +8,13 @@
 
 ## Documentation <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/arrow-down.svg" width="25" height="25"/>
 
-[Documentation for tabs](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/tabs/README.md)
+[Documentation for Tabs](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/tabs/README.md)
 
-[Documentation for accordions](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md)
+[Documentation for Accordions](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/accordions/README.md)
 
-[Documentation for marquee](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/marquee/README.md)
+[Documentation for Marquee](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/marquee/README.md)
 
-[Documentation for sharePageLinks](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/share-page-links/README.md)
+[Documentation for SharePageLinks](https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/lib/components/share-page-links/README.md)
 
 
 ## Usage <img src="https://github.com/DigitalButlersOrganization/DB-digitalbutlers-components/blob/master/src/icons/arrow-down.svg" width="25" height="25"/>
@@ -118,7 +118,7 @@ marquee.init();
 <hr>
 
 
-### Import a class and create an instance of MARQUEE:
+### Import a class and create an instance of SHARE_PAGE_LINKS:
 
 <hr>
 
