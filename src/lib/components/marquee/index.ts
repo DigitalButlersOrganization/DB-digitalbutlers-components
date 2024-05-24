@@ -128,6 +128,7 @@ export class Marquee {
 		if (this.on.disable) {
 			this.on.disable(this);
 		}
+		this.listsNumber = 1;
 		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
 		if (this.marqueeMovingLineElement) this.marqueeMovingLineElement.dataset.marqueeState = 'disabled';
 		if (this.marqueeListElement) {
