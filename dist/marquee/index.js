@@ -172,6 +172,7 @@ class Marquee {
     this.matchMediaRule = parameters.matchMediaRule;
     this.listsNumber = 1;
     this.fragmentForDuplicate = void 0;
+    this.on = parameters.on;
   }
 }
 export {

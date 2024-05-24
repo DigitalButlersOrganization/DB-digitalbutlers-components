@@ -7,7 +7,7 @@ const mainFilePath = path.join(distributionDirection, 'index.js');
 
 
 function generateExportsObjectAndIndexJS() {
-	const exports = { '.': './index.js' }; // сразу добавил файл index.js в корень dist
+	const exports = { '.': './index.js' };
 	let indexJsContent = '';
 	const components = fs.readdirSync(distributionDirection, { withFileTypes: true })
 		.filter((dirent) => dirent.isDirectory())

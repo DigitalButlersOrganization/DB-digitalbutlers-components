@@ -6,6 +6,11 @@ const marquee = new Marquee({
 	marqueeListSelector: '[data-role="marquee-list"]',
 	wrapperOfVisiblePartOfMarquee: document.documentElement, // it is needed to measure the width of the visible part of the running line
 	matchMediaRule: window.matchMedia('(min-width: 800px)'), // will prevent the tab changing if window.matchMedia doesn't match
+	on: {
+		update(instance) {
+			console.log(instance);
+		},
+	},
 });
 
 marquee.init();

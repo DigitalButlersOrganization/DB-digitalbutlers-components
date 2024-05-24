@@ -39,6 +39,7 @@ export class Marquee {
 		this.matchMediaRule = parameters.matchMediaRule;
 		this.listsNumber = 1;
 		this.fragmentForDuplicate = undefined;
+		this.on = parameters.on;
 	}
 
 	init = () => {
