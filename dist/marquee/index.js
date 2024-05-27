@@ -11,7 +11,6 @@ const DEFAULT_PARAMETERS = {
   marqueeListSelector: '[data-role="marquee-list"]',
   duration: 10,
   divisibleNumber: 0,
-  wrapperOfVisiblePartOfMarquee: document.documentElement,
   matchMediaRule: window.matchMedia("screen"),
   on: {}
 };
@@ -23,7 +22,6 @@ class Marquee {
     __publicField(this, "numberOfListChildren");
     __publicField(this, "duration");
     __publicField(this, "divisibleNumber");
-    __publicField(this, "wrapperOfVisiblePartOfMarquee");
     __publicField(this, "matchMediaRule");
     __publicField(this, "listsNumber");
     __publicField(this, "fragmentForDuplicate");
@@ -51,14 +49,15 @@ class Marquee {
           this.disable();
         }
       });
-      resizeObserver.observe(this.wrapperOfVisiblePartOfMarquee);
+      if (this.marqueeParentElement) {
+        resizeObserver.observe(this.marqueeParentElement);
+      }
     });
     __publicField(this, "hasAllRequiredNodes", () => {
       const arrayOfRequiredParameters = [
         this.marqueeParentElement,
         this.marqueeMovingLineElement,
-        this.marqueeListElement,
-        this.wrapperOfVisiblePartOfMarquee
+        this.marqueeListElement
       ];
       return !arrayOfRequiredParameters.some((element) => !element);
     });
@@ -78,9 +77,9 @@ class Marquee {
       childrenWithoutDuplicates.forEach((element) => {
         width += element.clientWidth;
       });
-      if (width > 0) {
-        const { clientWidth } = this.wrapperOfVisiblePartOfMarquee;
-        console.log(width, clientWidth, this.wrapperOfVisiblePartOfMarquee);
+      if (width > 0 && this.marqueeParentElement) {
+        const { clientWidth } = this.marqueeParentElement;
+        console.log(width, clientWidth);
         return 2 * Math.ceil(clientWidth / width);
       }
       return 2;
@@ -170,13 +169,12 @@ class Marquee {
     });
     var _a, _b, _c;
     const parameters = { ...DEFAULT_PARAMETERS, ...customParameters };
-    this.marqueeParentElement = document.querySelector(parameters.marqueeMovingLineSelector);
+    this.marqueeParentElement = document.querySelector(parameters.marqueeParentSelector);
     this.marqueeMovingLineElement = (_a = this.marqueeParentElement) == null ? void 0 : _a.querySelector(parameters.marqueeMovingLineSelector);
     this.marqueeListElement = (_b = this.marqueeParentElement) == null ? void 0 : _b.querySelector(parameters.marqueeListSelector);
     this.numberOfListChildren = (_c = this.marqueeListElement) == null ? void 0 : _c.children.length;
     this.duration = Number.parseInt(window.getComputedStyle(this.marqueeMovingLineElement).animationDuration, 10) || parameters.duration;
     this.divisibleNumber = parameters.divisibleNumber;
-    this.wrapperOfVisiblePartOfMarquee = parameters.wrapperOfVisiblePartOfMarquee;
     this.matchMediaRule = parameters.matchMediaRule;
     this.listsNumber = 1;
     this.fragmentForDuplicate = void 0;

@@ -69,8 +69,9 @@
   },
   "dependencies": {
     "rollup-plugin-smart-asset": "^2.1.2",
-    "@rollup/plugin-typescript": "^11.1.6",
+    "@rollup/plugin-typesript": "^11.1.6",
     "prettier": "^3.2.5",
     "vite": "^3.2.5"
   }
 }
+
