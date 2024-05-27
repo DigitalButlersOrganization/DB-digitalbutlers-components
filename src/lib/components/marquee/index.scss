@@ -2,30 +2,45 @@
 	0% {
 		transform: translateX(0);
 	}
+
 	100% {
 		transform: translateX(-50%);
 	}
 }
-[data-marquee-role="parent"]{
-	overflow: hidden;
-}
-[data-marquee-role="moving-line"]{
-	animation-play-state: running;
-	animation-iteration-count: infinite;
-	animation-duration: 1s;
-	animation-timing-function: linear;
-	animation-name: marqueeMovingLine;
 
-	&[data-marquee-state="disabled"]{
-		animation-name: none;
+[data-marquee-role="parent"] {
+
+	[data-marquee-role="moving-line"] {
+		animation-play-state: running;
+		animation-iteration-count: infinite;
+		animation-timing-function: linear;
 	}
-	&[data-marquee-state="enabled"]{
-		width: max-content !important;
-		[data-marquee-role="list"]{
-			display: flex !important;
-			gap: 0 !important;
+
+	&[data-marquee-state="disabled"] {
+		[data-marquee-role="moving-line"] {
+			animation-name: none;
 		}
 	}
+
+	&[data-marquee-state="enabled"] {
+		overflow: hidden;
+		display: flex;
+		flex-direction: row;
+		justify-content: start;
+
+		[data-marquee-role="moving-line"] {
+			animation-name: marqueeMovingLine;
+			width: max-content ; // may be we need to add '!important'...
+		}
+
+		[data-marquee-role="list"] {
+			display: flex;// may be we need to add '!important'...
+			gap: 0;// may be we need to add '!important'...
+			flex-direction: row;
+			justify-content: start;
+			width: max-content;// may be we need to add '!important'...
+		}
+	}
+
+
 }
-
-

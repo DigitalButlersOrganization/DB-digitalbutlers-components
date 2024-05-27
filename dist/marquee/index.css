@@ -6,24 +6,28 @@
     transform: translateX(-50%);
   }
 }
-[data-marquee-role=parent] {
-  overflow: hidden;
-}
-
-[data-marquee-role=moving-line] {
+[data-marquee-role=parent] [data-marquee-role=moving-line] {
   animation-play-state: running;
   animation-iteration-count: infinite;
-  animation-duration: 1s;
   animation-timing-function: linear;
-  animation-name: marqueeMovingLine;
 }
-[data-marquee-role=moving-line][data-marquee-state=disabled] {
+[data-marquee-role=parent][data-marquee-state=disabled] [data-marquee-role=moving-line] {
   animation-name: none;
 }
-[data-marquee-role=moving-line][data-marquee-state=enabled] {
-  width: max-content !important;
+[data-marquee-role=parent][data-marquee-state=enabled] {
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
 }
-[data-marquee-role=moving-line][data-marquee-state=enabled] [data-marquee-role=list] {
-  display: flex !important;
-  gap: 0 !important;
+[data-marquee-role=parent][data-marquee-state=enabled] [data-marquee-role=moving-line] {
+  animation-name: marqueeMovingLine;
+  width: max-content;
+}
+[data-marquee-role=parent][data-marquee-state=enabled] [data-marquee-role=list] {
+  display: flex;
+  gap: 0;
+  flex-direction: row;
+  justify-content: start;
+  width: max-content;
 }

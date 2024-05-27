@@ -17,9 +17,6 @@ body{
 .marquee-parent{
 	width: 100%;
 }
-[data-role="marquee-moving-line"]{
-	animation-duration: 20s;
-}
 .card-wrapper{
 	padding-right: 1rem;
 }
@@ -50,7 +47,3 @@ body{
 	}
 }
 
-[data-role="marquee-list"]{
-	display: flex;
-	width: max-content;
-}

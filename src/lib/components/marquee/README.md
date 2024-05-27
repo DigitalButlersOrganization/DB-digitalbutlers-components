@@ -6,7 +6,7 @@
 
 ```html
 <section class="section" data-component-id="marquee">
-		<div class="marquee-parent" >
+		<div data-role="marquee-parent" >
 			<div data-role="marquee-moving-line">
 				<div data-role="marquee-list">
 					<div class="card-wrapper">
@@ -29,6 +29,7 @@
 
 ```javascript
 const marquee = new Marquee({
+marqueeParentSelector: '[data-role="marquee-parent"]',
 	marqueeMovingLineSelector: '[data-role="marquee-moving-line"]',
 	marqueeListSelector: '[data-role="marquee-list"]',
 	wrapperOfVisiblePartOfMarquee: document.documentElement, // it is needed to measure the width of the visible part of the running line
@@ -43,10 +44,10 @@ marquee.init();
 
 ### Config Properties
 
-### `marqueeParent`
-*Type:* `HTMLElement`
-*Default:* `document.documentElement`
-*Description:* Any node that is the parent of a marquee. It is advisable to specify the nearest parent
+### `marqueeParentSelector`
+*Type:* `string`
+*Default:* `'[data-role="marquee-parent"]'`
+*Description:* The selector of the parent element for the moving line
 
 ### `marqueeMovingLineSelector`
 *Type:* `string`

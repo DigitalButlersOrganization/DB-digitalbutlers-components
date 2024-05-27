@@ -2,7 +2,7 @@ import './index.scss';
 import { MarqueeCallbacks } from './interfaces';
 
 const DEFAULT_PARAMETERS = {
-	marqueeParent: document.documentElement,
+	marqueeParentSelector: '[data-role="marquee-parent"]',
 	marqueeMovingLineSelector: '[data-role="marquee-moving-line"]',
 	marqueeListSelector: '[data-role="marquee-list"]',
 	duration: 10,
@@ -13,9 +13,9 @@ const DEFAULT_PARAMETERS = {
 };
 
 export class Marquee {
-	marqueeParent : HTMLElement;
-	marqueeMovingLineElement : HTMLElement | null;
-	marqueeListElement : HTMLElement | null;
+	marqueeParentElement : HTMLElement | null;
+	marqueeMovingLineElement : HTMLElement | null | undefined;
+	marqueeListElement : HTMLElement | null | undefined;
 	numberOfListChildren : number | undefined;
 	duration: number;
 	divisibleNumber: number;
@@ -27,9 +27,9 @@ export class Marquee {
 
 	constructor(customParameters: {}) {
 		const parameters = { ...DEFAULT_PARAMETERS, ...customParameters };
-		this.marqueeParent = parameters.marqueeParent;
-		this.marqueeMovingLineElement = this.marqueeParent.querySelector(parameters.marqueeMovingLineSelector);
-		this.marqueeListElement = this.marqueeParent.querySelector(parameters.marqueeListSelector);
+		this.marqueeParentElement = document.querySelector(parameters.marqueeMovingLineSelector);
+		this.marqueeMovingLineElement = this.marqueeParentElement?.querySelector(parameters.marqueeMovingLineSelector);
+		this.marqueeListElement = this.marqueeParentElement?.querySelector(parameters.marqueeListSelector);
 		this.numberOfListChildren = this.marqueeListElement?.children.length;
 		this.duration = Number.parseInt(window.getComputedStyle(this.marqueeMovingLineElement as HTMLElement)
 			.animationDuration, 10)
@@ -57,6 +57,8 @@ export class Marquee {
 
 	initResizeObserver = () => {
 		const resizeObserver = new ResizeObserver(() => {
+			console.log(this.matchMediaRule.matches);
+
 			if (this.matchMediaRule.matches) {
 				this.update();
 			} else {
@@ -64,12 +66,12 @@ export class Marquee {
 			}
 		});
 
-		resizeObserver.observe(this.marqueeParent);
+		resizeObserver.observe(this.wrapperOfVisiblePartOfMarquee);
 	};
 
 	hasAllRequiredNodes = () => {
 		const arrayOfRequiredParameters = [
-			this.marqueeParent,
+			this.marqueeParentElement,
 			this.marqueeMovingLineElement,
 			this.marqueeListElement,
 			this.wrapperOfVisiblePartOfMarquee,
@@ -78,7 +80,7 @@ export class Marquee {
 	};
 
 	addCustomAttributes = () => {
-		this.marqueeParent.dataset.marqueeRole = 'parent';
+		if (this.marqueeParentElement) this.marqueeParentElement.dataset.marqueeRole = 'parent';
 		if (this.marqueeMovingLineElement) this.marqueeMovingLineElement.dataset.marqueeRole = 'moving-line';
 		if (this.marqueeListElement) this.marqueeListElement.dataset.marqueeRole = 'list';
 	};
@@ -94,6 +96,10 @@ export class Marquee {
 		});
 		if (width > 0) {
 			const { clientWidth } = this.wrapperOfVisiblePartOfMarquee;
+			console.log(
+				width, clientWidth, this.wrapperOfVisiblePartOfMarquee,
+			);
+
 			return 2 * Math.ceil(clientWidth / width);
 		}
 
@@ -130,7 +136,7 @@ export class Marquee {
 		}
 		this.listsNumber = 1;
 		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
-		if (this.marqueeMovingLineElement) this.marqueeMovingLineElement.dataset.marqueeState = 'disabled';
+		if (this.marqueeParentElement) this.marqueeParentElement.dataset.marqueeState = 'disabled';
 		if (this.marqueeListElement) {
 			this.marqueeListElement.innerHTML = '';
 			this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
@@ -142,13 +148,17 @@ export class Marquee {
 		if (this.on.update) {
 			this.on.update(this);
 		}
-		if (this.marqueeMovingLineElement) this.marqueeMovingLineElement.dataset.marqueeState = 'enabled';
+		if (this.marqueeParentElement) this.marqueeParentElement.dataset.marqueeState = 'enabled';
 		const listsNeeded = this.getListsNumber();
 
 		let addedLists = 1;
+		console.log();
 
 		if (listsNeeded === this.listsNumber) return;
+		console.log('1!');
+
 		if (!this.numberOfListChildren) return;
+		console.log('2!');
 
 		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
 		const numberOfCopies = copyOfFragmentForDuplicate.children.length
@@ -162,6 +172,10 @@ export class Marquee {
 			if (this.marqueeListElement) this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
 			addedLists += numberOfCopies;
 		}
+		console.log(
+			addedLists, numberOfCopies, this.duration,
+		);
+
 		if (this.marqueeMovingLineElement) {
 			this.marqueeMovingLineElement.style.animationDuration = `${(addedLists + numberOfCopies) * this.duration}s`;
 			this.listsNumber = listsNeeded;
