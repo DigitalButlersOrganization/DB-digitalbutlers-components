@@ -7,7 +7,6 @@ const DEFAULT_PARAMETERS = {
 	marqueeListSelector: '[data-role="marquee-list"]',
 	duration: 10,
 	divisibleNumber: 0,
-	wrapperOfVisiblePartOfMarquee: document.documentElement,
 	matchMediaRule: window.matchMedia('screen'),
 	on: {},
 };
@@ -19,7 +18,6 @@ export class Marquee {
 	numberOfListChildren : number | undefined;
 	duration: number;
 	divisibleNumber: number;
-	wrapperOfVisiblePartOfMarquee: HTMLElement;
 	matchMediaRule: MediaQueryList;
 	listsNumber: number;
 	fragmentForDuplicate: DocumentFragment | undefined;
@@ -27,7 +25,7 @@ export class Marquee {
 
 	constructor(customParameters: {}) {
 		const parameters = { ...DEFAULT_PARAMETERS, ...customParameters };
-		this.marqueeParentElement = document.querySelector(parameters.marqueeMovingLineSelector);
+		this.marqueeParentElement = document.querySelector(parameters.marqueeParentSelector);
 		this.marqueeMovingLineElement = this.marqueeParentElement?.querySelector(parameters.marqueeMovingLineSelector);
 		this.marqueeListElement = this.marqueeParentElement?.querySelector(parameters.marqueeListSelector);
 		this.numberOfListChildren = this.marqueeListElement?.children.length;
@@ -35,7 +33,6 @@ export class Marquee {
 			.animationDuration, 10)
 		|| parameters.duration;
 		this.divisibleNumber = parameters.divisibleNumber;
-		this.wrapperOfVisiblePartOfMarquee = parameters.wrapperOfVisiblePartOfMarquee;
 		this.matchMediaRule = parameters.matchMediaRule;
 		this.listsNumber = 1;
 		this.fragmentForDuplicate = undefined;
@@ -66,7 +63,9 @@ export class Marquee {
 			}
 		});
 
-		resizeObserver.observe(this.wrapperOfVisiblePartOfMarquee);
+		if (this.marqueeParentElement) {
+			resizeObserver.observe(this.marqueeParentElement);
+		}
 	};
 
 	hasAllRequiredNodes = () => {
@@ -74,7 +73,6 @@ export class Marquee {
 			this.marqueeParentElement,
 			this.marqueeMovingLineElement,
 			this.marqueeListElement,
-			this.wrapperOfVisiblePartOfMarquee,
 		];
 		return !arrayOfRequiredParameters.some((element) => !element);
 	};
@@ -94,12 +92,9 @@ export class Marquee {
 		childrenWithoutDuplicates.forEach((element) => {
 			width += element.clientWidth;
 		});
-		if (width > 0) {
-			const { clientWidth } = this.wrapperOfVisiblePartOfMarquee;
-			console.log(
-				width, clientWidth, this.wrapperOfVisiblePartOfMarquee,
-			);
-
+		if (width > 0 && this.marqueeParentElement) {
+			const { clientWidth } = this.marqueeParentElement;
+			console.log(width, clientWidth);
 			return 2 * Math.ceil(clientWidth / width);
 		}
 
