@@ -54,8 +54,6 @@ export class Marquee {
 
 	initResizeObserver = () => {
 		const resizeObserver = new ResizeObserver(() => {
-			console.log(this.matchMediaRule.matches);
-
 			if (this.matchMediaRule.matches) {
 				this.update();
 			} else {
@@ -94,7 +92,6 @@ export class Marquee {
 		});
 		if (width > 0 && this.marqueeParentElement) {
 			const { clientWidth } = this.marqueeParentElement;
-			console.log(width, clientWidth);
 			return 2 * Math.ceil(clientWidth / width);
 		}
 
@@ -147,13 +144,10 @@ export class Marquee {
 		const listsNeeded = this.getListsNumber();
 
 		let addedLists = 1;
-		console.log();
 
 		if (listsNeeded === this.listsNumber) return;
-		console.log('1!');
 
 		if (!this.numberOfListChildren) return;
-		console.log('2!');
 
 		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
 		const numberOfCopies = copyOfFragmentForDuplicate.children.length
@@ -167,9 +161,6 @@ export class Marquee {
 			if (this.marqueeListElement) this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
 			addedLists += numberOfCopies;
 		}
-		console.log(
-			addedLists, numberOfCopies, this.duration,
-		);
 
 		if (this.marqueeMovingLineElement) {
 			this.marqueeMovingLineElement.style.animationDuration = `${(addedLists + numberOfCopies) * this.duration}s`;
