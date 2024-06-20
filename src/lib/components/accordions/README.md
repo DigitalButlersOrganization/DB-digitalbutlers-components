@@ -94,6 +94,16 @@ const accordions = new Accordions({
 *Default:* `undefined`
 *Description:* Callback will be started after every transition end
 
+### `open`
+*Type:* `function`
+*Default:* `undefined`
+*Description:* Callback will be started after every accordion open event
+
+### `close`
+*Type:* `function`
+*Default:* `undefined`
+*Description:* Callback will be started after every accordion close event
+
 ### `toggle`
 *Type:* `function`
 *Default:* `undefined`
