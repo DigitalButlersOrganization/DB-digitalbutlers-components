@@ -322,18 +322,28 @@ export class Accordions {
 			return;
 		}
 
-		const accordionElement = this.getAccordionById(itemElement[PARAMS_KEY]?.[PARAMS.ACCORDION_ID] ?? '');
-		const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
-		const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT];
+		const idClosed = !itemElement ? false : !itemElement.classList.contains(this.openClass);
 
-		if (accordionElement?.[PARAMS_KEY]?.[PARAMS.IS_SINGLE]) {
-			this.closeAccordion(accordionElement);
+		if (idClosed) {
+			const accordionElement = this.getAccordionById(itemElement[PARAMS_KEY]?.[PARAMS.ACCORDION_ID] ?? '');
+			const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
+			const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT];
+
+			if (accordionElement?.[PARAMS_KEY]?.[PARAMS.IS_SINGLE]) {
+				this.closeAccordion(accordionElement);
+			}
+
+			itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = true;
+			itemElement.classList.add(this.openClass);
+			summaryElement?.setAttribute('aria-expanded', 'true');
+			detailsElement?.removeAttribute('inert');
+			if (this.on.open) {
+				this.on.open(this);
+			}
+			if (this.on.toggle) {
+				this.on.toggle(this);
+			}
 		}
-
-		itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = true;
-		itemElement.classList.add(this.openClass);
-		summaryElement?.setAttribute('aria-expanded', 'true');
-		detailsElement?.removeAttribute('inert');
 	};
 
 	close = (item: AccordionElement | string) => {
@@ -343,17 +353,27 @@ export class Accordions {
 			itemElement[PARAMS_KEY] = {};
 		}
 
-		const detailsElement = itemElement?.[PARAMS_KEY]?.[PARAMS.DETAILS_ELEMENT];
-		const summaryElement = itemElement?.[PARAMS_KEY]?.[PARAMS.SUMMARY_ELEMENT];
+		const isOpened = itemElement?.classList.contains(this.openClass);
 
-		if (!detailsElement) {
-			return;
+		if (isOpened) {
+			const detailsElement = itemElement?.[PARAMS_KEY]?.[PARAMS.DETAILS_ELEMENT];
+			const summaryElement = itemElement?.[PARAMS_KEY]?.[PARAMS.SUMMARY_ELEMENT];
+
+			if (!detailsElement) {
+				return;
+			}
+
+			(itemElement[PARAMS_KEY] as AccordionProperties)[PARAMS.IS_OPEN] = false;
+			itemElement.classList.remove(this.openClass);
+			summaryElement?.setAttribute('aria-expanded', 'false');
+			detailsElement.setAttribute('inert', '');
+			if (this.on.close) {
+				this.on.close(this);
+			}
+			if (this.on.toggle) {
+				this.on.toggle(this);
+			}
 		}
-
-		(itemElement[PARAMS_KEY] as AccordionProperties)[PARAMS.IS_OPEN] = false;
-		itemElement.classList.remove(this.openClass);
-		summaryElement?.setAttribute('aria-expanded', 'false');
-		detailsElement.setAttribute('inert', '');
 	};
 
 	toggle = (item: AccordionElement | string) => {
@@ -371,10 +391,6 @@ export class Accordions {
 			this.close(itemElement);
 		} else {
 			this.open(itemElement);
-		}
-
-		if (this.on.toggle) {
-			this.on.toggle(this);
 		}
 	};
 

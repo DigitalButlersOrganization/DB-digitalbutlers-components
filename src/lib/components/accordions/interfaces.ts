@@ -34,6 +34,8 @@ export interface AccordionCallbacks {
   afterInit?: AccordionCallback,
   beforeInit?: AccordionCallback,
   toggle?: AccordionCallback,
+  open?: AccordionCallback,
+  close?: AccordionCallback,
   detailsTransitionEnd?: AccordionCallback
 }
 
