@@ -207,6 +207,9 @@ const _Accordions = class {
       }
     });
     __publicField(this, "init", () => {
+      if (this.on.beforeInit) {
+        this.on.beforeInit(this);
+      }
       this.updateInstanceId();
       this.initAccordions();
       this.isDestroyed = false;
@@ -214,6 +217,9 @@ const _Accordions = class {
       this.breakpoint.addEventListener("change", this.onBreakpointChange);
       this.onBreakpointChange();
       this.closeAll();
+      if (this.on.afterInit) {
+        this.on.afterInit(this);
+      }
     });
     __publicField(this, "destroy", (destroyedBy = DESTROYED_TYPES.MANUAL) => {
       this.elements.forEach((accordionElement) => {
@@ -228,16 +234,25 @@ const _Accordions = class {
       if (!itemElement || !itemElement[PARAMS_KEY]) {
         return;
       }
-      const accordionElement = this.getAccordionById((_b = (_a = itemElement[PARAMS_KEY]) == null ? void 0 : _a[PARAMS.ACCORDION_ID]) != null ? _b : "");
-      const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
-      const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT];
-      if ((_c = accordionElement == null ? void 0 : accordionElement[PARAMS_KEY]) == null ? void 0 : _c[PARAMS.IS_SINGLE]) {
-        this.closeAccordion(accordionElement);
+      const idClosed = !itemElement ? false : !itemElement.classList.contains(this.openClass);
+      if (idClosed) {
+        const accordionElement = this.getAccordionById((_b = (_a = itemElement[PARAMS_KEY]) == null ? void 0 : _a[PARAMS.ACCORDION_ID]) != null ? _b : "");
+        const detailsElement = itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT];
+        const summaryElement = itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT];
+        if ((_c = accordionElement == null ? void 0 : accordionElement[PARAMS_KEY]) == null ? void 0 : _c[PARAMS.IS_SINGLE]) {
+          this.closeAccordion(accordionElement);
+        }
+        itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = true;
+        itemElement.classList.add(this.openClass);
+        summaryElement == null ? void 0 : summaryElement.setAttribute("aria-expanded", "true");
+        detailsElement == null ? void 0 : detailsElement.removeAttribute("inert");
+        if (this.on.open) {
+          this.on.open(this);
+        }
+        if (this.on.toggle) {
+          this.on.toggle(this);
+        }
       }
-      itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = true;
-      itemElement.classList.add(this.openClass);
-      summaryElement == null ? void 0 : summaryElement.setAttribute("aria-expanded", "true");
-      detailsElement == null ? void 0 : detailsElement.removeAttribute("inert");
     });
     __publicField(this, "close", (item) => {
       var _a, _b;
@@ -245,15 +260,24 @@ const _Accordions = class {
       if (itemElement && !itemElement[PARAMS_KEY]) {
         itemElement[PARAMS_KEY] = {};
       }
-      const detailsElement = (_a = itemElement == null ? void 0 : itemElement[PARAMS_KEY]) == null ? void 0 : _a[PARAMS.DETAILS_ELEMENT];
-      const summaryElement = (_b = itemElement == null ? void 0 : itemElement[PARAMS_KEY]) == null ? void 0 : _b[PARAMS.SUMMARY_ELEMENT];
-      if (!detailsElement) {
-        return;
+      const isOpened = itemElement == null ? void 0 : itemElement.classList.contains(this.openClass);
+      if (isOpened) {
+        const detailsElement = (_a = itemElement == null ? void 0 : itemElement[PARAMS_KEY]) == null ? void 0 : _a[PARAMS.DETAILS_ELEMENT];
+        const summaryElement = (_b = itemElement == null ? void 0 : itemElement[PARAMS_KEY]) == null ? void 0 : _b[PARAMS.SUMMARY_ELEMENT];
+        if (!detailsElement) {
+          return;
+        }
+        itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = false;
+        itemElement.classList.remove(this.openClass);
+        summaryElement == null ? void 0 : summaryElement.setAttribute("aria-expanded", "false");
+        detailsElement.setAttribute("inert", "");
+        if (this.on.close) {
+          this.on.close(this);
+        }
+        if (this.on.toggle) {
+          this.on.toggle(this);
+        }
       }
-      itemElement[PARAMS_KEY][PARAMS.IS_OPEN] = false;
-      itemElement.classList.remove(this.openClass);
-      summaryElement == null ? void 0 : summaryElement.setAttribute("aria-expanded", "false");
-      detailsElement.setAttribute("inert", "");
     });
     __publicField(this, "toggle", (item) => {
       const itemElement = typeof item === "string" ? this.getItemById(item) : item;
@@ -267,9 +291,6 @@ const _Accordions = class {
         this.close(itemElement);
       } else {
         this.open(itemElement);
-      }
-      if (this.on.toggle) {
-        this.on.toggle(this);
       }
     });
     __publicField(this, "closeAccordion", (accordion) => {
