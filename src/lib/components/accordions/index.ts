@@ -66,11 +66,11 @@ export class Accordions {
 
 		this.isDestroyed = true;
 		this.destroyedBy = undefined;
-
 		this.on = parameters.on;
 
 		this.init();
 	}
+
 
 	// Instance id
 	updateInstanceId = () => {
@@ -129,6 +129,7 @@ export class Accordions {
 		accordionElement[PARAMS_KEY][PARAMS.IS_SINGLE] = isSingle;
 
 		accordionElement.id = this.generateAccordionId(accordionId);
+		accordionElement.dataset.accordionRole = 'parent';
 
 		const accordionChildren = Array.from(accordionElement.children) as AccordionElement[];
 
@@ -167,15 +168,19 @@ export class Accordions {
 		itemElement[PARAMS_KEY][PARAMS.ACCORDION_ID] = String(accordionId);
 		itemElement[PARAMS_KEY][PARAMS.SUMMARY_ELEMENT] = summaryElement;
 		itemElement[PARAMS_KEY][PARAMS.DETAILS_ELEMENT] = detailsElement;
+		itemElement.dataset.accordionRole = 'item';
 
 		this.itemElements.push(itemElement);
 
+		summaryElement.dataset.accordionRole = 'summary';
+		summaryElement.dataset.test = 'summary';
 		summaryElement.setAttribute('tabindex', '0');
 		summaryElement.setAttribute('id', summaryId);
 		summaryElement.setAttribute('aria-controls', detailsId);
 		summaryElement[PARAMS_KEY] = {};
 		summaryElement[PARAMS_KEY][PARAMS.ITEM_ID] = itemId;
 
+		detailsElement.dataset.accordionRole = 'details';
 		detailsElement.setAttribute('id', detailsId);
 		detailsElement.setAttribute('aria-labelledby', summaryId);
 		detailsElement[PARAMS_KEY] = {};

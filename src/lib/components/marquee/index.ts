@@ -1,48 +1,55 @@
 import './index.scss';
+import { MarqueeCallbacks } from './interfaces';
 
 const DEFAULT_PARAMETERS = {
-	marqueeParent: document.documentElement,
+	marqueeParentSelector: '[data-role="marquee-parent"]',
 	marqueeMovingLineSelector: '[data-role="marquee-moving-line"]',
 	marqueeListSelector: '[data-role="marquee-list"]',
 	duration: 10,
 	divisibleNumber: 0,
-	wrapperOfVisiblePartOfMarquee: document.documentElement,
 	matchMediaRule: window.matchMedia('screen'),
+	on: {},
 };
 
 export class Marquee {
-	marqueeParent : HTMLElement;
-	marqueeMovingLineElement : HTMLElement | null;
-	marqueeListElement : HTMLElement | null;
+	marqueeParentElement : HTMLElement | null;
+	marqueeMovingLineElement : HTMLElement | null | undefined;
+	marqueeListElement : HTMLElement | null | undefined;
 	numberOfListChildren : number | undefined;
 	duration: number;
 	divisibleNumber: number;
-	wrapperOfVisiblePartOfMarquee: HTMLElement;
 	matchMediaRule: MediaQueryList;
 	listsNumber: number;
 	fragmentForDuplicate: DocumentFragment | undefined;
+	on: MarqueeCallbacks = {};
 
 	constructor(customParameters: {}) {
 		const parameters = { ...DEFAULT_PARAMETERS, ...customParameters };
-		this.marqueeParent = parameters.marqueeParent;
-		this.marqueeMovingLineElement = this.marqueeParent.querySelector(parameters.marqueeMovingLineSelector);
-		this.marqueeListElement = this.marqueeParent.querySelector(parameters.marqueeListSelector);
+		this.marqueeParentElement = document.querySelector(parameters.marqueeParentSelector);
+		this.marqueeMovingLineElement = this.marqueeParentElement?.querySelector(parameters.marqueeMovingLineSelector);
+		this.marqueeListElement = this.marqueeParentElement?.querySelector(parameters.marqueeListSelector);
 		this.numberOfListChildren = this.marqueeListElement?.children.length;
 		this.duration = Number.parseInt(window.getComputedStyle(this.marqueeMovingLineElement as HTMLElement)
 			.animationDuration, 10)
 		|| parameters.duration;
 		this.divisibleNumber = parameters.divisibleNumber;
-		this.wrapperOfVisiblePartOfMarquee = parameters.wrapperOfVisiblePartOfMarquee;
 		this.matchMediaRule = parameters.matchMediaRule;
 		this.listsNumber = 1;
 		this.fragmentForDuplicate = undefined;
+		this.on = parameters.on;
 	}
 
 	init = () => {
+		if (this.on.beforeInit) {
+			this.on.beforeInit(this);
+		}
 		// eslint-disable-next-line no-console
 		if (!this.hasAllRequiredNodes()) { console.error('Marquee has not all required nodes'); return; }
 		this.addCustomAttributes();
 		this.initResizeObserver();
+		if (this.on.afterInit) {
+			this.on.afterInit(this);
+		}
 	};
 
 	initResizeObserver = () => {
@@ -54,21 +61,22 @@ export class Marquee {
 			}
 		});
 
-		resizeObserver.observe(this.marqueeParent);
+		if (this.marqueeParentElement) {
+			resizeObserver.observe(this.marqueeParentElement);
+		}
 	};
 
 	hasAllRequiredNodes = () => {
 		const arrayOfRequiredParameters = [
-			this.marqueeParent,
+			this.marqueeParentElement,
 			this.marqueeMovingLineElement,
 			this.marqueeListElement,
-			this.wrapperOfVisiblePartOfMarquee,
 		];
 		return !arrayOfRequiredParameters.some((element) => !element);
 	};
 
 	addCustomAttributes = () => {
-		this.marqueeParent.dataset.marqueeRole = 'parent';
+		if (this.marqueeParentElement) this.marqueeParentElement.dataset.marqueeRole = 'parent';
 		if (this.marqueeMovingLineElement) this.marqueeMovingLineElement.dataset.marqueeRole = 'moving-line';
 		if (this.marqueeListElement) this.marqueeListElement.dataset.marqueeRole = 'list';
 	};
@@ -82,8 +90,8 @@ export class Marquee {
 		childrenWithoutDuplicates.forEach((element) => {
 			width += element.clientWidth;
 		});
-		if (width > 0) {
-			const { clientWidth } = this.wrapperOfVisiblePartOfMarquee;
+		if (width > 0 && this.marqueeParentElement) {
+			const { clientWidth } = this.marqueeParentElement;
 			return 2 * Math.ceil(clientWidth / width);
 		}
 
@@ -115,9 +123,12 @@ export class Marquee {
 		: this.generateListElement());
 
 	disable = () => {
-		console.log('disable');
+		if (this.on.disable) {
+			this.on.disable(this);
+		}
+		this.listsNumber = 1;
 		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
-		if (this.marqueeMovingLineElement) this.marqueeMovingLineElement.dataset.marqueeState = 'disabled';
+		if (this.marqueeParentElement) this.marqueeParentElement.dataset.marqueeState = 'disabled';
 		if (this.marqueeListElement) {
 			this.marqueeListElement.innerHTML = '';
 			this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
@@ -126,12 +137,16 @@ export class Marquee {
 
 
 	update = () => {
-		if (this.marqueeMovingLineElement) this.marqueeMovingLineElement.dataset.marqueeState = 'enabled';
+		if (this.on.update) {
+			this.on.update(this);
+		}
+		if (this.marqueeParentElement) this.marqueeParentElement.dataset.marqueeState = 'enabled';
 		const listsNeeded = this.getListsNumber();
 
 		let addedLists = 1;
 
 		if (listsNeeded === this.listsNumber) return;
+
 		if (!this.numberOfListChildren) return;
 
 		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
@@ -146,6 +161,7 @@ export class Marquee {
 			if (this.marqueeListElement) this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
 			addedLists += numberOfCopies;
 		}
+
 		if (this.marqueeMovingLineElement) {
 			this.marqueeMovingLineElement.style.animationDuration = `${(addedLists + numberOfCopies) * this.duration}s`;
 			this.listsNumber = listsNeeded;

@@ -7,7 +7,7 @@ const mainFilePath = path.join(distributionDirection, 'index.js');
 
 
 function generateExportsObjectAndIndexJS() {
-	const exports = { '.': './index.js' }; // сразу добавил файл index.js в корень dist
+	const exports = { '.': './index.js' };
 	let indexJsContent = '';
 	const components = fs.readdirSync(distributionDirection, { withFileTypes: true })
 		.filter((dirent) => dirent.isDirectory())
@@ -16,7 +16,9 @@ function generateExportsObjectAndIndexJS() {
 	components.forEach((componentName) => {
 		if (componentName === 'assets') return;
 
-		const functionName = `${componentName[0].toUpperCase()}${componentName.slice(1)}`;
+		const className = componentName.split('-')
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join('');
 		const jsFilePath = path.posix.join(componentName, 'index.js');
 		const jsPath = path.posix.join(
 			distributionDirection, componentName, 'index.js',
@@ -25,7 +27,7 @@ function generateExportsObjectAndIndexJS() {
 			distributionDirection, componentName, 'index.css',
 		);
 
-		indexJsContent += `export { ${functionName} } from './${jsFilePath}';\n`;
+		indexJsContent += `export { ${className} } from './${jsFilePath}';\n`;
 		exports[`./${componentName}`] = `./${jsPath}`;
 		if (fs.existsSync(cssFilePath)) {
 			exports[`./${componentName}/index.css`] = `./${cssFilePath}`;
