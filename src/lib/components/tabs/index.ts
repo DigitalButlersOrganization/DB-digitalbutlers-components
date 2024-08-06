@@ -104,22 +104,22 @@ export class Tabs {
 			}
 			this.checkMatchMedia();
 			window.addEventListener('resize', this.checkMatchMedia);
+			window.addEventListener('resize', this.update);
 			this.tabButtonsList = this.tabsWrapper.querySelector(this.#tabbuttonsListSelector) as HTMLElement;
 			this.tabPanelsList = this.tabsWrapper.querySelector(this.#tabpanelsListSelector) as HTMLElement;
 			if (this.tabButtonsList && this.tabPanelsList) {
-				this.tabs = getChildrenArray(this.tabButtonsList);
-				this.panels = getChildrenArray(this.tabPanelsList);
+				this.update();
 				if (this.tabs.length > 0 && this.tabs.length === this.panels.length) {
 					if (this.#equalHeight) {
 						this.setEqualHeight();
 						window.addEventListener('resize', this.setEqualHeight);
 					}
-					this.assignTabsAttributes();
+
 					if (!this.#listenersAdded) {
 						this.addListenersForTabs();
 						this.#listenersAdded = true;
 					}
-					this.goTo(this.activeIndex, false);
+
 					if (this.#autoplay.delay > 0 && this.isInMatchMedia) {
 						this.runAutoPlay();
 					}
@@ -130,6 +130,12 @@ export class Tabs {
 				throw new Error('Tabs or panels not found');
 			}
 			this.#inited = true;
+			if (this.isInMatchMedia) {
+				this.assignTabsAttributes();
+				this.goTo(this.activeIndex, false);
+			} else {
+				this.removeTabsAttributes();
+			}
 			if (this.on.afterInit) {
 				this.on.afterInit(this);
 			}
@@ -152,7 +158,7 @@ export class Tabs {
 	};
 
 	public goTo = (index: number, setFocus: boolean = true) => {
-		if (this.activeIndex !== index || !this.#inited) {
+		if (this.#inited) {
 			this.activeIndex = index;
 			this.updateProperties();
 			this.setUnactiveAll();
@@ -444,8 +450,12 @@ export class Tabs {
 	public update = () => {
 		this.tabs = getChildrenArray(this.tabButtonsList as HTMLElement);
 		this.panels = getChildrenArray(this.tabPanelsList as HTMLElement);
-		this.updateProperties();
-		this.assignTabsAttributes();
+		if (this.isInMatchMedia) {
+			this.assignTabsAttributes();
+			this.goTo(this.activeIndex, false);
+		} else {
+			this.removeTabsAttributes();
+		}
 	};
 
 	public destroy = () => {

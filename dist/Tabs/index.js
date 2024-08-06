@@ -96,7 +96,7 @@ class Tabs {
       });
     });
     __publicField(this, "goTo", (index2, setFocus = true) => {
-      if (this.activeIndex !== index2 || !__privateGet(this, _inited)) {
+      if (__privateGet(this, _inited)) {
         this.activeIndex = index2;
         this.updateProperties();
         this.setUnactiveAll();
@@ -348,8 +348,12 @@ class Tabs {
     __publicField(this, "update", () => {
       this.tabs = getChildrenArray(this.tabButtonsList);
       this.panels = getChildrenArray(this.tabPanelsList);
-      this.updateProperties();
-      this.assignTabsAttributes();
+      if (this.isInMatchMedia) {
+        this.assignTabsAttributes();
+        this.goTo(this.activeIndex, false);
+      } else {
+        this.removeTabsAttributes();
+      }
     });
     __publicField(this, "destroy", () => {
       this.removeTabsAttributes();
@@ -399,22 +403,20 @@ class Tabs {
       }
       this.checkMatchMedia();
       window.addEventListener("resize", this.checkMatchMedia);
+      window.addEventListener("resize", this.update);
       this.tabButtonsList = this.tabsWrapper.querySelector(__privateGet(this, _tabbuttonsListSelector));
       this.tabPanelsList = this.tabsWrapper.querySelector(__privateGet(this, _tabpanelsListSelector));
       if (this.tabButtonsList && this.tabPanelsList) {
-        this.tabs = getChildrenArray(this.tabButtonsList);
-        this.panels = getChildrenArray(this.tabPanelsList);
+        this.update();
         if (this.tabs.length > 0 && this.tabs.length === this.panels.length) {
           if (__privateGet(this, _equalHeight)) {
             this.setEqualHeight();
             window.addEventListener("resize", this.setEqualHeight);
           }
-          this.assignTabsAttributes();
           if (!__privateGet(this, _listenersAdded)) {
             this.addListenersForTabs();
             __privateSet(this, _listenersAdded, true);
           }
-          this.goTo(this.activeIndex, false);
           if (__privateGet(this, _autoplay).delay > 0 && this.isInMatchMedia) {
             this.runAutoPlay();
           }
@@ -425,6 +427,12 @@ class Tabs {
         throw new Error("Tabs or panels not found");
       }
       __privateSet(this, _inited, true);
+      if (this.isInMatchMedia) {
+        this.assignTabsAttributes();
+        this.goTo(this.activeIndex, false);
+      } else {
+        this.removeTabsAttributes();
+      }
       if (this.on.afterInit) {
         this.on.afterInit(this);
       }
