@@ -24,6 +24,7 @@ const DEFAULTS = {
 	detailsSelector: '[data-role="accordion-details"]',
 	breakpoint: window.matchMedia('screen'),
 	isSingle: false,
+	devMode: false,
 	on: {},
 };
 
@@ -41,6 +42,7 @@ export class Accordions {
 	itemElements: AccordionElement[];
 	isDestroyed: boolean;
 	destroyedBy: string | undefined;
+	devMode: boolean;
 	on: AccordionCallbacks;
 
 	constructor(customParameters = {}) {
@@ -66,6 +68,7 @@ export class Accordions {
 
 		this.isDestroyed = true;
 		this.destroyedBy = undefined;
+		this.devMode = parameters.devMode;
 		this.on = parameters.on;
 
 		this.init();
@@ -102,7 +105,15 @@ export class Accordions {
 
 	// Initialisation
 	initAccordions = () => {
+		if (this.devMode && !this.parentElement) {
+			throw new Error('Parent element is not defined | Родительский элемент не определен');
+		}
+
 		this.elements = Array.from(this.parentElement.querySelectorAll(this.accordionSelector));
+
+		if (this.elements.length === 0 && this.devMode) {
+			throw new Error(`Accordions not found. Check the selector ${this.accordionSelector} | Аккордионы не найдены. Проверьте селектор ${this.accordionSelector}`);
+		}
 
 		this.elements.forEach((accordionElement, accordionIndex) => {
 			this.initAccordion(accordionElement, accordionIndex);
@@ -136,6 +147,10 @@ export class Accordions {
 		const itemElements = accordionChildren
 			.filter((element) => element.matches(this.itemSelector));
 
+		if (itemElements.length === 0 && this.devMode) {
+			throw new Error(`Accordion items not found. Check the selector ${this.itemSelector} | Элементы аккордиона не найдены. Проверьте селектор ${this.itemSelector}`);
+		}
+
 		itemElements.forEach((itemElement, itemIndex) => {
 			const itemId = `${accordionId}-${itemIndex}`;
 
@@ -157,7 +172,15 @@ export class Accordions {
 		}
 
 		const summaryElement = itemElement.querySelector(this.summarySelector) as AccordionElement ?? undefined;
+
+		if (!summaryElement && this.devMode) {
+			throw new Error(`Accordion summary not found. Check the selector ${this.summarySelector} | Саммари аккордиона не найден. Проверьте селектор ${this.summarySelector}`);
+		}
 		const detailsElement = itemElement.querySelector(this.detailsSelector) as AccordionElement ?? undefined;
+
+		if (!detailsElement && this.devMode) {
+			throw new Error(`Accordion details not found. Check the selector ${this.detailsSelector} | Контент аккордиона не найден. Проверьте селектор ${this.detailsSelector}`);
+		}
 
 		const summaryId = this.generateSummaryId(itemId);
 		const detailsId = this.generateDetailsId(itemId);
