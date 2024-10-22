@@ -237,6 +237,7 @@ export class Pagination {
 	};
 
 	addPageParam = () => {
+		this.url = new URL(window.location.href);
 		this.url.searchParams.set('page', this.currentPage.toString());
 		window.history.pushState(
 			{}, '', this.url.href,
