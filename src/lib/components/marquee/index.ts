@@ -12,10 +12,10 @@ const DEFAULT_PARAMETERS = {
 };
 
 export class Marquee {
-	marqueeParentElement : HTMLElement | null;
-	marqueeMovingLineElement : HTMLElement | null | undefined;
-	marqueeListElement : HTMLElement | null | undefined;
-	numberOfListChildren : number | undefined;
+	marqueeParentElement: HTMLElement | null;
+	marqueeMovingLineElement: HTMLElement | null | undefined;
+	marqueeListElement: HTMLElement | null | undefined;
+	numberOfListChildren: number | undefined;
 	duration: number;
 	divisibleNumber: number;
 	matchMediaRule: MediaQueryList;
@@ -29,9 +29,10 @@ export class Marquee {
 		this.marqueeMovingLineElement = this.marqueeParentElement?.querySelector(parameters.marqueeMovingLineSelector);
 		this.marqueeListElement = this.marqueeParentElement?.querySelector(parameters.marqueeListSelector);
 		this.numberOfListChildren = this.marqueeListElement?.children.length;
-		this.duration = Number.parseInt(window.getComputedStyle(this.marqueeMovingLineElement as HTMLElement)
-			.animationDuration, 10)
-		|| parameters.duration;
+		// eslint-disable-next-line operator-linebreak
+		this.duration =
+			Number.parseInt(window.getComputedStyle(this.marqueeMovingLineElement as HTMLElement).animationDuration, 10) ||
+			parameters.duration;
 		this.divisibleNumber = parameters.divisibleNumber;
 		this.matchMediaRule = parameters.matchMediaRule;
 		this.listsNumber = 1;
@@ -44,12 +45,26 @@ export class Marquee {
 			this.on.beforeInit(this);
 		}
 		// eslint-disable-next-line no-console
-		if (!this.hasAllRequiredNodes()) { console.error('Marquee has not all required nodes'); return; }
+		if (!this.hasAllRequiredNodes()) {
+			console.error('Marquee has not all required nodes');
+			return;
+		}
 		this.addCustomAttributes();
+		this.checkImagesDownloading();
 		this.initResizeObserver();
 		if (this.on.afterInit) {
 			this.on.afterInit(this);
 		}
+	};
+
+	checkImagesDownloading = () => {
+		const arrayOfImages = this.marqueeParentElement?.querySelectorAll('img');
+		if (!arrayOfImages?.length) return;
+
+		arrayOfImages.forEach((element) => {
+			if (element.complete) return;
+			element.addEventListener('load', this.update);
+		});
 	};
 
 	initResizeObserver = () => {
@@ -81,12 +96,10 @@ export class Marquee {
 		if (this.marqueeListElement) this.marqueeListElement.dataset.marqueeRole = 'list';
 	};
 
-
 	getListsNumber = () => {
 		let width = 0;
 		if (!this.marqueeListElement) return 2;
-		const childrenWithoutDuplicates = Array.from(this.marqueeListElement.children)
-			.slice(0, this.numberOfListChildren);
+		const childrenWithoutDuplicates = Array.from(this.marqueeListElement.children).slice(0, this.numberOfListChildren);
 		childrenWithoutDuplicates.forEach((element) => {
 			width += element.clientWidth;
 		});
@@ -99,7 +112,7 @@ export class Marquee {
 	};
 
 	greatestCommonDivisor = () => {
-		let firstNumber : number = this.divisibleNumber;
+		let firstNumber: number = this.divisibleNumber;
 		let secondNumber: number = this.numberOfListChildren || 0;
 
 		while (secondNumber !== 0) {
@@ -119,8 +132,10 @@ export class Marquee {
 		return 0;
 	};
 
-	getCopyOfFragmentForDuplicate = () => (this.fragmentForDuplicate ? this.fragmentForDuplicate
-		: this.generateListElement());
+	// eslint-disable-next-line no-confusing-arrow
+	getCopyOfFragmentForDuplicate = () =>
+		// eslint-disable-next-line implicit-arrow-linebreak
+		this.fragmentForDuplicate ? this.fragmentForDuplicate : this.generateListElement();
 
 	disable = () => {
 		if (this.on.disable) {
@@ -134,7 +149,6 @@ export class Marquee {
 			this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
 		}
 	};
-
 
 	update = () => {
 		if (this.on.update) {
@@ -150,8 +164,7 @@ export class Marquee {
 		if (!this.numberOfListChildren) return;
 
 		const copyOfFragmentForDuplicate = this.getCopyOfFragmentForDuplicate();
-		const numberOfCopies = copyOfFragmentForDuplicate.children.length
-		/ this.numberOfListChildren;
+		const numberOfCopies = copyOfFragmentForDuplicate.children.length / this.numberOfListChildren;
 		if (this.marqueeListElement) {
 			this.marqueeListElement.innerHTML = '';
 			this.marqueeListElement.append(copyOfFragmentForDuplicate.cloneNode(true));
@@ -172,17 +185,18 @@ export class Marquee {
 		const fragment = document.createDocumentFragment();
 		const additionalFragment = document.createDocumentFragment();
 		if (!this.marqueeListElement) return fragment;
-		const childrenWithoutDuplicates = Array.from(this.marqueeListElement.children)
-			.slice(0, this.numberOfListChildren);
+		const childrenWithoutDuplicates = Array.from(this.marqueeListElement.children).slice(0, this.numberOfListChildren);
 
 		if (this.divisibleNumber > 0) {
 			const leastCommonMultiple = this.leastCommonMultiple();
-			const additionalElementNumbers = leastCommonMultiple - childrenWithoutDuplicates.length === 0
-				? 0 : leastCommonMultiple - childrenWithoutDuplicates.length;
+			// eslint-disable-next-line operator-linebreak
+			const additionalElementNumbers =
+				leastCommonMultiple - childrenWithoutDuplicates.length === 0
+					? 0
+					: leastCommonMultiple - childrenWithoutDuplicates.length;
 
 			for (let index = 0; index < additionalElementNumbers; index += 1) {
-				additionalFragment.append(childrenWithoutDuplicates[index % childrenWithoutDuplicates.length]
-					.cloneNode(true));
+				additionalFragment.append(childrenWithoutDuplicates[index % childrenWithoutDuplicates.length].cloneNode(true));
 			}
 		}
 
@@ -193,5 +207,3 @@ export class Marquee {
 		return fragment;
 	};
 }
-
-

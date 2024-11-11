@@ -34,6 +34,7 @@ const DEFAULTS = {
   detailsSelector: '[data-role="accordion-details"]',
   breakpoint: window.matchMedia("screen"),
   isSingle: false,
+  devMode: false,
   on: {}
 };
 const _Accordions = class {
@@ -51,6 +52,7 @@ const _Accordions = class {
     __publicField(this, "itemElements");
     __publicField(this, "isDestroyed");
     __publicField(this, "destroyedBy");
+    __publicField(this, "devMode");
     __publicField(this, "on");
     __publicField(this, "updateInstanceId", () => {
       this.instanceId = _Accordions.generateInstanceId();
@@ -68,7 +70,13 @@ const _Accordions = class {
       return ((_a = accordionElement[PARAMS_KEY]) == null ? void 0 : _a[PARAMS.ACCORDION_ID]) === accordionId;
     }));
     __publicField(this, "initAccordions", () => {
+      if (this.devMode && !this.parentElement) {
+        throw new Error("Parent element is not defined | \u0420\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0439 \u044D\u043B\u0435\u043C\u0435\u043D\u0442 \u043D\u0435 \u043E\u043F\u0440\u0435\u0434\u0435\u043B\u0435\u043D");
+      }
       this.elements = Array.from(this.parentElement.querySelectorAll(this.accordionSelector));
+      if (this.elements.length === 0 && this.devMode) {
+        throw new Error(`Accordions not found. Check the selector ${this.accordionSelector} | \u0410\u043A\u043A\u043E\u0440\u0434\u0438\u043E\u043D\u044B \u043D\u0435 \u043D\u0430\u0438\u0306\u0434\u0435\u043D\u044B. \u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0441\u0435\u043B\u0435\u043A\u0442\u043E\u0440 ${this.accordionSelector}`);
+      }
       this.elements.forEach((accordionElement, accordionIndex) => {
         this.initAccordion(accordionElement, accordionIndex);
       });
@@ -92,6 +100,9 @@ const _Accordions = class {
       accordionElement.dataset.accordionRole = "parent";
       const accordionChildren = Array.from(accordionElement.children);
       const itemElements = accordionChildren.filter((element) => element.matches(this.itemSelector));
+      if (itemElements.length === 0 && this.devMode) {
+        throw new Error(`Accordion items not found. Check the selector ${this.itemSelector} | \u042D\u043B\u0435\u043C\u0435\u043D\u0442\u044B \u0430\u043A\u043A\u043E\u0440\u0434\u0438\u043E\u043D\u0430 \u043D\u0435 \u043D\u0430\u0438\u0306\u0434\u0435\u043D\u044B. \u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0441\u0435\u043B\u0435\u043A\u0442\u043E\u0440 ${this.itemSelector}`);
+      }
       itemElements.forEach((itemElement, itemIndex) => {
         const itemId = `${accordionId}-${itemIndex}`;
         this.initItem({
@@ -109,7 +120,13 @@ const _Accordions = class {
         return;
       }
       const summaryElement = (_a = itemElement.querySelector(this.summarySelector)) != null ? _a : void 0;
+      if (!summaryElement && this.devMode) {
+        throw new Error(`Accordion summary not found. Check the selector ${this.summarySelector} | \u0421\u0430\u043C\u043C\u0430\u0440\u0438 \u0430\u043A\u043A\u043E\u0440\u0434\u0438\u043E\u043D\u0430 \u043D\u0435 \u043D\u0430\u0438\u0306\u0434\u0435\u043D. \u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0441\u0435\u043B\u0435\u043A\u0442\u043E\u0440 ${this.summarySelector}`);
+      }
       const detailsElement = (_b = itemElement.querySelector(this.detailsSelector)) != null ? _b : void 0;
+      if (!detailsElement && this.devMode) {
+        throw new Error(`Accordion details not found. Check the selector ${this.detailsSelector} | \u041A\u043E\u043D\u0442\u0435\u043D\u0442 \u0430\u043A\u043A\u043E\u0440\u0434\u0438\u043E\u043D\u0430 \u043D\u0435 \u043D\u0430\u0438\u0306\u0434\u0435\u043D. \u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0441\u0435\u043B\u0435\u043A\u0442\u043E\u0440 ${this.detailsSelector}`);
+      }
       const summaryId = this.generateSummaryId(itemId);
       const detailsId = this.generateDetailsId(itemId);
       itemElement.id = this.generateItemId(itemId);
@@ -334,6 +351,7 @@ const _Accordions = class {
     this.itemElements = [];
     this.isDestroyed = true;
     this.destroyedBy = void 0;
+    this.devMode = parameters.devMode;
     this.on = parameters.on;
     this.init();
   }
