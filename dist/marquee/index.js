@@ -35,10 +35,22 @@ class Marquee {
         return;
       }
       this.addCustomAttributes();
+      this.checkImagesDownloading();
       this.initResizeObserver();
       if (this.on.afterInit) {
         this.on.afterInit(this);
       }
+    });
+    __publicField(this, "checkImagesDownloading", () => {
+      var _a;
+      const arrayOfImages = (_a = this.marqueeParentElement) == null ? void 0 : _a.querySelectorAll("img");
+      if (!(arrayOfImages == null ? void 0 : arrayOfImages.length))
+        return;
+      arrayOfImages.forEach((element) => {
+        if (element.complete)
+          return;
+        element.addEventListener("load", this.update);
+      });
     });
     __publicField(this, "initResizeObserver", () => {
       const resizeObserver = new ResizeObserver(() => {
